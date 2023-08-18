@@ -1,0 +1,79 @@
+body{margin:35px;
+display: flex;
+flex-direction: column;
+}
+
+a{color: black;
+font-size: 16px;
+text-decoration: none;
+}
+
+#first_main_block {
+display: inherit;
+align-items: start;
+justify-content: right;
+height: 150px;
+}
+
+.refer_block {margin-left: 20px;
+}
+
+#google_logo_block{
+display:inherit;
+height:100px;
+align-items: center;
+justify-content: center;
+}
+
+#google_logo{
+width:272px;
+height:92px;
+}
+
+#action{
+display:inherit;
+flex-direction: inherit;
+align-items: center;
+justify-content: center;
+}
+
+
+#search_block{
+display:inherit;
+height:70px;
+align-items: inherit;
+justify-content: inherit;
+}
+
+#search_form{
+width:500px;
+height:40px;
+border-radius:20px;
+border-width: 1px;
+padding-left: 20px;
+font-size:20px;
+}
+
+#button_block{
+display:inherit;
+height:50px;
+align-items: inherit;
+justify-content: inherit;
+column-gap:15px;
+}
+
+.button{
+width:130px;
+height:35px;
+border-radius:10px;
+border-width: 1px;
+}
+
+#text_images{
+color: blue;
+font-size: 20px;
+position: relative;
+top: 35px;
+left: -55px;
+}
+

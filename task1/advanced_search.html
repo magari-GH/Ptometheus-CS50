@@ -3,8 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <title>Advanced Search</title>
+    <link rel="stylesheet" href="advanced_search.css">
+
 </head>
 <body>
+    <div class="block_main" id="first_main_block">
+            <div id="image_block">
+                <img src="google_logo.png" width="100px">
+            </div>
 
+            <div id="empty_block">
+            </div>
+                <div class="refer_block">
+                    <a href="index.html">
+                        <text>Google</text>
+                    </a>
+                </div>
+                <div class="refer_block">
+                    <a href="advanced_search.html">
+                        <text>Advanced Search </text>
+                    </a>
+                </div>
+    </div>
+    <div class="block_main" id="second_main_block">
+            <text id="title_main" >Advanced Search</text>
+                    </div>
+    <form action="https://www.google.com/search?">
+        <div class=block_main>
+            <div class=block_sub>
+                <div class=textfilter>
+                    <text class="title_first">Find pages with...</text>
+                </div>
+                <div class=input>
+
+                </div>
+                <div class = "inform" id="title_inform">
+                   <text >To do this in the search box.</text>
+                </div>
+
+            </div>
+            <div class=block_sub>
+                <div class=textfilter>
+                    <text>all these words:</text>
+                </div>
+                <div class=input>
+                    <input type="text" name="as_q" class="input_block">
+                </div>
+                <div class = "inform" >
+                   <text >Type the important words: tri-colour rat terrier</text>
+                </div>
+            </div>
+            <div class=block_sub>
+                <div class=textfilter>
+                    <text>this exact word or phrase:</text>
+                </div>
+                <div class=input>
+                    <input type="text" name="as_epq" class="input_block">
+                </div>
+                <div class = "inform" >
+                   <text >TPut exact words in quotes: "rat terrier"</text>
+                </div>
+            </div>
+            <div class=block_sub>
+                <div class=textfilter>
+                    <text>any of these words:</text>
+                </div>
+                <div class=input>
+                    <input type="text" name="as_oq" class="input_block">
+                </div>
+                <div class="inform" >
+                   <text >Type OR between all the words you want: miniature OR standard</text>
+                </div>
+            </div>
+            <div class=block_sub>
+                <div class=textfilter>
+                    <text>none of these words:</text>
+                </div>
+
+                <div class=input>
+                    <input type="text" name="as_eq" class="input_block">
+                </div>
+                <div  class = "inform" >
+                   <text>Put a minus sign just before words that you don't want: -rodent, -"Jack Russell"</text>
+                </div>
+            </div>
+            <div class=block_sub>
+                <div class=textfilter>
+                    <text>numbers ranging from:</text>
+                </div>
+                <div class=input>
+                    <input type="text" name="as_nlo" class="input_block_short">
+                    <text id="to">to</text>
+                    <input type="text" name="as_nhi" class="input_block_short">
+                </div>
+                <div class = "inform" >
+                   <text>Put two full stops between the numbers and add a unit of measurement: 10..35 kg, £300..£500, 2010..2011</text>
+                </div>
+
+            </div>
+        </div>
+        <div class=block_main>
+            <div class=block_sub>
+                <div class=textfilter>
+                    <text class="title_first">Then narrow your results by...</text>
+                </div>
+                <div class=input>
+
+                </div>
+                <div class = "inform" >
+                   <text></text>
+                </div>
+            </div>
+            <div class=block_sub>
+                <div class=textfilter>
+                    <text id="test">language:</text>
+                </div>
+                <div class=input>
+                    <input list="language" class="lists"/>
+                </div>
+                <div class = "inform" >
+                   <text>Find pages in the language that you select.</text>
+                </div>
+            </div>
+            <div class=block_sub>
+                <div class=textfilter>
+                    <text>region:</text>
+                </div>
+                <div class=input>
+                    <input list="region" class="lists"/>
+                </div>
+                <div class = "inform" >
+                   <text>Find pages published in a particular region.</text>
+                </div>
+            </div>
+            <div class=block_sub>
+                <div class=textfilter>
+                    <text>last update:</text>
+                </div>
+                <div class=input>
+                    <input list="last update" class="lists"/>
+                </div>
+                <div class = "inform" >
+                   <text>Find pages updated within the time that you specify.</text>
+                </div>
+            </div>
+            <div class=block_sub>
+                <div class=textfilter>
+                    <text>site or domain:</text>
+                </div>
+                <div class=input>
+
+                </div>
+                <div class = "inform" >
+                   <text>Search one site (like wikipedia.org ) or limit your results to a domain like .edu, .org or .gov</text>
+                </div>
+            </div>
+            <div class=block_sub>
+                <div class=textfilter>
+                    <text>terms appearing:</text>
+                </div>
+                <div class=input>
+                    <input list="terms appearing" class="lists"/>
+                </div>
+                <div class = "inform" >
+                   <text>Search for terms in the whole page, page title or web address, or links to the page you're looking for.</text>
+                </div>
+            </div>
+            <div class=block_sub>
+                <div class=textfilter>
+                    <text>file type:</text>
+                </div>
+                <div class=input>
+                    <input list="file type" class="lists"/>
+                </div>
+                <div class = "inform" >
+                   <text>Find pages in the format that you prefer.</text>
+                </div>
+            </div>
+            <div class=block_sub>
+                <div class=textfilter>
+                    <text>usage rights:</text>
+                </div>
+                <div class=input>
+                    <input list="usage rights" class="lists"/>
+                </div>
+                <div class = "inform" >
+                   <text>Find pages that you are free to use yourself.</text>
+                </div>
+            </div>
+        </div>
+        <div class=block_main id="last_block">
+            <div class=block_sub id="block_sub_submit">
+                <div class=textfilter></div>
+                <div class=input id="input_submit">
+                    <input  id="Advanced_Search"  type="submit" value="Advanced Search">
+                </div>
+            </div>
+        </div>
+    </form>
 </body>
 </html>
+
+<datalist id="language">
+    <option value="any language"></option>
+    <option value="Arabic"></option>
+    <option value="Czech"></option>
+    <option value="Dutch"></option>
+    <option value="English"></option>
+</datalist>
+<datalist id="region">
+    <option value="any region"></option>
+    <option value="Australia"></option>
+    <option value="Austria"></option>
+    <option value="Belgium"></option>
+    <option value="Czechia"></option>
+</datalist>
+<datalist id="last update">
+    <option value="anytime"></option>
+    <option value="past 24 hours"></option>
+    <option value="past week"></option>
+    <option value="past month"></option>
+    <option value="past year"></option>
+</datalist>
+<datalist id="terms appearing">
+    <option value="anywhere in the page"></option>
+    <option value="in the title of the page"></option>
+    <option value="in the text of the page"></option>
+    <option value="in the URL of the page"></option>
+    <option value="in the links of the page"></option>
+</datalist>
+<datalist id="file type">
+    <option value="any format"></option>
+    <option value="Adobe Acrobat PDF (.pdf)"></option>
+    <option value="Adobe Postscript (.ps)"></option>
+    <option value="Autodesk DWF (.dwf)"></option>
+    <option value="Google Earth KML (.kml)"></option>
+</datalist>
+<datalist id="usage rights">
+    <option value="no filtered by licence"></option>
+    <option value="free to use or share"></option>
+    <option value="free to use or share, even commercially"></option>
+    <option value="free to use or share or modify"></option>
+    <option value="free to use or share or modify, even commercially"></option>
+</datalist>
