@@ -12,10 +12,9 @@
         <div class="row">
             <div class="sidebar col-lg-2 col-md-3">
                 <h2>Wiki</h2>
-                <form action="{% url 'index'  %}" role="search">
-                    {{ form }}
-
-                    <input class="search" type="text" name="q" placeholder="Search Encyclopedia">
+                <form action="{% url 'search' %}" method="get">
+                    <input type="text" name="search_box"  placeholder="Search Encyclopedia">
+                    <input type="submit" value="ok">
                 </form>
                 <div>
                     <a href="{% url 'index' %}">Home</a>
