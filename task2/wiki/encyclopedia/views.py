@@ -2,10 +2,19 @@ from django.shortcuts import render
 from markdown2 import markdown
 from . import util
 from django import forms
+from django.http import HttpResponseRedirect
 
 
 class NewSearchForm(forms.Form):
     text_form = forms.CharField(label="Search Encyclopedia:")
+
+
+class NewTitleForm(forms.Form):
+    new_title = forms.CharField(widget=forms.Textarea)
+
+
+class NewContentForm(forms.Form):
+    new_content = forms.CharField(widget=forms.Textarea)
 
 
 entries = util.list_entries()
@@ -26,10 +35,10 @@ def title(request, title):
     else:
         text_html = markdown(open(f"entries/{title}.md").read())
     return render(request, "encyclopedia/title.html", {
-            "title_name": title_name,
-            "text_html": text_html,
-            "entries": util.list_entries(),
-            "form": NewSearchForm(),
+        "title_name": title_name,
+        "text_html": text_html,
+        "entries": util.list_entries(),
+        "form": NewSearchForm(),
     })
 
 
@@ -43,10 +52,10 @@ def search_html(request):
             if title1 in i:
                 lists.append(i)
         return render(request, "encyclopedia/search.html", {
-                    "form": NewSearchForm(),
-                    "lists": lists,
-                    "entries": entries,
-                    "title1": title1})
+            "form": NewSearchForm(),
+            "lists": lists,
+            "entries": entries,
+            "title1": title1})
     else:
         text_html = markdown(open(f"entries/{title1}.md").read())
         return render(request, "encyclopedia/title.html", {
@@ -54,7 +63,7 @@ def search_html(request):
             "text_html": text_html,
             "entries": util.list_entries(),
             "form": NewSearchForm(),
-    })
+        })
 
 
 def search_form(request):
@@ -83,4 +92,27 @@ def search_form(request):
                     "entries": util.list_entries(),
                     "form": NewSearchForm(),
                     "title1": title1,
+                })
+
+
+def create(request):
+    warning_message = ""
+    if request.method == "POST":
+        form_title = NewTitleForm(request.POST)
+        form_content = NewContentForm(request.POST)
+        if form_title.is_valid() and form_content.is_valid():
+            title3 = form_title.cleaned_data["new_title"]
+            content = form_content.cleaned_data["new_content"]
+            if title3 not in util.list_entries():
+                with open(f"entries/{title3}.md", 'w', encoding="utf-8") as f:
+                    f.write(f"{content}")
+                    return HttpResponseRedirect(f"{title3}")
+            else:
+                warning_message = "This title exist, try another word!"
+    return render(request, "encyclopedia/create.html", {
+                    "entries": util.list_entries(),
+                    "form": NewSearchForm(),
+                    "form_title": NewTitleForm(),
+                    "form_content": NewContentForm(),
+                    "warning_message": warning_message,
                     })
