@@ -12,27 +12,26 @@
         <div class="row">
             <div class="sidebar col-lg-2 col-md-3">
                 <h2>Wiki</h2>
-                <form action="{% url 'search' %}" method="get" >
-                    <label for="search_box">Search Encyclopedia:</label>
-                    <input type="text" name="search_box" id="search_box">
-                    <input type="submit" value="ok">
-                </form>
+                    <form action="{% url 'search' %}" method="get" >
+                        <label for="search_box">Search Encyclopedia:</label>
+                        <input type="text" name="search_box" id="search_box">
+                        <input type="submit" value="ok">
+                    </form>
 
-                <form action="{% url 'search1' %}" method="POST">
-                    {% csrf_token %}
-                    {{ form }}
-                    <input type="submit" value="ok">
-                </form>
-                <div>
-                    <a href="{% url 'index' %}">Home</a>
-                </div>
-                <div>
-                    Create New Page
-                </div>
-                <div>
-                    <a href="{% url 'title' entries|random %}">Random Page</a>
-
-                </div>
+                    <form action="{% url 'search1' %}" method="POST">
+                        {% csrf_token %}
+                        {{ form }}
+                        <input type="submit" value="ok">
+                    </form>
+                    <div>
+                        <a href="{% url 'index' %}">Home</a>
+                    </div>
+                    <div>
+                        <a href="{% url 'create' %}">Create New Page</a>
+                    </div>
+                    <div>
+                        <a href="{% url 'title' entries|random %}">Random Page</a>
+                    </div>
                 {% block nav %}
                 {% endblock %}
             </div>
