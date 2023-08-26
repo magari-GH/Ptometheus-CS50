@@ -110,9 +110,35 @@ def create(request):
             else:
                 warning_message = "This title exist, try another word!"
     return render(request, "encyclopedia/create.html", {
-                    "entries": util.list_entries(),
-                    "form": NewSearchForm(),
-                    "form_title": NewTitleForm(),
-                    "form_content": NewContentForm(),
-                    "warning_message": warning_message,
-                    })
+        "entries": util.list_entries(),
+        "form": NewSearchForm(),
+        "form_title": NewTitleForm(),
+        "form_content": NewContentForm(),
+        "warning_message": warning_message,
+    })
+
+
+def edit(request, title):
+    title_name1 = f"{title}"
+    with open(f"entries/{title_name1}.md", "r", encoding="utf-8") as f:
+        previous_text = f.read()
+
+    class NewEditForm(forms.Form):
+        new_edit = forms.CharField(widget=forms.Textarea, initial=previous_text)
+
+    if request.method == "POST":
+        form_edit = NewEditForm(request.POST)
+        if form_edit.is_valid():
+            edited_content = form_edit.cleaned_data["new_edit"]
+            with open(f"entries/{title_name1}.md", 'w', encoding="utf-8") as fo:
+                fo.write(f"{edited_content}")
+                return HttpResponseRedirect(f"/wiki/{title_name1}")
+
+
+    return render(request, "encyclopedia/edit.html", {
+            "form": NewSearchForm(),
+            "entries": util.list_entries(),
+            "form_edit": NewEditForm(),
+            "previous_text": previous_text,
+            "title_name1": title_name1,
+            })
