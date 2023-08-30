@@ -14,23 +14,32 @@ class Auction(models.Model):
     description = models.CharField(blank=True, max_length=124)
     image_url = models.CharField(blank=True, max_length=124)
     price = models.FloatField(default=0.0)
-    owner = models.CharField(max_length=64)  # user
-    winner = models.CharField(blank=True, max_length=64)  # user
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="seller")  # user
+    # owner = models.CharField(max_length=64)  # user
+    winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="buyer")  # user
+    # winner = models.CharField(blank=True, max_length=64)  # user
     is_active = models.BooleanField(default=False, verbose_name='active status')  # active or non_active
 
 
 class Bet(models.Model):
-    title = models.CharField(max_length=64)  # auction
-    user = models.CharField(max_length=64)  # user
-    price = models.FloatField()
+    title = models.ForeignKey(Auction, on_delete=models.CASCADE)  # auction
+    # title = models.CharField(max_length=64)  # auction
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # user
+    # user = models.CharField(max_length=64)  # user
+    price = models.ForeignKey(Auction, on_delete=models.CASCADE, related_name="bet_price")
+    # price = models.FloatField()
 
 
 class Comment(models.Model):
-    title = models.CharField(max_length=64)  # auction
-    user = models.CharField(max_length=64)  # user
+    title = models.ForeignKey(Auction, on_delete=models.CASCADE)  # auction
+    # title = models.CharField(max_length=64)  # auction
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # user
+    # user = models.CharField(max_length=64)  # user
     comments = models.CharField(max_length=128)
 
 
 class Watchlist(models.Model):
-    user = models.CharField(max_length=64)  # user
-    title = models.CharField(max_length=64)  # auction
+    title = models.ForeignKey(Auction, on_delete=models.CASCADE)  # auction
+    # title = models.CharField(max_length=64)  # auction
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # user
+    # user = models.CharField(max_length=64)  # user
