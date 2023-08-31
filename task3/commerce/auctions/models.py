@@ -20,6 +20,10 @@ class Auction(models.Model):
     # winner = models.CharField(blank=True, max_length=64)  # user
     is_active = models.BooleanField(default=False, verbose_name='active status')  # active or non_active
 
+    def __str__(self):
+        return (f'Auction {self.id} with title {self.title} in category {self.category} price is ${self.price} '
+                f'from seller {self.owner}')
+
 
 class Bet(models.Model):
     title = models.ForeignKey(Auction, on_delete=models.CASCADE)  # auction
@@ -29,6 +33,9 @@ class Bet(models.Model):
     price = models.ForeignKey(Auction, on_delete=models.CASCADE, related_name="bet_price")
     # price = models.FloatField()
 
+    def __str__(self):
+        return f'Bet {self.id} on auction {self.title} from {self.user}'
+
 
 class Comment(models.Model):
     title = models.ForeignKey(Auction, on_delete=models.CASCADE)  # auction
@@ -37,9 +44,15 @@ class Comment(models.Model):
     # user = models.CharField(max_length=64)  # user
     comment = models.CharField(max_length=128)
 
+    def __str__(self):
+        return f'{self.id} comment for {self.title} from {self.user}'
+
 
 class Watchlist(models.Model):
     title = models.ForeignKey(Auction, on_delete=models.CASCADE)  # auction
     # title = models.CharField(max_length=64)  # auction
     user = models.ForeignKey(User, on_delete=models.CASCADE)  # user
     # user = models.CharField(max_length=64)  # user
+
+    def __str__(self):
+        return f'auction {self.__str__()}'
