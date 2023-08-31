@@ -35,7 +35,7 @@ class Comment(models.Model):
     # title = models.CharField(max_length=64)  # auction
     user = models.ForeignKey(User, on_delete=models.CASCADE)  # user
     # user = models.CharField(max_length=64)  # user
-    comments = models.CharField(max_length=128)
+    comment = models.CharField(max_length=128)
 
 
 class Watchlist(models.Model):
