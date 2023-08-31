@@ -16,7 +16,7 @@ class Auction(models.Model):
     price = models.FloatField(default=0.0)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="seller")  # user
     # owner = models.CharField(max_length=64)  # user
-    winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="buyer")  # user
+    winner = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE, related_name="buyer")  # user
     # winner = models.CharField(blank=True, max_length=64)  # user
     is_active = models.BooleanField(default=False, verbose_name='active status')  # active or non_active
 
