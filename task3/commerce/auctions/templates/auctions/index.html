@@ -4,7 +4,7 @@
     <h2>Active Listings</h2>
     <ul>
         {% for auction in auctions %}
-            <li> Auction {{ auction.id}}: "{{auction.title}}" in category "{{auction.category}}" price $ {{auction.price}} from seller {{auction.owner}}</li>
+            <li> Auction {{ auction.id}}: "{{auction.title}}" "{{auction.description}}" price $ {{auction.price}}</li>
         {% endfor %}
     </ul>
 
