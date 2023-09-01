@@ -4,7 +4,11 @@
     <h2>Active Listings</h2>
     <ul>
         {% for auction in auctions %}
-            <li> Auction {{ auction.id}}: "{{auction.title}}" "{{auction.description}}" price $ {{auction.price}}</li>
+            <li>
+                <a href="{% url 'auction' auction.id %}">
+                  Auction {{ auction.id}}: "{{auction.title}}" "{{auction.description}}" price $ {{auction.price}}
+                </a>
+            </li>
         {% endfor %}
     </ul>
 
