@@ -1,5 +1,15 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
+        <h3>Auction {{ auction.id }} </h3>
 
+    <ul>
+        <li>Title: {{ auction.title }} </li>
+        <li>Category: {{ auction.category }}</li>
+        <li>Description: {{ auction.description }}</li>
+        <li>Price: {{ auction.price }}</li>
+        <li>Seller: {{ auction.owner }}</li>
+    </ul>
+
+<a href="{% url 'index' %}"> Back to Active Listing </a>
 {% endblock %}
