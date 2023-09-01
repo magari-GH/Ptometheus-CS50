@@ -18,7 +18,7 @@ class Auction(models.Model):
     # owner = models.CharField(max_length=64)  # user
     winner = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE, related_name="buyer")  # user
     # winner = models.CharField(blank=True, max_length=64)  # user
-    is_active = models.BooleanField(default=False, verbose_name='active status')  # active or non_active
+    is_active = models.BooleanField(default=True, verbose_name='active status')  # active or non_active
 
     def __str__(self):
         return (f'Auction {self.id} with title {self.title} in category {self.category} price is ${self.price} '
