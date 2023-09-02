@@ -4,7 +4,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from .forms import AuctionForm
+from .forms import AuctionForm, CommentForm
 from .models import User, Auction, Bet, Comment, Watchlist
 
 
@@ -29,7 +29,19 @@ def new_auction(request):
 def auction(request, auction_id):
     auction = Auction.objects.get(pk=auction_id)
     return render(request, 'auctions/auction.html', {
-        "auction": auction
+        "auction": auction,
+        "comments": Comment.objects.filter(title=auction_id)
+    })
+
+
+@login_required
+def new_comment(request):
+    form = CommentForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        form = CommentForm
+    return render(request, "auctions/new_comment.html", {
+        "form": form
     })
 
 
