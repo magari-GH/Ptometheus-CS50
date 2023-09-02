@@ -12,4 +12,13 @@
     </ul>
 
 <a href="{% url 'index' %}"> Back to Active Listing </a>
+    <h4>Comments: </h4>
+    <ul>
+            {% for comment in comments %}
+        <li>
+          {{comment.user}}:    {{comment.comment}}
+        </li>
+    {% endfor %}
+    </ul>
+<a href="{% url 'new_comment' %}"> Add new comment </a>
 {% endblock %}
