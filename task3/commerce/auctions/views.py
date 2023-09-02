@@ -36,12 +36,16 @@ def auction(request, auction_id):
 
 @login_required
 def new_comment(request):
-    form = CommentForm(request.POST or None)
+    initial_data = {
+        "user": request.user,
+
+    }
+    form = CommentForm(request.POST or None, initial=initial_data)
     if form.is_valid():
         form.save()
         form = CommentForm
     return render(request, "auctions/new_comment.html", {
-        "form": form
+        "form": form,
     })
 
 
