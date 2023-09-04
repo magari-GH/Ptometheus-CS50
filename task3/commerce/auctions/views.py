@@ -14,6 +14,20 @@ def index(request):
     })
 
 
+def categories_view(request):
+    return render(request, 'auctions/categories.html', {
+        "auctions": Auction.objects.filter(is_active=True)
+    })
+
+
+def category_view(request, category):
+    category_title = category
+    return render(request, "auctions/category.html", {
+        "auctions": Auction.objects.filter(category=category),
+        "category_title": category_title,
+    })
+
+
 @login_required
 def new_auction(request):
     form = AuctionForm(request.POST or None)
