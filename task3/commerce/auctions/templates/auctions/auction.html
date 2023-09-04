@@ -20,5 +20,5 @@
         </li>
     {% endfor %}
     </ul>
-<a href="{% url 'new_comment' %}"> Add new comment </a>
+<a href="{% url 'new_comment' auction.id %}"> Add new comment </a>
 {% endblock %}
