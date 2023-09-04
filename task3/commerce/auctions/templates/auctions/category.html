@@ -1,5 +1,16 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
+    <h2>Category: {{category_title}} </h2>
+    <ul>
+        {% for auction in auctions %}
+            <li>
+                <a href="{% url 'auction' auction.id %}">
+                  Auction {{ auction.id}}: "{{auction.title}}" "{{auction.description}}" price $ {{auction.price}}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+
 
 {% endblock %}
