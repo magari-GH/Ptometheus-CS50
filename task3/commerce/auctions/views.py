@@ -35,15 +35,16 @@ def auction(request, auction_id):
 
 
 @login_required
-def new_comment(request):
+def new_comment(request, auction_id):
     initial_data = {
         "user": request.user,
-
+        "title": auction_id
     }
     form = CommentForm(request.POST or None, initial=initial_data)
     if form.is_valid():
         form.save()
-        form = CommentForm
+        form = CommentForm()
+        return HttpResponseRedirect(f"/auctions/{auction_id}")
     return render(request, "auctions/new_comment.html", {
         "form": form,
     })
