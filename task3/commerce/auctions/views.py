@@ -2,15 +2,37 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from .forms import AuctionForm, CommentForm
 from .models import User, Auction, Bet, Comment, Watchlist
 
 
+@login_required
+def watchlist_add(request, auction_id):
+    if request.method == "POST":
+        items = Auction.objects.get(pk=auction_id)
+        tracking = Watchlist.objects.filter(user=request.user, item=items)
+        if tracking.exists():
+            tracking.delete()
+            return redirect('watchlist')
+        else:
+            tracking, created = Watchlist.objects.get_or_create(user=request.user, item=items)
+            tracking.save()
+            return redirect('watchlist')
+
+
+@login_required
+def watchlist_view(request):
+    watchlist = Watchlist.objects.filter(user=request.user)
+    return render(request, 'auctions/watchlist.html', {
+        'watchlist': watchlist
+    })
+
+
 def index(request):
     return render(request, "auctions/index.html", {
-        'auctions': Auction.objects.filter(is_active=True)
+        'auctions': Auction.objects.filter(is_active=True),
     })
 
 
@@ -29,7 +51,7 @@ def category_view(request, category):
 
 
 @login_required
-def new_auction(request):
+def new_auction_view(request):
     form = AuctionForm(request.POST or None)
     if form.is_valid():
         form.save()
@@ -40,16 +62,16 @@ def new_auction(request):
     })
 
 
-def auction(request, auction_id):
+def auction_view(request, auction_id):
     auction = Auction.objects.get(pk=auction_id)
     return render(request, 'auctions/auction.html', {
         "auction": auction,
-        "comments": Comment.objects.filter(title=auction_id)
+        "comments": Comment.objects.filter(title=auction_id),
     })
 
 
 @login_required
-def new_comment(request, auction_id):
+def new_comment_view(request, auction_id):
     initial_data = {
         "user": request.user,
         "title": auction_id
