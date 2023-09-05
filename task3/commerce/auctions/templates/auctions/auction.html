@@ -10,8 +10,11 @@
         <li>Price: {{ auction.price }}</li>
         <li>Seller: {{ auction.owner }}</li>
     </ul>
-
-<a href="{% url 'index' %}"> Back to Active Listing </a>
+    <form action="{% url 'watchlist_add' auction.id %}" method="post">
+        {% csrf_token %}
+        <input type="submit" value="Watchlist">
+    </form>
+    <a href="{% url 'index' %}"> Back to Active Listing </a>
     <h4>Comments: </h4>
     <ul>
             {% for comment in comments %}
