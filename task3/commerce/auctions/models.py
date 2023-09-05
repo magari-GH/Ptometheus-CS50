@@ -49,10 +49,11 @@ class Comment(models.Model):
 
 
 class Watchlist(models.Model):
-    title = models.ForeignKey(Auction, on_delete=models.CASCADE)  # auction
+    id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
+    item = models.ForeignKey(Auction, on_delete=models.CASCADE)  # auction
     # title = models.CharField(max_length=64)  # auction
     user = models.ForeignKey(User, on_delete=models.CASCADE)  # user
     # user = models.CharField(max_length=64)  # user
 
     def __str__(self):
-        return f'auction {self.__str__()}'
+        return f'Watch list of  {self.user}'
