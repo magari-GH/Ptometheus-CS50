@@ -20,7 +20,7 @@ class CommentAdmin(admin.ModelAdmin):
 
 
 class WatchlistAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'user')
+    list_display = ('id', 'user', 'item')
 
 
 admin.site.register(User, UserAdmin)
