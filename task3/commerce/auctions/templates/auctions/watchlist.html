@@ -1,5 +1,14 @@
-{% extends "auctions/layout.html" %}
+    {% extends "auctions/layout.html" %}
 
-{% block body %}
-
-{% endblock %}
+    {% block body %}
+    <h3>Watchlist of {{ user }}:</h3>
+    <ul>
+        {% for tracking  in watchlist %}
+            <li>
+                <a href="{% url 'auction' tracking.item.id %}">
+                  {{ tracking.item }}
+                </a>
+            </li>
+        {%endfor%}
+    </ul>
+    {% endblock %}
