@@ -30,7 +30,8 @@ class Bet(models.Model):
     # title = models.CharField(max_length=64)  # auction
     user = models.ForeignKey(User, on_delete=models.CASCADE)  # user
     # user = models.CharField(max_length=64)  # user
-    price = models.ForeignKey(Auction, on_delete=models.CASCADE, related_name="bet_price")
+    #price = models.ForeignKey(Auction, on_delete=models.CASCADE, related_name="bet_price")
+    price = models.FloatField(default=0.0)
     # price = models.FloatField()
 
     def __str__(self):
