@@ -9,7 +9,18 @@
     <li>Description: {{ auction.description }}</li>
     <li>Price: {{ auction.price }}</li>
     <li>Seller: {{ auction.owner }}</li>
+    <li>Active: {{auction.is_active}} </li>
+    <li>Buyer: {{auction.winner}}</li>
 </ul>
+    {% if auction.is_active == True %}
+        {% if user == auction.owner %}
+            <form action="{% url 'close_auction' auction.id %}" method="post">
+                {% csrf_token %}
+            <input type="submit" value="Close auction">
+            </form>
+        {% endif %}
+    {% endif %}
+<h2>For gape</h2>
 <a href="{% url 'new_bet' auction.id %}"> Make Bet </a>
 <form action="{% url 'watchlist_add' auction.id %}" method="post">
     {% csrf_token %}
