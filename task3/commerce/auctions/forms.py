@@ -2,7 +2,7 @@ from xml.dom.minidom import Comment
 
 from django import forms
 
-from .models import Auction, Comment
+from .models import Auction, Comment, Bet
 
 
 class AuctionForm(forms.ModelForm):
@@ -25,4 +25,14 @@ class CommentForm(forms.ModelForm):
             'title',
             'user',
             'comment',
+        ]
+
+
+class BetForm(forms.ModelForm):
+    class Meta:
+        model = Bet
+        fields = [
+            'title',
+            'user',
+            'price',
         ]
