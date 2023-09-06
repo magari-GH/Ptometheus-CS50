@@ -4,8 +4,35 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from .forms import AuctionForm, CommentForm
+from .forms import AuctionForm, CommentForm, BetForm
 from .models import User, Auction, Bet, Comment, Watchlist
+
+@login_required
+def new_bet_view(request, auction_id):
+    auction = Auction.objects.get(pk=auction_id)
+    base_price = auction.price
+    initial_data = {
+        "user": request.user,
+        "title": auction_id,
+        "price": base_price
+    }
+
+    form = BetForm(request.POST or None, initial=initial_data)
+    if form.is_valid():
+        auction.price = form.cleaned_data["price"]
+        if auction.price > base_price:
+            form.save()
+            auction.save()
+        else:
+            return render(request, "auctions/new_bet.html", {
+                "form": form,
+                "message": "The bet must be higher than current price"
+            })
+
+        return HttpResponseRedirect(f"/auctions/{auction_id}")
+    return render(request, "auctions/new_bet.html", {
+        "form": form,
+    })
 
 
 @login_required
