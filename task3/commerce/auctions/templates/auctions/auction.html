@@ -1,27 +1,28 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-        <h3>Auction {{ auction.id }} </h3>
+<h3>Auction {{ auction.id }} </h3>
 
-    <ul>
-        <li>Title: {{ auction.title }} </li>
-        <li>Category: {{ auction.category }}</li>
-        <li>Description: {{ auction.description }}</li>
-        <li>Price: {{ auction.price }}</li>
-        <li>Seller: {{ auction.owner }}</li>
-    </ul>
-    <form action="{% url 'watchlist_add' auction.id %}" method="post">
-        {% csrf_token %}
-        <input type="submit" value="Watchlist">
-    </form>
-    <a href="{% url 'index' %}"> Back to Active Listing </a>
-    <h4>Comments: </h4>
-    <ul>
-            {% for comment in comments %}
-        <li>
-          {{comment.user}}:    {{comment.comment}}
-        </li>
+<ul>
+    <li>Title: {{ auction.title }} </li>
+    <li>Category: {{ auction.category }}</li>
+    <li>Description: {{ auction.description }}</li>
+    <li>Price: {{ auction.price }}</li>
+    <li>Seller: {{ auction.owner }}</li>
+</ul>
+<a href="{% url 'new_bet' auction.id %}"> Make Bet </a>
+<form action="{% url 'watchlist_add' auction.id %}" method="post">
+    {% csrf_token %}
+    <input type="submit" value="Watchlist">
+</form>
+<a href="{% url 'index' %}"> Back to Active Listing </a>
+<h4>Comments: </h4>
+<ul>
+    {% for comment in comments %}
+    <li>
+        {{comment.user}}: {{comment.comment}}
+    </li>
     {% endfor %}
-    </ul>
+</ul>
 <a href="{% url 'new_comment' auction.id %}"> Add new comment </a>
 {% endblock %}
