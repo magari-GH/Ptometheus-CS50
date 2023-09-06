@@ -7,6 +7,19 @@ from django.urls import reverse
 from .forms import AuctionForm, CommentForm, BetForm
 from .models import User, Auction, Bet, Comment, Watchlist
 
+
+@login_required
+def close_auction(request, auction_id):
+    if request.method == "POST":
+        auction = Auction.objects.get(pk=auction_id)
+        bet = Bet.objects.latest("title")
+        auction.winner = bet.user
+        auction.is_active = False
+        auction.save()
+        return redirect('auction', auction_id)
+    return redirect('index')
+
+
 @login_required
 def new_bet_view(request, auction_id):
     auction = Auction.objects.get(pk=auction_id)
