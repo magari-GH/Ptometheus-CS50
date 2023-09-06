@@ -107,6 +107,7 @@ def auction_view(request, auction_id):
     return render(request, 'auctions/auction.html', {
         "auction": auction,
         "comments": Comment.objects.filter(title=auction_id),
+        "message": "You are winner. Congratulations!"
     })
 
 
