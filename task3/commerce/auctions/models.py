@@ -11,8 +11,9 @@ class Auction(models.Model):
         unique=True, error_messages={'unique': "The auction with that title already exists."},
         max_length=64, verbose_name='title of auction')
     category = models.CharField(max_length=64)
-    description = models.CharField(blank=True, max_length=124)
-    image_url = models.CharField(blank=True, max_length=124)
+    description = models.TextField(blank=True, max_length=124)
+    #  image_url = models.CharField(blank=True, max_length=124)
+    image_url = models.URLField(blank=True, null=True, verbose_name='URL')
     price = models.FloatField(default=0.0)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="seller")  # user
     # owner = models.CharField(max_length=64)  # user
