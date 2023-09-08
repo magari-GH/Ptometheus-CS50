@@ -12,6 +12,10 @@
     <li>Active: {{auction.is_active}} </li>
     <li>Buyer: {{auction.winner}}</li>
 </ul>
+    {% if user == auction.winner %}
+        {{message}}
+    {% endif %}
+
     {% if auction.is_active == True %}
         {% if user == auction.owner %}
             <form action="{% url 'close_auction' auction.id %}" method="post">
