@@ -1,43 +1,76 @@
 {% extends "auctions/layout.html" %}
 
+{% block title %} {{auction.title}}{% endblock %}
+
 {% block body %}
-<h3>Auction {{ auction.id }} </h3>
-
-<ul>
-    <li>Title: {{ auction.title }} </li>
-    <li>Category: {{ auction.category }}</li>
-    <li>Description: {{ auction.description }}</li>
-    <li>Price: {{ auction.price }}</li>
-    <li>Seller: {{ auction.owner }}</li>
-    <li>Active: {{auction.is_active}} </li>
-    <li>Buyer: {{auction.winner}}</li>
-</ul>
-    {% if user == auction.winner %}
-        {{message}}
-    {% endif %}
-
-    {% if auction.is_active == True %}
-        {% if user == auction.owner %}
-            <form action="{% url 'close_auction' auction.id %}" method="post">
-                {% csrf_token %}
-            <input type="submit" value="Close auction">
-            </form>
+<div class="grid grid-cols-5 gap-6">
+    <div class="col-span-3">
+       <img src="{{ auction.image_url }}" alt="This is image">
+    </div>
+    <div class="col-span-2 p-6 bg-gray-100 rounded-xl">
+        <h1 class="mb-6 text-3xl"> {{auction.title}}</h1>
+        {% if auction.is_active != True %}
+        <p class="text-red-500"> <strong>Closed</strong></p>
         {% endif %}
-    {% endif %}
-<h2>For gape</h2>
-<a href="{% url 'new_bet' auction.id %}"> Make Bet </a>
-<form action="{% url 'watchlist_add' auction.id %}" method="post">
-    {% csrf_token %}
-    <input type="submit" value="Watchlist">
-</form>
-<a href="{% url 'index' %}"> Back to Active Listing </a>
-<h4>Comments: </h4>
-<ul>
-    {% for comment in comments %}
-    <li>
-        {{comment.user}}: {{comment.comment}}
-    </li>
-    {% endfor %}
-</ul>
-<a href="{% url 'new_comment' auction.id %}"> Add new comment </a>
+
+        <p class="text-gray-500"> Price: {{ auction.price }} $</p>
+        <p class="text-gray-500"> Seller: {{ auction.owner }}</p>
+        <p class="text-gray-500"> Category: {{ auction.category }}</p>
+
+            {% if auction.is_active != True %}
+                <p class="text-gray-500"> Winner: {{ auction.winner }}</p><br>
+            {% endif %}
+
+            {% if auction.description %}
+                <p class="text-gray-500">
+                    <strong>Description:</strong>
+                    {{ auction.description }}
+                </p>
+            {% endif%}
+
+            <div class="py-5">
+                {% if auction.is_active == True %}
+                    {% if user == auction.owner %}
+                        <a class="px-6 py-1 text-lg font-semibold bg-red-500 text-white rounded-xl hover:bg-red-700"
+                            href="{% url 'close_auction' auction.id %}"> Close auction </a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        {% if auction.is_active == True %}
+            {% if user.is_authenticated %}
+            <div class="flex justify-between py-5">
+            {% if auction.id == watchlist.item.id %}
+                <a class="px-6 py-1 text-lg font-semibold bg-teal-500 text-white rounded-xl hover:bg-teal-700"
+                href="{% url 'watchlist_add' auction.id %}">Follow </a><br>
+            {% else %}
+                <a class="px-6 py-1 text-lg font-semibold bg-red-500 text-white rounded-xl hover:bg-red-700"
+                href="{% url 'watchlist_add' auction.id %}">Remove</a><br>
+            {% endif %}
+            <a class="px-6 py-1 text-lg font-semibold bg-teal-500 text-white rounded-xl hover:bg-teal-700"
+            href="{% url 'new_bet' auction.id %}"> Make Bet </a><br>
+            </div>
+
+
+
+
+            <div class="text-gray-500 py-3">
+                <strong>Comments:</strong>
+                <ul class="pl-6">
+                    {% for comment in comments %}
+                    <li>
+                     {{comment.user}}:  {{comment.comment}}
+                    </li>
+                    {% endfor %}
+                </ul><br>
+                <a class="text-gray-500 font-semibold hover:text-gray-700"
+                href="{% url 'new_comment' auction.id %}"> Add new comment </a>
+            </div>
+            {% endif%}
+        {% endif%}
+        <a class="text-gray-500 text-lg font-semibold hover:text-gray-700" href="{% url 'index' %}"> Back to Active Listing </a><br>
+        {% if user == auction.winner %}
+        <p class="text-red-500"> <strong>{{message}}</strong></p>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}
