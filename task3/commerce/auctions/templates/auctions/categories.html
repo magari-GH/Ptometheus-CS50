@@ -1,16 +1,16 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Categories</h2>
-    <ul>
+    <h2 class="text-2xl py-6 font-semibold hover:text-gray-400 ">Categories</h2>
+    <ul class="space-y-1">
         {% for auction in auctions %}
-            {% ifchanged %}
-            <li>
-                <a href="{% url 'category' auction.category %}">
-                {{ auction.category}}
-                </a>
-            </li>
-            {% endifchanged %}
+                {% ifchanged %}
+                    <li>
+                        <a href="{% url 'category' auction.category %}" class="font-semibold hover:text-gray-500">
+                            {{ auction.category }}
+                        </a>
+                    </li>
+                {% endifchanged %}
         {% endfor %}
     </ul>
 {% endblock %}
