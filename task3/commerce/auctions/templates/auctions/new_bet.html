@@ -1,13 +1,22 @@
 {% extends "auctions/layout.html" %}
 
+{% block title %} New Bet {% endblock %}
 {% block body %}
+<h1 class="m-6 text-3xl">New Bet</h1>
+
 <form action="" method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Submit">
+    <div class="space-y-2">
+        {{ form.as_p }}
+    </div>
+    <div class="py-3">
+    <input class="py-2 px-8 text-lg bg-teal-500 hover:bg-teal-700 rounded-xl text-white"
+            type="submit" value="Save">
+    </div>
+
     {% if message %}
     {{message}}
     {% endif%}
-    
-</form>
+    </form>
+
 {% endblock %}
