@@ -10,30 +10,35 @@ from .models import User, Auction, Bet, Comment, Watchlist
 
 @login_required
 def close_auction(request, auction_id):
-    if request.method == "POST":
-        auction = Auction.objects.get(pk=auction_id)
-        bet = Bet.objects.latest("title")
-        auction.winner = bet.user
-        auction.is_active = False
-        auction.save()
-        return redirect('auction', auction_id)
-    return redirect('index')
+    #    if request.method == "POST":
+    auction = Auction.objects.get(pk=auction_id)
+    bet = Bet.objects.latest("title")
+    auction.winner = bet.user
+    auction.is_active = False
+    auction.save()
+    return redirect('auction', auction_id)
+
+
+#    return redirect('index')
 
 
 @login_required
 def new_bet_view(request, auction_id):
     auction = Auction.objects.get(pk=auction_id)
     base_price = auction.price
-    initial_data = {
-        "user": request.user,
-        "title": auction_id,
-        "price": base_price
-    }
+    # initial_data = {
+    #     "user": request.user,
+    #     "title": auction_id,
+    #     "price": base_price
+    # }
 
-    form = BetForm(request.POST or None, initial=initial_data)
+    form = BetForm(request.POST or None)#, initial=initial_data)
     if form.is_valid():
         auction.price = form.cleaned_data["price"]
         if auction.price > base_price:
+            form = form.save(commit=False)
+            form.user = request.user
+            form.title = Auction.objects.get(pk=auction_id)
             form.save()
             auction.save()
         else:
@@ -50,16 +55,16 @@ def new_bet_view(request, auction_id):
 
 @login_required
 def watchlist_add(request, auction_id):
-    if request.method == "POST":
-        items = Auction.objects.get(pk=auction_id)
-        tracking = Watchlist.objects.filter(user=request.user, item=items)
-        if tracking.exists():
-            tracking.delete()
-            return redirect('watchlist')
-        else:
-            tracking, created = Watchlist.objects.get_or_create(user=request.user, item=items)
-            tracking.save()
-            return redirect('watchlist')
+    #    if request.method == "POST":
+    items = Auction.objects.get(pk=auction_id)
+    tracking = Watchlist.objects.filter(user=request.user, item=items)
+    if tracking.exists():
+        tracking.delete()
+        return redirect('watchlist')
+    else:
+        tracking, created = Watchlist.objects.get_or_create(user=request.user, item=items)
+        tracking.save()
+        return redirect('watchlist')
 
 
 @login_required
@@ -77,8 +82,11 @@ def index(request):
 
 
 def categories_view(request):
+    auctions = Auction.objects.filter(is_active=True)
+    auctions = auctions.order_by('category')
     return render(request, 'auctions/categories.html', {
-        "auctions": Auction.objects.filter(is_active=True)
+        "auctions": auctions,
+
     })
 
 
@@ -94,6 +102,8 @@ def category_view(request, category):
 def new_auction_view(request):
     form = AuctionForm(request.POST or None)
     if form.is_valid():
+        form = form.save(commit=False)
+        form.owner = request.user
         form.save()
         form = AuctionForm()
         return HttpResponseRedirect(reverse(index))
@@ -104,26 +114,49 @@ def new_auction_view(request):
 
 def auction_view(request, auction_id):
     auction = Auction.objects.get(pk=auction_id)
+    items = Auction.objects.get(pk=auction_id)
+    watchlist = Watchlist.objects.filter(item=items, user=request.user).first()
+    # watchlist = watchlists.first()
     return render(request, 'auctions/auction.html', {
-        "auction": auction,
-        "comments": Comment.objects.filter(title=auction_id),
-        "message": "You are winner. Congratulations!"
-    })
+            "auction": auction,
+            "comments": Comment.objects.filter(title=auction_id),
+            "message": "You are winner. Congratulations!",
+            "watchlist": watchlist,
+                    })
 
+
+# @login_required
+# def new_comment_view(request, auction_id):
+#     initial_data = {
+#         "user": request.user,
+#         "title": auction_id
+#     }
+#     form = CommentForm(request.POST or None, initial=initial_data)
+#     if form.is_valid():
+#         form.save()
+#         form = CommentForm()
+#         return HttpResponseRedirect(f"/auctions/{auction_id}")
+#     return render(request, "auctions/new_comment.html", {
+#         "form": form,
+#     })
 
 @login_required
 def new_comment_view(request, auction_id):
-    initial_data = {
-        "user": request.user,
-        "title": auction_id
-    }
-    form = CommentForm(request.POST or None, initial=initial_data)
+    # initial_data = {
+    #     "user": request.user,
+    #     "title": auction_id
+    # }
+    form = CommentForm(request.POST or None)
     if form.is_valid():
+        form = form.save(commit=False)
+        form.user = request.user
+        form.title = Auction.objects.get(pk=auction_id)
         form.save()
         form = CommentForm()
         return HttpResponseRedirect(f"/auctions/{auction_id}")
     return render(request, "auctions/new_comment.html", {
         "form": form,
+
     })
 
 
