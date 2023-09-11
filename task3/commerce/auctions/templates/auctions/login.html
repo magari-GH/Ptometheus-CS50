@@ -1,8 +1,8 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-
-    <h2>Login</h2>
+<div class="w-1/2 my-6 mx-auto p-6 bg-gray-100 rounded-xl">
+    <h1 class="mb-6 text-3xl">Login</h1>
 
     {% if message %}
         <div>{{ message }}</div>
@@ -10,15 +10,16 @@
 
     <form action="{% url 'login' %}" method="post">
         {% csrf_token %}
-        <div class="form-group">
-            <input autofocus class="form-control" type="text" name="username" placeholder="Username">
+
+        <div class=" mb-3">
+            <input autofocus class=" inline-block mb-2 w-full py-2 px-8 text-lg rounded-xl" type="text" name="username" placeholder="Username">
         </div>
-        <div class="form-group">
-            <input class="form-control" type="password" name="password" placeholder="Password">
+        <div class="mb-3">
+            <input class="inline-block mb-2 w-full py-2 px-8 text-lg rounded-xl" type="password" name="password" placeholder="Password">
         </div>
-        <input class="btn btn-primary" type="submit" value="Login">
+        <input class="py-2 px-8 text-lg bg-teal-500 hover:bg-teal-700 rounded-xl text-white" type="submit" value="Login">
     </form>
 
-    Don't have an account? <a href="{% url 'register' %}">Register here.</a>
-
+    Don't have an account? <a href="{% url 'register' %}"><strong>Register here.</strong></a>
+</div>
 {% endblock %}
