@@ -1,9 +1,20 @@
 {% extends "auctions/layout.html" %}
 
+{% block title %} New auction {% endblock %}
+
 {% block body %}
-<form action="" method="post">
+
+<h1 class="m-6 text-3xl">New Auction</h1>
+<form action="" method="post" >
     {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Save">
+    <div class="space-y-2">
+        {{ form.as_p }}
+    </div>
+
+    <div class="py-3">
+        <input class="py-2 px-8 text-lg bg-teal-500 hover:bg-teal-700 rounded-xl text-white"
+            type="submit" value="Save">
+    </div>
+
 </form>
 {% endblock %}
