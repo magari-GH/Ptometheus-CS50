@@ -107,8 +107,7 @@ def new_auction_view(request):
 def auction_view(request, auction_id):
     auction = Auction.objects.get(pk=auction_id)
     items = Auction.objects.get(pk=auction_id)
-    watchlist = Watchlist.objects.filter(item=items, user=request.user).first()
-    # watchlist = watchlists.first()
+    watchlist = Watchlist.objects.filter(item=items, user=request.user.id).first() #user=request.user
     return render(request, 'auctions/auction.html', {
             "auction": auction,
             "comments": Comment.objects.filter(title=auction_id),
