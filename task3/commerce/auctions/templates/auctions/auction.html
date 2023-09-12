@@ -1,6 +1,6 @@
 {% extends "auctions/layout.html" %}
 
-{% block title %} {{auction.title}}{% endblock %}
+{% block title %} {{ auction.title }}{% endblock %}
 
 {% block body %}
 <div class="grid grid-cols-5 gap-6">
@@ -8,7 +8,7 @@
        <img src="{{ auction.image_url }}" alt="This is image">
     </div>
     <div class="col-span-2 p-6 bg-gray-100 rounded-xl">
-        <h1 class="mb-6 text-3xl"> {{auction.title}}</h1>
+        <h1 class="mb-6 text-3xl"> {{ auction.title }}</h1>
         {% if auction.is_active != True %}
         <p class="text-red-500"> <strong>Closed</strong></p>
         {% endif %}
@@ -40,18 +40,15 @@
             {% if user.is_authenticated %}
             <div class="flex justify-between py-5">
             {% if auction.id == watchlist.item.id %}
-                <a class="px-6 py-1 text-lg font-semibold bg-teal-500 text-white rounded-xl hover:bg-teal-700"
-                href="{% url 'watchlist_add' auction.id %}">Follow </a><br>
-            {% else %}
                 <a class="px-6 py-1 text-lg font-semibold bg-red-500 text-white rounded-xl hover:bg-red-700"
-                href="{% url 'watchlist_add' auction.id %}">Remove</a><br>
+                href="{% url 'watchlist_add' auction.id %}">Remove </a><br>
+            {% else %}
+                <a class="px-6 py-1 text-lg font-semibold bg-teal-500 text-white rounded-xl hover:bg-teal-700"
+                href="{% url 'watchlist_add' auction.id %}">Follow</a><br>
             {% endif %}
             <a class="px-6 py-1 text-lg font-semibold bg-teal-500 text-white rounded-xl hover:bg-teal-700"
             href="{% url 'new_bet' auction.id %}"> Make Bet </a><br>
             </div>
-
-
-
 
             <div class="text-gray-500 py-3">
                 <strong>Comments:</strong>
