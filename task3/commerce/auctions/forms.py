@@ -17,7 +17,6 @@ class AuctionForm(forms.ModelForm):
             "description",
             "image_url",
             "price",
-            # "owner",
         ]
         widgets = {
             "title": forms.TextInput(attrs={
@@ -35,9 +34,6 @@ class AuctionForm(forms.ModelForm):
             "price": forms.TextInput(attrs={
                 "class": INPUT_CLASSES
             }),
-            # "owner": forms.Select(attrs={
-            #     "class": INPUT_CLASSES
-            # }),
         }
 
 
@@ -45,17 +41,9 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = [
-            # 'title',
-            # 'user',
             'comment',
         ]
         widgets = {
-            # "title": forms.Select(attrs={
-            #     "class": INPUT_CLASSES
-            # }),
-            # "user": forms.Select(attrs={
-            #     "class": INPUT_CLASSES
-            # }),
             "comment": forms.TextInput(attrs={
                 "class": INPUT_CLASSES
             }),
@@ -66,17 +54,9 @@ class BetForm(forms.ModelForm):
     class Meta:
         model = Bet
         fields = [
-            # 'title',
-            # 'user',
             'price',
         ]
         widgets = {
-            # "title": forms.Select(attrs={
-            #     "class": INPUT_CLASSES
-            # }),
-            # "user": forms.Select(attrs={
-            #     "class": INPUT_CLASSES
-            # }),
             "price": forms.TextInput(attrs={
                 "class": INPUT_CLASSES
             }),

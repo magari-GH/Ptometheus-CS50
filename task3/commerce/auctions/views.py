@@ -19,18 +19,10 @@ def close_auction(request, auction_id):
     return redirect('auction', auction_id)
 
 
-#    return redirect('index')
-
-
 @login_required
 def new_bet_view(request, auction_id):
     auction = Auction.objects.get(pk=auction_id)
     base_price = auction.price
-    # initial_data = {
-    #     "user": request.user,
-    #     "title": auction_id,
-    #     "price": base_price
-    # }
 
     form = BetForm(request.POST or None)#, initial=initial_data)
     if form.is_valid():
@@ -125,27 +117,8 @@ def auction_view(request, auction_id):
                     })
 
 
-# @login_required
-# def new_comment_view(request, auction_id):
-#     initial_data = {
-#         "user": request.user,
-#         "title": auction_id
-#     }
-#     form = CommentForm(request.POST or None, initial=initial_data)
-#     if form.is_valid():
-#         form.save()
-#         form = CommentForm()
-#         return HttpResponseRedirect(f"/auctions/{auction_id}")
-#     return render(request, "auctions/new_comment.html", {
-#         "form": form,
-#     })
-
 @login_required
 def new_comment_view(request, auction_id):
-    # initial_data = {
-    #     "user": request.user,
-    #     "title": auction_id
-    # }
     form = CommentForm(request.POST or None)
     if form.is_valid():
         form = form.save(commit=False)
