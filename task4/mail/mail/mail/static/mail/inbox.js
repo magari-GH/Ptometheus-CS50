@@ -1,4 +1,22 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelector('form').onsubmit = () => {
+    fetch('/emails', {
+      method: 'POST',
+      body: JSON.stringify({
+        recipients: document.querySelector('#compose-recipients').value,
+        subject: document.querySelector('#compose-subject').value,
+        body: document.querySelector('#compose-body').value
+      })
+    })
+      .then(response => response.json())
+      .then(result => {
+        // Вивести результат в консоль
+        console.log(result);
+        load_mailbox('sent');
+      });
+      return false;
+      load_mailbox('sent');
+  };
 
   // Use buttons to toggle between views
   document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
@@ -7,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('#compose').addEventListener('click', compose_email);
 
   // By default, load the inbox
-  load_mailbox('inbox');
+  load_mailbox('index');
 });
 
 function compose_email() {
@@ -20,6 +38,7 @@ function compose_email() {
   document.querySelector('#compose-recipients').value = '';
   document.querySelector('#compose-subject').value = '';
   document.querySelector('#compose-body').value = '';
+
 }
 
 function load_mailbox(mailbox) {
