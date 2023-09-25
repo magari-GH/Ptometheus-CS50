@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return false;
       
   };
-
+  
   // Use buttons to toggle between views
   document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
   document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
@@ -51,7 +51,6 @@ function load_mailbox(mailbox) {
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
- 
 
   // Show messages
   fetch(`/emails/${mailbox}`)
@@ -64,7 +63,7 @@ function load_mailbox(mailbox) {
         const element = document.createElement('div');
         element.style.border = "1px solid";
         element.style.padding = "5px";
-        element.style.backgroundColor = "lightgray";
+        element.style.backgroundColor = email.read ? "lightgray" : "white";
         const id = email.id;
         const sender = email.sender;
         const recipients = email.recipients; 
@@ -73,35 +72,65 @@ function load_mailbox(mailbox) {
         const timestamp = email.timestamp;
         const read = email.read;
         const archived = email.archived;
-        // element.innerHTML = `Message from ${sender} about ${subject} recieved ${timestamp}`
-        element.innerHTML = ` ${id} ${sender} ${recipients} ${subject} ${body} ${timestamp} ${read} ${archived}`
+        const btext = email.archived ? "from archive" : "to archive";
+        element.innerHTML = ` ${id} ${sender} ${recipients} ${subject} ${body} ${timestamp} ${read} ${archived} <button class='archive'> ${btext} </button>`;
         
+        // buttom to archive
+        element.querySelector('.archive').addEventListener('click', event => {
+          const some = event.target
+          if (some.className === 'archive') {
+            fetch(`/emails/${id}`, {
+              method: 'PUT',
+              body: JSON.stringify({
+                archived: email.archived ? false : true
+              })
+            })
+          }
+          event.stopImmediatePropagation() 
+          load_mailbox(`inbox`)
+        });
+
         // function for email representation
         element.addEventListener('click', function() {
-          console.log(id);
+          fetch(`/emails/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+            read: true
+            })
+            })
+
           document.querySelector('#email-view').style.display = 'block';
           document.querySelector('#emails-view').style.display = 'none';
           document.querySelector('#compose-view').style.display = 'none';
-            const element_sender = document.createElement('div');
-            element_sender.innerHTML = `<b>From: </b> ${sender}`;
-            const element_recipients = document.createElement('div');
-            element_recipients.innerHTML = `<b>To: </b> ${recipients}`
-            const element_subgect = document.createElement('div');
-            element_subgect.innerHTML = `<b>Subject: </b> ${subject}`;
-            const element_timestamp = document.createElement('div');
-            element_timestamp.innerHTML = `<b>Timestamp: </b>: ${timestamp} <hr>`;
-            const element_body= document.createElement('deiv');
-            element_body.innerHTML = body;
+          document.querySelector('#email-view').innerHTML = ' ';
 
-            document.querySelector('#email-view').append(element_sender, element_recipients, element_subgect, element_timestamp, element_body);
-           
-          
+          fetch(`/emails/${id}`)
+            .then(response => response.json())
+            .then(email => {
+              // Вивести лист до консолі
+              console.log(email);
+              // ... зробити з листом щось інше ...
+              const element_sender = document.createElement('div');
+              element_sender.innerHTML = `<b>From: </b> ${email.sender}`;
+              const element_recipients = document.createElement('div');
+              element_recipients.innerHTML = `<b>To: </b> ${email.recipients}`
+              const element_subgect = document.createElement('div');
+              element_subgect.innerHTML = `<b>Subject: </b> ${email.subject}`;
+              const element_timestamp = document.createElement('div');
+              element_timestamp.innerHTML = `<b>Timestamp: </b>: ${email.timestamp} <hr>`;
+              const element_body = document.createElement('div');
+              element_body.innerHTML = email.body;
+              const button_reply = document.createElement('button');
+              button_reply.textContent = 'Reply';
+              button_reply.setAttribute('class', 'button_reply');
+              
+              
+              document.querySelector('#email-view').append(element_sender, element_recipients, element_subgect, element_timestamp, element_body, button_reply);
+              document.querySelector('.button_reply').onclick = compose_email;
+            });
             
-          
-          
-        
+
           });
-        // console.log(sender, subject, timestamp);
         document.querySelector('#emails-view').append(element);
       });
 
