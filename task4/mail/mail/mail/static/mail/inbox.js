@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
+  
+  // send message
   document.querySelector('form').onsubmit = () => {
     fetch('/emails', {
       method: 'POST',
@@ -28,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
   load_mailbox('index');
 });
 
-function compose_email() {
+function compose_email(element_sender, element_subgect, element_timestamp, element_body) {
 
   // Show compose view and hide other views
   document.querySelector('#email-view').style.display = 'none';
@@ -40,6 +42,10 @@ function compose_email() {
   document.querySelector('#compose-subject').value = '';
   document.querySelector('#compose-body').value = '';
 
+  
+  document.querySelector('#compose-subject').value = element_subgect.includes('Re:') ? element_subgect : `Re: ${element_subgect}`;
+  document.querySelector('#compose-recipients').value = `${element_sender}`;
+  document.querySelector('#compose-body').value = `On ${element_timestamp} ${element_sender} wrote:\n"${element_body}"\n`;
 }
 
 function load_mailbox(mailbox) {
@@ -56,11 +62,12 @@ function load_mailbox(mailbox) {
   fetch(`/emails/${mailbox}`)
     .then(response => response.json())
     .then(emails => {
-      // Вивести листи в консоль
+      
       console.log(emails);
-      // ... зробити з листами щось інше ...
+      
       emails.forEach(email => {
         const element = document.createElement('div');
+        element.setAttribute('class', 'div_message');
         element.style.border = "1px solid";
         element.style.padding = "5px";
         element.style.backgroundColor = email.read ? "lightgray" : "white";
@@ -90,26 +97,30 @@ function load_mailbox(mailbox) {
           load_mailbox(`inbox`)
         });
 
-        // function for email representation
-        element.addEventListener('click', function() {
+        
+        element.addEventListener('click', (event) => {
+
+          // function for mark as readed
           fetch(`/emails/${id}`, {
             method: 'PUT',
             body: JSON.stringify({
-            read: true
+              read: true
             })
-            })
+          })
+        
+        
+        document.querySelector('#email-view').style.display = 'block';
+        document.querySelector('#emails-view').style.display = 'none';
+        document.querySelector('#compose-view').style.display = 'none';
+        document.querySelector('#email-view').innerHTML = ' ';
 
-          document.querySelector('#email-view').style.display = 'block';
-          document.querySelector('#emails-view').style.display = 'none';
-          document.querySelector('#compose-view').style.display = 'none';
-          document.querySelector('#email-view').innerHTML = ' ';
-
+          // function for current email representation
           fetch(`/emails/${id}`)
             .then(response => response.json())
             .then(email => {
-              // Вивести лист до консолі
+              
               console.log(email);
-              // ... зробити з листом щось інше ...
+              
               const element_sender = document.createElement('div');
               element_sender.innerHTML = `<b>From: </b> ${email.sender}`;
               const element_recipients = document.createElement('div');
@@ -123,18 +134,23 @@ function load_mailbox(mailbox) {
               const button_reply = document.createElement('button');
               button_reply.textContent = 'Reply';
               button_reply.setAttribute('class', 'button_reply');
-              
-              
               document.querySelector('#email-view').append(element_sender, element_recipients, element_subgect, element_timestamp, element_body, button_reply);
-              document.querySelector('.button_reply').onclick = compose_email;
+              event.stopPropagation()
+
+              button_reply.addEventListener('click', (event) => {
+              compose_email(email.sender, email.subject, email.timestamp, email.body);
+                // element.querySelector('.button_reply').addEventListener('click', compose_email(email.sender, email.subject, email.timestamp, email.body));
+                // element.querySelector('.button_reply').onclick = compose_email(email.sender, email.subject, email.timestamp, email.body);
+                // button_reply.onclick.target = compose_email(email.sender, email.subject, email.timestamp, email.body);
+              });
             });
             
-
           });
+          
         document.querySelector('#emails-view').append(element);
       });
 
     });
 
 
-};
+  };
