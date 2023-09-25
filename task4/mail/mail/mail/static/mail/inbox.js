@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', function () {
     })
       .then(response => response.json())
       .then(result => {
-        // Вивести результат в консоль
         console.log(result);
         load_mailbox('sent');
       });
@@ -27,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelector('#compose').addEventListener('click', compose_email);
 
   // By default, load the inbox
-  load_mailbox('index');
+  load_mailbox('inbox');
 });
 
 function compose_email(element_sender, element_subgect, element_timestamp, element_body) {
@@ -45,7 +44,7 @@ function compose_email(element_sender, element_subgect, element_timestamp, eleme
   
   document.querySelector('#compose-subject').value = element_subgect.includes('Re:') ? element_subgect : `Re: ${element_subgect}`;
   document.querySelector('#compose-recipients').value = `${element_sender}`;
-  document.querySelector('#compose-body').value = `On ${element_timestamp} ${element_sender} wrote:\n"${element_body}"\n`;
+  document.querySelector('#compose-body').value = `On ${element_timestamp} ${element_sender} wrote:"${element_body}"\n`;
 }
 
 function load_mailbox(mailbox) {
@@ -79,9 +78,10 @@ function load_mailbox(mailbox) {
         const timestamp = email.timestamp;
         const read = email.read;
         const archived = email.archived;
-        const btext = email.archived ? "from archive" : "to archive";
-        element.innerHTML = ` ${id} ${sender} ${recipients} ${subject} ${body} ${timestamp} ${read} ${archived} <button class='archive'> ${btext} </button>`;
+        const btext = email.archived ? "unarchive" : "archive";
         
+        if (mailbox !== 'sent') {
+        element.innerHTML = `${sender} ${subject} ${timestamp} <button class='archive'> ${btext} </button>`;       
         // buttom to archive
         element.querySelector('.archive').addEventListener('click', event => {
           const some = event.target
@@ -96,6 +96,9 @@ function load_mailbox(mailbox) {
           event.stopImmediatePropagation() 
           load_mailbox(`inbox`)
         });
+      } else {
+        element.innerHTML = `${sender} ${subject} ${timestamp}`;
+      }
 
         
         element.addEventListener('click', (event) => {
@@ -133,15 +136,12 @@ function load_mailbox(mailbox) {
               element_body.innerHTML = email.body;
               const button_reply = document.createElement('button');
               button_reply.textContent = 'Reply';
-              button_reply.setAttribute('class', 'button_reply');
-              document.querySelector('#email-view').append(element_sender, element_recipients, element_subgect, element_timestamp, element_body, button_reply);
+              button_reply.setAttribute('class', 'btn btn-sm btn-outline-primary');
+              document.querySelector('#email-view').append(element_sender, element_recipients, element_subgect, element_timestamp, button_reply, element_body);
               event.stopPropagation()
 
-              button_reply.addEventListener('click', (event) => {
+              button_reply.addEventListener('click', () => {
               compose_email(email.sender, email.subject, email.timestamp, email.body);
-                // element.querySelector('.button_reply').addEventListener('click', compose_email(email.sender, email.subject, email.timestamp, email.body));
-                // element.querySelector('.button_reply').onclick = compose_email(email.sender, email.subject, email.timestamp, email.body);
-                // button_reply.onclick.target = compose_email(email.sender, email.subject, email.timestamp, email.body);
               });
             });
             
