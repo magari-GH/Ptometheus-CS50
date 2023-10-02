@@ -1,8 +1,8 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {       // used event DOMContentLoaded for load all element for the documents before run code
   
   // send message
-  document.querySelector('form').onsubmit = () => {
-    fetch('/emails', {
+  document.querySelector('form').onsubmit = () => {               
+    fetch('/emails', {                                            // used fetch function with method post to ascr. send the massege
       method: 'POST',
       body: JSON.stringify({
         recipients: document.querySelector('#compose-recipients').value,
@@ -58,18 +58,18 @@ function load_mailbox(mailbox) {
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
 
   // Show messages
-  fetch(`/emails/${mailbox}`)
+  fetch(`/emails/${mailbox}`)                                 // used fetch function to get messages from the API in the JSON
     .then(response => response.json())
     .then(emails => {
       
       console.log(emails);
       
-      emails.forEach(email => {
+      emails.forEach(email => {                               // for each object create the div element with content
         const element = document.createElement('div');
         element.setAttribute('class', 'div_message');
         element.style.border = "1px solid";
         element.style.padding = "5px";
-        element.style.backgroundColor = email.read ? "lightgray" : "white";
+        element.style.backgroundColor = email.read ? "lightgray" : "white";    //  ternary operator in this statement
         const id = email.id;
         const sender = email.sender;
         const recipients = email.recipients; 
@@ -81,7 +81,7 @@ function load_mailbox(mailbox) {
         const btext = email.archived ? "unarchive" : "archive";
         
         if (mailbox !== 'sent') {
-        element.innerHTML = `${sender} ${subject} ${timestamp} <button class='archive'> ${btext} </button>`;       
+        element.innerHTML = `${sender} ${subject} ${timestamp} <button class='archive'> ${btext} </button>`;     // used formated literals   
         // buttom to archive
         element.querySelector('.archive').addEventListener('click', event => {
           const some = event.target
@@ -93,7 +93,7 @@ function load_mailbox(mailbox) {
               })
             })
           }
-          event.stopImmediatePropagation() 
+          event.stopImmediatePropagation()         // used the function stopImmediatePropagation for prevent sharing event to the parrent element
           load_mailbox(`inbox`)
         });
       } else {
