@@ -2,16 +2,29 @@
 {% load static %}
 
 {% block body %}
-    <div class="border p-3 m-3" id="compose_view">
-        <h4>New post</h3>
-        <form id="compose-form">
-            <div class="form-group">
-                <input disabled class="form-control" value="{{ request.user }}">
-            </div>
-            <textarea class="form-control" id="compose-body" placeholder="Create your post"></textarea>
-            <input type="submit" class="btn btn-primary mt-2">
-        </form>
+
+    <div id="user-page-view">
+        <h4>User page</h4>
     </div>
+
+    <div id="all-posts-view">
+        <h4>All Posts</h4>
+        <div class="border p-3 m-3" id="compose_view">
+            <h4>New post</h3>
+            <form id="compose-form">
+                <div class="form-group">
+                    <input disabled class="form-control" value="{{ request.user }}">
+                </div>
+                <textarea class="form-control" id="compose-body" placeholder="Create your post"></textarea>
+                <input type="submit" class="btn btn-primary mt-2">
+            </form>
+        </div>
+    </div>
+
+    <div id="following-view">
+        <h4>Following</h4>
+    </div>
+    
 {% endblock %}
 
 {% block script %}
