@@ -7,17 +7,20 @@ document.addEventListener('DOMContentLoaded', () => {
     
     
     document.querySelector('form').onsubmit = () => {
-    const publicationUrl = '/compose';
-    const body = document.querySelector('#compose-body').value;
-    const bodyObject = { body };
+    // const publicationUrl = '/compose';
+    // const body = document.querySelector('#compose-body').value;
+    // const bodyObject = { body };
 
-    fetch(publicationUrl, {
+    fetch('/compose', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
 
-        body: JSON.stringify(bodyObject)
+        // body: JSON.stringify( { body } )
+        body: JSON.stringify( {
+          body: document.querySelector('#compose-body').value
+         } )
       })
 
     .then(response => response.json())
@@ -28,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .catch(error => {
       console.log(error);
     });
-
+    document.querySelector('#compose-body').value = ""; 
     return false;
   };
 
@@ -44,7 +47,7 @@ function user_page_display() {
 function all_posts_display() {
     document.querySelector('#user-page-view').style.display = 'none';
     document.querySelector('#all-posts-view').style.display = 'block';
-    document.querySelector('#following-view').style.display = 'none';   
+    document.querySelector('#following-view').style.display = 'none'; 
 };
 
 function following_display() {
