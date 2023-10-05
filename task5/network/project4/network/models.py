@@ -6,8 +6,8 @@ class User(AbstractUser):
     pass
 
 
-class Post(models.Model):
-    user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="posts")
+class Publication(models.Model):
+    user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="publications")
     body = models.TextField(blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     like = models.IntegerField(default=0)
