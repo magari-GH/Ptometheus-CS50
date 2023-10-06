@@ -32,6 +32,21 @@ def compose(request):
     return JsonResponse({"message": "Publication is created"}, status=201)
 
 
+@login_required
+def represent(request, tab):
+    if tab == "all":
+        publications = Publication.objects.all()
+    elif tab != "all":
+        user = User.objects.get(username=tab)
+        user = user.id       
+        publications = Publication.objects.filter(user=user)
+        return JsonResponse([publication.serialize() for publication in publications], safe=False)
+    else:
+        return JsonResponse({"error": "Invalis mailbox."}, stutus=400)
+    publications = publications.order_by("-timestamp")
+    return JsonResponse([publication.serialize() for publication in publications], safe=False)
+
+
 def login_view(request):
     if request.method == "POST":
 
