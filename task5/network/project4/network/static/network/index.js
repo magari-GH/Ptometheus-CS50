@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-
-  document.querySelector('#user-page').addEventListener('click', () => user_page_display());
+  
+  const current_user = document.querySelector('#compose-user').value
+  document.querySelector('#user-page').addEventListener('click', () => user_page_display(`${current_user}`));
   document.querySelector('#all-posts').addEventListener('click', () => all_posts_display('all'));
   document.querySelector('#following').addEventListener('click', () => following_display('following'));
   all_posts_display('all');
@@ -34,15 +35,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('#compose-body').value = ""; 
     return false;
   };
-
-
 });
 
 function user_page_display(tab) {
     document.querySelector('#user-page-view').style.display = 'block';
     document.querySelector('#all-posts-view').style.display = 'none';
     document.querySelector('#following-view').style.display = 'none';
-    document.querySelector('#user-page-view').innerHTML = ""; 
+    document.querySelector('#user-page-view-posts').innerHTML = "";
+
 
     
     fetch(`/${tab}`)
@@ -63,7 +63,7 @@ function user_page_display(tab) {
           const publication_like = `Likes:${publication.like}`;
 
         element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp} ${publication_like}`;
-        document.querySelector('#user-page-view').append(element);
+        document.querySelector('#user-page-view-posts').append(element);
 
       });
 
@@ -96,14 +96,21 @@ function all_posts_display(tab) {
             const publication_user = `<strong> ${publication.user} </strong> <hr>`;          
             const publication_body = `${publication.body} <hr>`;
             const publication_timestamp = `<small> ${publication.timestamp} </small> <br>`;
-            const publication_like = `Likes:${publication.like}`;
+            const publication_like = `<p> Likes:${publication.like} </p>`;
 
           element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp} ${publication_like}`;
           document.querySelector('#all_element_view').append(element);
 
           element.querySelector('strong').addEventListener('click', () => {
             user_page_display(publication.user);
-            // user_page_display('user5');s
+          })
+
+          // To 'p' added listener that increase field 'like' +1 and the reload view 'all_display_posts'
+          element.querySelector('p').addEventListener('click', () => {
+            fetch(`/${publication.id}`, {
+              method: 'PUT',
+            })
+          all_posts_display('all')
           })
 
         });
@@ -111,7 +118,7 @@ function all_posts_display(tab) {
       })
       .catch(error => {
         console.log(error);
-      });
+      })
 
 
 };
