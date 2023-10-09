@@ -31,18 +31,25 @@ def compose(request):
     
     return JsonResponse({"message": "Publication is created"}, status=201)
 
-
+@csrf_exempt
 @login_required
 def represent(request, tab):
     if tab == "all":
         publications = Publication.objects.all()
+    elif request.method == 'PUT':
+        publication = Publication.objects.get(id=tab)
+        publication.like = publication.like + 1
+        publication.save()
+        # return JsonResponse({"message": "Like"}, status=200)
+        return JsonResponse(publication.serialize(), safe=False)
     elif tab != "all":
         user = User.objects.get(username=tab)
         user = user.id       
         publications = Publication.objects.filter(user=user)
         return JsonResponse([publication.serialize() for publication in publications], safe=False)
+
     else:
-        return JsonResponse({"error": "Invalis mailbox."}, stutus=400)
+        return JsonResponse({"error": "Invalis mailbox."}, status=400)
     publications = publications.order_by("-timestamp")
     return JsonResponse([publication.serialize() for publication in publications], safe=False)
 
