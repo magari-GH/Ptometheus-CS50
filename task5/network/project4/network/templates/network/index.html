@@ -5,6 +5,18 @@
 
     <div id="user-page-view">
         <h4>User page</h4>
+
+        <div>Follows: X </div>
+        <div>Following: X </div>
+
+        <form id="follow_form">
+
+            <input id="follow_form_follower" disabled  type="text" value="{{ request.user.username }}" name="follower">
+            <input id="follow_form_is_followed" disabled  type="text" value="user3" name="is_followed">
+            <input id="submit_follow" type="submit" class="btn btn-primary mt-2" value="follow">
+
+        </form>
+        
         <div id="user-page-view-posts">
             
         </div>
@@ -19,7 +31,7 @@
                     <input disabled class="form-control" id="compose-user" value="{{ request.user }}">
                 </div>
                 <textarea class="form-control" id="compose-body" placeholder="Create your post"></textarea>
-                <input type="submit" class="btn btn-primary mt-2">
+                <input id="submit_new_post" type="submit" class="btn btn-primary mt-2">
             </form>
         </div>
         <div class="border p-3 m-3" id ="all_element_view"></div>
