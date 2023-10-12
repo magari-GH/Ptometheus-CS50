@@ -20,3 +20,9 @@ class Publication(models.Model):
             "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p"),
             "like": self.like
         }
+    
+class Follow(models.Model):
+    follower = models.CharField(max_length=120)
+    is_followed = models.CharField(max_length=120)
+
+
