@@ -5,9 +5,12 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('#all-posts').addEventListener('click', () => all_posts_display('all'));
   document.querySelector('#following').addEventListener('click', () => following_display('following'));
   all_posts_display('all');
+
+
+
     
     
-    document.querySelector('form').onsubmit = () => {
+    document.querySelector('#compose-form').onsubmit = () => {
     // const publicationUrl = '/compose';
     // const body = document.querySelector('#compose-body').value;
     // const bodyObject = { body };
@@ -43,6 +46,7 @@ function user_page_display(tab) {
     document.querySelector('#following-view').style.display = 'none';
     document.querySelector('#user-page-view-posts').innerHTML = "";
 
+    
 
     
     fetch(`/${tab}`)
@@ -64,13 +68,36 @@ function user_page_display(tab) {
 
         element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp} ${publication_like}`;
         document.querySelector('#user-page-view-posts').append(element);
+        document.querySelector('#follow_form_is_followed').value = publication.user;
+        const follower = document.querySelector('#follow_form_follower').value
+        
+        if (publication.user === follower) {
+          document.querySelector('#submit_follow').style.display = 'none'
+        }
+        else{document.querySelector('#submit_follow').style.display = 'block'}
+
+          // function passes information about the person who is followed
+          document.querySelector('#follow_form').onsubmit =  () => {
+      
+            fetch(`/follow`, {
+              method: 'POST',
+              headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify({
+                body: `${publication.user}`
+              })
+              
+            })
+            .then(response => response.json())
+            .then(result => {console.log(result)})
+            .catch(error => {console.log(error)})
+
+  
+            return false;
+          }
 
       });
 
     })
-    .catch(error => {
-      console.log(error);
-    });
     
 };
 
