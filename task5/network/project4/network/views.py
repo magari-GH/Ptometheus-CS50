@@ -7,7 +7,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import User, Publication
+from .models import User, Publication, Follow
 
 
 def index(request):
@@ -53,6 +53,22 @@ def represent(request, tab):
     publications = publications.order_by("-timestamp")
     return JsonResponse([publication.serialize() for publication in publications], safe=False)
 
+@csrf_exempt
+@login_required
+def follow(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        is_followed = data.get("body", "")
+        follower = request.user.username
+        if Follow.objects.filter(follower=follower, is_followed=is_followed).first():
+            follow_delete = Follow.objects.filter(follower=follower, is_followed=is_followed)
+            follow_delete.delete()
+            return JsonResponse({"message": "Follow is deleted"}, status=201)
+        else:
+            new_follow = Follow.objects.create(follower=follower, is_followed=is_followed)
+            new_follow.save()
+            return JsonResponse({"message": "Created is succesed"}, status=201)
+    
 
 def login_view(request):
     if request.method == "POST":
