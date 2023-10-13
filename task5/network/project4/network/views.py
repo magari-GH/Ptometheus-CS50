@@ -9,7 +9,19 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .models import User, Publication, Follow
 
+
 @login_required
+def following(request):
+        is_followed_users = []
+        follower = request.user
+        follows = Follow.objects.filter(follower=follower)
+        for follow in follows:
+            is_followed_user = follow.is_followed
+            is_followed_users.append(is_followed_user)
+        publications = Publication.objects.filter(user__username__in=is_followed_users)
+        return JsonResponse([publication.serialize() for publication in publications], safe=False)
+
+
 @csrf_exempt
 def index(request):
     if request.method == 'PUT':
@@ -50,7 +62,6 @@ def represent(request, tab):
         publication = Publication.objects.get(id=tab)
         publication.like = publication.like + 1
         publication.save()
-        # return JsonResponse({"message": "Like"}, status=200)
         return JsonResponse(publication.serialize(), safe=False)
     elif tab != "all":
         user = User.objects.get(username=tab)
