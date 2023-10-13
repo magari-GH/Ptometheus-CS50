@@ -7,9 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
   all_posts_display('all');
 
 
+    
+  
 
-    
-    
     document.querySelector('#compose-form').onsubmit = () => {
     // const publicationUrl = '/compose';
     // const body = document.querySelector('#compose-body').value;
@@ -45,10 +45,21 @@ function user_page_display(tab) {
     document.querySelector('#all-posts-view').style.display = 'none';
     document.querySelector('#following-view').style.display = 'none';
     document.querySelector('#user-page-view-posts').innerHTML = "";
-
     
+    fetch(`/`, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        body: tab
+      })
+    })
+    .then(response => response.json())
+    .then(result => {
+      console.log(result)
+      document.querySelector('#number_follows').innerHTML = `Follows: ${result.number_follows}`
+      document.querySelector('#number_following').innerHTML = `Following: ${result.number_following}`
+    })
 
-    
     fetch(`/${tab}`)
     .then(response => response.json())
     .then(publications => {
@@ -91,7 +102,7 @@ function user_page_display(tab) {
             .then(result => {console.log(result)})
             .catch(error => {console.log(error)})
 
-  
+
             return false;
           }
 
