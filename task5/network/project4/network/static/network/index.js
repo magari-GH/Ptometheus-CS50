@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const current_user = document.querySelector('#compose-user').value
   document.querySelector('#user-page').addEventListener('click', () => user_page_display(`${current_user}`));
   document.querySelector('#all-posts').addEventListener('click', () => all_posts_display('all'));
-  document.querySelector('#following').addEventListener('click', () => following_display('following'));
+  document.querySelector('#following').addEventListener('click', () => following_display());
   all_posts_display('all');
 
 
@@ -164,6 +164,46 @@ function all_posts_display(tab) {
 function following_display() {
     document.querySelector('#user-page-view').style.display = 'none';
     document.querySelector('#all-posts-view').style.display = 'none';
-    document.querySelector('#following-view').style.display = 'block';   
+    document.querySelector('#following-view').style.display = 'block';
+    document.querySelector('#filtred_element_view').innerHTML = "";
+
+    fetch(`/following`)
+      .then(response => response.json())
+      .then(publications => {
+        console.log(publications);
+
+        publications.forEach(publication => {
+          const element = document.createElement('div');
+          element.setAttribute('class', 'div_publication');
+          element.style.border = '1px solid';
+          element.style.padding = "5px";
+          element.style.marginBottom = "10px";
+
+            const publication_user = `<strong> ${publication.user} </strong> <hr>`;          
+            const publication_body = `${publication.body} <hr>`;
+            const publication_timestamp = `<small> ${publication.timestamp} </small> <br>`;
+            const publication_like = `<p> Likes:${publication.like} </p>`;
+
+          element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp} ${publication_like}`;
+          document.querySelector('#filtred_element_view').append(element);
+
+          element.querySelector('strong').addEventListener('click', () => {
+            user_page_display(publication.user);
+          })
+
+          // To 'p' added listener that increase field 'like' +1 and the reload view 'all_display_posts'
+          element.querySelector('p').addEventListener('click', () => {
+            fetch(`/${publication.id}`, {
+              method: 'PUT',
+            })
+          following_display()
+          })
+
+        });
+
+      })
+      .catch(error => {
+        console.log(error);
+      })
 };
 
