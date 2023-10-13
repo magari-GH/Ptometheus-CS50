@@ -9,9 +9,19 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .models import User, Publication, Follow
 
-
+@login_required
+@csrf_exempt
 def index(request):
-    return render(request, "network/index.html")
+    if request.method == 'PUT':
+            data = json.loads(request.body)
+            is_followed = data.get("body", "")
+            number_follows = 0
+            number_following = 0
+            number_follows = len(Follow.objects.filter(follower=is_followed))
+            number_following = len(Follow.objects.filter(is_followed=is_followed))
+            return JsonResponse({"number_follows":number_follows, "number_following":number_following})
+    else: 
+        return render(request, "network/index.html")
 
 # view for creation new publications
 @login_required
@@ -47,7 +57,6 @@ def represent(request, tab):
         user = user.id       
         publications = Publication.objects.filter(user=user)
         return JsonResponse([publication.serialize() for publication in publications], safe=False)
-
     else:
         return JsonResponse({"error": "Invalis mailbox."}, status=400)
     publications = publications.order_by("-timestamp")
@@ -92,7 +101,8 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return HttpResponseRedirect(reverse("index"))
+    # return HttpResponseRedirect(reverse("index"))
+    return render(request, "network/login.html")
 
 
 def register(request):
