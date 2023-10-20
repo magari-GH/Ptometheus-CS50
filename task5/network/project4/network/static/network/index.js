@@ -1,209 +1,686 @@
 document.addEventListener('DOMContentLoaded', () => {
-  
+
+  const base_page = 1;
+    // all_posts_display('all');
+  all_posts_display('all', base_page);
+
   const current_user = document.querySelector('#compose-user').value
-  document.querySelector('#user-page').addEventListener('click', () => user_page_display(`${current_user}`));
-  document.querySelector('#all-posts').addEventListener('click', () => all_posts_display('all'));
-  document.querySelector('#following').addEventListener('click', () => following_display());
-  all_posts_display('all');
-
-
-    
+  document.querySelector('#user-page').addEventListener('click', () => user_page_display(`${current_user}`, page=base_page));
+  document.querySelector('#all-posts').addEventListener('click', () => all_posts_display(username = 'all', page=base_page));
+  document.querySelector('#following').addEventListener('click', () => following_display(`${current_user}`, page=base_page));
   
 
-    document.querySelector('#compose-form').onsubmit = () => {
-    // const publicationUrl = '/compose';
-    // const body = document.querySelector('#compose-body').value;
-    // const bodyObject = { body };
+  
+})
+function user_page_display(username, page) {
+  document.querySelector('#user-page-view').style.display = 'block';
+  document.querySelector('#all-posts-view').style.display = 'none';
+  document.querySelector('#following-view').style.display = 'none';
+  document.querySelector('#user-page-view-posts').innerHTML = "";
+  document.querySelector('#title_username').innerHTML = `Page of user ${username}`;
 
-    fetch('/compose', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
 
-        // body: JSON.stringify( { body } )
-        body: JSON.stringify( {
-          body: document.querySelector('#compose-body').value
-         } )
-      })
+  check_follow(username);
+  get_follows_following(username);
+  // get_publication_of_user(username);
+  get_publication_of_user2(username, page);
+ 
 
-    .then(response => response.json())
-    .then(result => {
-      console.log(result);
-    })
+  document.querySelector('#follow_form').onsubmit = () => {
+    add_remove_follow(username);
+    return false
+  }
 
-    .catch(error => {
-      console.log(error);
-    });
-    document.querySelector('#compose-body').value = ""; 
-    return false;
-  };
-});
+  function check_follow(username) {
+    // function for check existing the follow
+    const follower = document.querySelector('#follow_form_follower').value
+    const submit_follow = document.querySelector('#submit_follow')
 
-function user_page_display(tab) {
-    document.querySelector('#user-page-view').style.display = 'block';
-    document.querySelector('#all-posts-view').style.display = 'none';
-    document.querySelector('#following-view').style.display = 'none';
-    document.querySelector('#user-page-view-posts').innerHTML = "";
-    
-    fetch(`/`, {
+    if (username === follower) {
+      submit_follow.style.display = 'none'
+    }
+    else { submit_follow.style.display = 'block' }
+
+    fetch(`/follow`, {
       method: 'PUT',
-      headers: {'Content-Type': 'application/json'},
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        body: tab
+        body: `${username}`
       })
     })
-    .then(response => response.json())
-    .then(result => {
-      console.log(result)
-      document.querySelector('#number_follows').innerHTML = `Follows: ${result.number_follows}`
-      document.querySelector('#number_following').innerHTML = `Following: ${result.number_following}`
+      .then(response => response.json())
+      .then(result => { console.log(result) 
+      if (result.follow_exist == 1) {
+        submit_follow.value = 'Unfollow'
+      }
+      else {
+        submit_follow.value = 'Follow'
+      }
+      })
+      .catch(error => { console.log(error) })
+  }
+
+  function add_remove_follow(username) {
+    fetch(`/follow`, {
+      // function for adding/removing a follow
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        body: `${username}`
+      })
     })
+      .then(response => response.json())
+      .then(result => { console.log(result) 
+      if (result.message == 'The follow is created successfully') {
+        submit_follow.value = 'Unfollow'
+      }
+      else {
+        submit_follow.value = 'Follow'
+      }
+      })
+      .catch(error => { console.log(error) })
+  }
 
-    fetch(`/${tab}`)
-    .then(response => response.json())
-    .then(publications => {
-      console.log(publications);
+  function get_follows_following(username) {
+    // function for getting number of follows/following
+    fetch(`/represent`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        body: username
+      })
+    })
+      .then(response => response.json())
+      .then(result => {
+        console.log(result)
+        document.querySelector('#number_follows').innerHTML = `Follows: ${result.number_follows}`
+        document.querySelector('#number_following').innerHTML = `Following: ${result.number_following}`
+      })
+  }
 
-      publications.forEach(publication => {
-        const element = document.createElement('div');
-        element.setAttribute('class', 'div_publication');
-        element.style.border = '1px solid';
-        element.style.padding = "5px";
-        element.style.marginBottom = "10px";
+  // function get_publication_of_user(username) {
+  //   // function for getting publication of certain user
+  //   fetch(`/${username}`)
+  //     .then(response => response.json())
+  //     .then(publications => {
+  //       console.log(publications);
 
-          const publication_user = `<strong> ${publication.user} </strong> <hr>`;          
+  //       publications.forEach(publication => {
+  //         const element = document.createElement('div');
+  //         element.setAttribute('class', 'div_publication');
+
+  //         element.style.border = '1px solid';
+  //         element.style.padding = "5px";
+  //         element.style.marginBottom = "10px";
+
+  //         const publication_id = publication.id
+  //         const publication_user = `<strong> ${publication.user} </strong> <hr>`;
+  //         const publication_body = `${publication.body} <hr>`;
+  //         const publication_timestamp = `<small> ${publication.timestamp} </small> <br>`;
+
+  //         element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp}`;
+  //         document.querySelector('#user-page-view-posts').append(element);
+
+  //         const button_like = document.createElement('button');
+  //         button_like.setAttribute('class', 'btn btn-light')
+  //         element.appendChild(button_like)
+
+  //         count_like()
+
+  //         function count_like() {
+  //         // function for counting like
+  //           fetch(`/like`, {
+  //             method: 'PUT',
+  //             headers: { 'Content-Type': 'application/json' },
+  //             body: JSON.stringify({
+  //               body: publication_id
+  //             })
+  //           })
+  //           .then(response => response.json())
+  //           .then(result => {
+  //             console.log(result)
+  //             like_text = `Like: ${result.number_likes}`
+  //             button_like.innerHTML = like_text
+  //             if (result.like_exists == 1) {
+  //               button_like.style.backgroundColor = 'lightblue';
+  //             }
+  //             else { button_like.style.backgroundColor = 'lightgray'; }
+  //           })
+  //         }
+
+  //         element.querySelector('strong').addEventListener('click', () => {
+  //           user_page_display(publication.user);
+  //         })
+
+  //         element.querySelector('button').addEventListener('click', () => {
+  //           add_remove_like();
+  //         })
+
+  //         function add_remove_like() {
+  //         // function for adding/removing likes
+  //           fetch(`/like`, {
+  //             method: 'POST',
+  //             headers: { 'Content-Type': 'application/json' },
+  //             body: JSON.stringify({
+  //               body: `${publication.id}`
+  //             })
+  //           })
+  //           .then(response => response.json())
+  //           .then(result => {
+  //             console.log(result)
+  //             like_text = `Like: ${result.number_likes}`
+  //             button_like.innerHTML = like_text
+  //             if (result.message == 'Like is created succesfully') {
+  //               button_like.style.backgroundColor = 'lightblue'
+  //             }
+  //             else {
+  //               button_like.style.backgroundColor = 'lightgray'
+  //             }
+  //           })
+  //           .catch(error => { console.log(error) })
+  //           return false;
+  //         }
+
+  //       })
+
+  //     })
+  //     .catch(error => {
+  //       console.log(error);
+  //     })
+  // }
+
+  document.querySelector('#user_page_next').addEventListener('click', () => {load_next_user(username, returned_page_user)})
+
+  function load_next_user(username, returned_page_user) {
+    document.querySelector('#user-page-view-posts').innerHTML = '';
+    get_publication_of_user2(username=username, page=returned_page_user+1);
+  }
+
+  document.querySelector('#user_page_previous').addEventListener('click', () => {load_previous_user(username, returned_page_user)})
+
+  function load_previous_user(username, returned_page_user) {
+    document.querySelector('#user-page-view-posts').innerHTML = '';
+    get_publication_of_user2(username=username, page=returned_page_user-1);
+  }
+
+  function get_publication_of_user2(username, page) {
+    // function for getting publication
+
+    fetch(`/${username}?page=${page}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log(data.publications, data.meta);
+
+        returned_page_user = data.meta.returned_page;
+        total_pages = data.meta.total_pages;
+
+        document.querySelector('#user_page_previous').disabled = false;
+        if (returned_page_user == 1) {
+          document.querySelector('#user_page_previous').disabled = true;
+        }
+      
+        document.querySelector('#user_page_next').disabled = false;
+        if (returned_page_user == data.meta.total_pages) {
+          document.querySelector('#user_page_next').disabled = true;
+        }
+      
+        document.querySelector('#user_page_page').innerHTML = returned_page_user;
+
+       data.publications.forEach(publication => {
+          const element = document.createElement('div');
+          element.setAttribute('class', 'card-body text-dark bg-light mb-3 rounded-top');
+
+          element.style.border = '1px solid';
+          element.style.padding = "5px";
+          element.style.marginBottom = "10px";
+
+          const publication_id = publication.id
+          const publication_user = `<strong> ${publication.user} </strong> <hr>`;
           const publication_body = `${publication.body} <hr>`;
           const publication_timestamp = `<small> ${publication.timestamp} </small> <br>`;
-          const publication_like = `Likes:${publication.like}`;
 
-        element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp} ${publication_like}`;
-        document.querySelector('#user-page-view-posts').append(element);
-        document.querySelector('#follow_form_is_followed').value = publication.user;
-        const follower = document.querySelector('#follow_form_follower').value
-        
-        if (publication.user === follower) {
-          document.querySelector('#submit_follow').style.display = 'none'
-        }
-        else{document.querySelector('#submit_follow').style.display = 'block'}
+          element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp}`;
+          document.querySelector('#user-page-view-posts').append(element);
 
-          // function passes information about the person who is followed
-          document.querySelector('#follow_form').onsubmit =  () => {
-      
-            fetch(`/follow`, {
-              method: 'POST',
-              headers: {'Content-Type': 'application/json'},
+          const button_like = document.createElement('button');
+          button_like.setAttribute('class', 'btn btn-secondary')
+          element.appendChild(button_like)
+
+          count_like()
+
+          function count_like() {
+            fetch(`/like`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                body: `${publication.user}`
+                body: publication_id
               })
-              
             })
             .then(response => response.json())
-            .then(result => {console.log(result)})
-            .catch(error => {console.log(error)})
+            .then(result => {
+              console.log(result)
+              like_text = `Like: ${result.number_likes}`
+              button_like.innerHTML = like_text
+              if (result.like_exists == 1) {
+                button_like.setAttribute('class', 'btn btn-primary');
+              }
+              else { button_like.setAttribute('class', 'btn btn-secondary')}
+            })
+          }
 
+          element.querySelector('strong').addEventListener('click', () => {
+            user_page_display(username=publication.user, page=1);
+          })
 
+          element.querySelector('button').addEventListener('click', () => {
+            add_remove_like();
+          })
+
+          function add_remove_like() {
+            fetch(`/like`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                body: `${publication.id}`
+              })
+            })
+            .then(response => response.json())
+            .then(result => {
+              console.log(result)
+              like_text = `Like: ${result.number_likes}`
+              button_like.innerHTML = like_text
+              if (result.message == 'Like is created succesfully') {
+                button_like.setAttribute('class', 'btn btn-primary')
+              }
+              else {
+                button_like.setAttribute('class', 'btn btn-secondary')
+              }
+            })
+            .catch(error => { console.log(error) })
             return false;
           }
 
-      });
+        })
 
+      })
+      .catch(error => {
+        console.log(error);
+      })
+  }
+}
+
+
+
+function all_posts_display(username, page) {
+  document.querySelector('#user-page-view').style.display = 'none';
+  document.querySelector('#all-posts-view').style.display = 'block';
+  document.querySelector('#following-view').style.display = 'none';
+  document.querySelector('#all_element_view').innerHTML = "";
+  // get_publication_of_user(username)
+  get_publication_of_user1(username, page);
+
+
+  document.querySelector('#compose-form').onsubmit = () => {compose_publication();
+    return false;
+  }
+    
+  function compose_publication() {
+  // function for composing publication
+    fetch('/compose', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        body: document.querySelector('#compose-body').value
+      })
     })
-    
-};
+    .then(response => response.json())
+    .then(result => {console.log(result)})
+    .catch(error => {console.log(error)})
+    document.querySelector('#compose-body').value = "";
+    // all_posts_display('all', page=base_page)
+  }
 
-function all_posts_display(tab) {
-    document.querySelector('#user-page-view').style.display = 'none';
-    document.querySelector('#all-posts-view').style.display = 'block';
-    document.querySelector('#following-view').style.display = 'none';
-    document.querySelector('#all_element_view').innerHTML = "";
+  // function get_publication_of_user(username) {
+  //   // function for getting publication 
+  //   fetch(`/${username}`)
+  //     .then(response => response.json())
+  //     .then(publications => {
+  //       console.log(publications);
 
-    
-    fetch(`/${tab}`)
+  //       publications.forEach(publication => {
+  //         const element = document.createElement('div');
+  //         element.setAttribute('class', 'div_publication');
+
+  //         element.style.border = '1px solid';
+  //         element.style.padding = "5px";
+  //         element.style.marginBottom = "10px";
+
+  //         const publication_id = publication.id
+  //         const publication_user = `<strong> ${publication.user} </strong> <hr>`;
+  //         const publication_body = `${publication.body} <hr>`;
+  //         const publication_timestamp = `<small> ${publication.timestamp} </small> <br>`;
+
+  //         element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp}`;
+  //         document.querySelector('#all_element_view').append(element);
+
+  //         const button_like = document.createElement('button');
+  //         button_like.setAttribute('class', 'btn btn-light')
+  //         element.appendChild(button_like)
+
+  //         count_like()
+
+  //         function count_like() {
+  //           fetch(`/like`, {
+  //             method: 'PUT',
+  //             headers: { 'Content-Type': 'application/json' },
+  //             body: JSON.stringify({
+  //               body: publication_id
+  //             })
+  //           })
+  //           .then(response => response.json())
+  //           .then(result => {
+  //             console.log(result)
+  //             like_text = `Like: ${result.number_likes}`
+  //             button_like.innerHTML = like_text
+  //             if (result.like_exists == 1) {
+  //               button_like.style.backgroundColor = 'lightblue';
+  //             }
+  //             else { button_like.style.backgroundColor = 'lightgray'; }
+  //           })
+  //         }
+
+  //         element.querySelector('strong').addEventListener('click', () => {
+  //           user_page_display(publication.user);
+  //         })
+
+  //         element.querySelector('button').addEventListener('click', () => {
+  //           add_remove_like();
+  //         })
+
+  //         function add_remove_like() {
+  //           fetch(`/like`, {
+  //             method: 'POST',
+  //             headers: { 'Content-Type': 'application/json' },
+  //             body: JSON.stringify({
+  //               body: `${publication.id}`
+  //             })
+  //           })
+  //           .then(response => response.json())
+  //           .then(result => {
+  //             console.log(result)
+  //             like_text = `Like: ${result.number_likes}`
+  //             button_like.innerHTML = like_text
+  //             if (result.message == 'Like is created succesfully') {
+  //               button_like.style.backgroundColor = 'lightblue'
+  //             }
+  //             else {
+  //               button_like.style.backgroundColor = 'lightgray'
+  //             }
+  //           })
+  //           .catch(error => { console.log(error) })
+  //           return false;
+  //         }
+
+  //       })
+
+  //     })
+  //     .catch(error => {
+  //       console.log(error);
+  //     })
+  // }
+
+
+  
+  document.querySelector('#next').addEventListener('click', () => {load_next(returned_page)})
+
+  function load_next(returned_page) {
+    document.querySelector('#all_element_view').innerHTML = '';
+    get_publication_of_user1(username='all', page=returned_page+1)
+  }
+
+  document.querySelector('#previous').addEventListener('click', () => {load_previous(returned_page)})
+
+  function load_previous(returned_page) {
+    document.querySelector('#all_element_view').innerHTML = '';
+    get_publication_of_user1(username='all', page=returned_page-1)
+  }
+
+
+  function get_publication_of_user1(username, page) {
+    // function for getting publication
+
+    fetch(`/${username}?page=${page}`)
       .then(response => response.json())
-      .then(publications => {
-        console.log(publications);
+      .then(data => {
+        console.log(data.publications, data.meta);
 
-        publications.forEach(publication => {
+        returned_page = data.meta.returned_page;
+        total_pages = data.meta.total_pages;
+
+        document.querySelector('#previous').disabled = false;
+        if (returned_page == 1) {
+          document.querySelector('#previous').disabled = true;
+        }
+      
+        document.querySelector('#next').disabled = false;
+        if (returned_page == data.meta.total_pages) {
+          document.querySelector('#next').disabled = true;
+        }
+      
+        document.querySelector('#page').innerHTML = returned_page;
+
+       data.publications.forEach(publication => {
           const element = document.createElement('div');
-          element.setAttribute('class', 'div_publication');
+          element.setAttribute('class', 'card-body text-dark bg-light mb-3 rounded-top');
+
           element.style.border = '1px solid';
           element.style.padding = "5px";
           element.style.marginBottom = "10px";
 
-            const publication_user = `<strong> ${publication.user} </strong> <hr>`;          
-            const publication_body = `${publication.body} <hr>`;
-            const publication_timestamp = `<small> ${publication.timestamp} </small> <br>`;
-            const publication_like = `<p> Likes:${publication.like} </p>`;
+          const publication_id = publication.id
+          const publication_user = `<strong> ${publication.user} </strong> <hr>`;
+          const publication_body = `${publication.body} <hr>`;
+          const publication_timestamp = `<small> ${publication.timestamp} </small> <br>`;
 
-          element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp} ${publication_like}`;
+          element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp}`;
           document.querySelector('#all_element_view').append(element);
 
-          element.querySelector('strong').addEventListener('click', () => {
-            user_page_display(publication.user);
-          })
+          const button_like = document.createElement('button');
+          button_like.setAttribute('class', 'btn btn-secondary')
+          element.appendChild(button_like)
 
-          // To 'p' added listener that increase field 'like' +1 and the reload view 'all_display_posts'
-          element.querySelector('p').addEventListener('click', () => {
-            fetch(`/${publication.id}`, {
+          count_like()
+
+          function count_like() {
+            fetch(`/like`, {
               method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                body: publication_id
+              })
             })
-          all_posts_display('all')
+            .then(response => response.json())
+            .then(result => {
+              console.log(result)
+              like_text = `Like: ${result.number_likes}`
+              button_like.innerHTML = like_text
+              if (result.like_exists == 1) {
+                button_like.setAttribute('class', 'btn btn-primary');
+              }
+              else { button_like.setAttribute('class', 'btn btn-secondary'); }
+            })
+          }
+
+          element.querySelector('strong').addEventListener('click', () => {
+            user_page_display(username=publication.user, page=1);
           })
 
-        });
+          element.querySelector('button').addEventListener('click', () => {
+            add_remove_like();
+          })
+
+          function add_remove_like() {
+            fetch(`/like`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                body: `${publication.id}`
+              })
+            })
+            .then(response => response.json())
+            .then(result => {
+              console.log(result)
+              like_text = `Like: ${result.number_likes}`
+              button_like.innerHTML = like_text
+              if (result.message == 'Like is created succesfully') {
+                button_like.setAttribute('class', 'btn btn-primary')
+              }
+              else {
+                button_like.setAttribute('class', 'btn btn-secondary')
+              }
+            })
+            .catch(error => { console.log(error) })
+            return false;
+          }
+
+        })
 
       })
       .catch(error => {
         console.log(error);
       })
+  }
+}
 
 
-};
 
-function following_display() {
-    document.querySelector('#user-page-view').style.display = 'none';
-    document.querySelector('#all-posts-view').style.display = 'none';
-    document.querySelector('#following-view').style.display = 'block';
-    document.querySelector('#filtred_element_view').innerHTML = "";
+function following_display(username, page) {
+  document.querySelector('#user-page-view').style.display = 'none';
+  document.querySelector('#all-posts-view').style.display = 'none';
+  document.querySelector('#following-view').style.display = 'block';
+  document.querySelector('#filtred_element_view').innerHTML = "";
+  get_publication_of_user3(username, page)
 
-    fetch(`/following`)
+  document.querySelector('#following_page_next').addEventListener('click', () => {load_next_following(username, following_returned_page)})
+
+  function load_next_following(username, following_returned_page) {
+    document.querySelector('#filtred_element_view').innerHTML = '';
+    get_publication_of_user3(username=username, page=following_returned_page+1);
+  }
+
+  document.querySelector('#following_page_previous').addEventListener('click', () => {load_previous_following(username, following_returned_page)})
+
+  function load_previous_following(username, following_returned_page) {
+    document.querySelector('#filtred_element_view').innerHTML = '';
+    get_publication_of_user3(username=username, page=following_returned_page-1);
+  }
+
+  function get_publication_of_user3(username, page) {
+    // function for getting publication of following users
+    fetch(`/following?page=${page}`)
       .then(response => response.json())
-      .then(publications => {
-        console.log(publications);
+      .then(data => {
+        console.log(data.publications, data.meta);
 
-        publications.forEach(publication => {
+        following_returned_page = data.meta.returned_page;
+        total_pages = data.meta.total_pages;
+
+        document.querySelector('#following_page_previous').disabled = false;
+        if (following_returned_page == 1) {
+          document.querySelector('#following_page_previous').disabled = true;
+        }
+      
+        document.querySelector('#following_page_next').disabled = false;
+        if (following_returned_page == data.meta.total_pages) {
+          document.querySelector('#following_page_next').disabled = true;
+        }
+      
+        document.querySelector('#following_page_page').innerHTML = following_returned_page;
+
+        data.publications.forEach(publication => {
           const element = document.createElement('div');
-          element.setAttribute('class', 'div_publication');
+          element.setAttribute('class', 'card-body text-dark bg-light mb-3 rounded-top');
+
           element.style.border = '1px solid';
           element.style.padding = "5px";
           element.style.marginBottom = "10px";
 
-            const publication_user = `<strong> ${publication.user} </strong> <hr>`;          
-            const publication_body = `${publication.body} <hr>`;
-            const publication_timestamp = `<small> ${publication.timestamp} </small> <br>`;
-            const publication_like = `<p> Likes:${publication.like} </p>`;
+          const publication_id = publication.id
+          const publication_user = `<strong> ${publication.user} </strong> <hr>`;
+          const publication_body = `${publication.body} <hr>`;
+          const publication_timestamp = `<small> ${publication.timestamp} </small> <br>`;
 
-          element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp} ${publication_like}`;
+          element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp}`;
           document.querySelector('#filtred_element_view').append(element);
 
-          element.querySelector('strong').addEventListener('click', () => {
-            user_page_display(publication.user);
-          })
+          const button_like = document.createElement('button');
+          button_like.setAttribute('class', 'btn btn-secondary')
+          element.appendChild(button_like)
 
-          // To 'p' added listener that increase field 'like' +1 and the reload view 'all_display_posts'
-          element.querySelector('p').addEventListener('click', () => {
-            fetch(`/${publication.id}`, {
+          count_like()
+
+          function count_like() {
+            // function for counting likes by publication
+            fetch(`/like`, {
               method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                body: publication_id
+              })
             })
-          following_display()
+            .then(response => response.json())
+            .then(result => {
+              console.log(result)
+              like_text = `Like: ${result.number_likes}`
+              button_like.innerHTML = like_text
+              if (result.like_exists == 1) {
+                button_like.setAttribute('class', 'btn btn-primary')
+              }
+              else { button_like.setAttribute('class', 'btn btn-secondary') }
+            })
+          }
+
+          element.querySelector('strong').addEventListener('click', () => {
+            user_page_display(username=publication.user, page=1);
           })
 
-        });
+          element.querySelector('button').addEventListener('click', () => {
+            add_remove_like();
+          })
+
+          function add_remove_like() {
+            // function for adding/removing likes
+            fetch(`/like`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                body: `${publication.id}`
+              })
+            })
+            .then(response => response.json())
+            .then(result => {
+              console.log(result)
+              like_text = `Like: ${result.number_likes}`
+              button_like.innerHTML = like_text
+              if (result.message == 'Like is created succesfully') {
+                button_like.setAttribute('class', 'btn btn-primary')
+              }
+              else {
+                button_like.setAttribute('class', 'btn btn-secondary')
+              }
+            })
+            .catch(error => { console.log(error) })
+            return false;
+          }
+
+        })
 
       })
       .catch(error => {
         console.log(error);
       })
-};
+  }
+
+}
 

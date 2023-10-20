@@ -6,42 +6,78 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
+from .models import User, Publication, Follow, Like
+from django.core.paginator import Paginator
 
-from .models import User, Publication, Follow
+
+def index(request):
+    # function for presenting main page
+    return render(request, "network/index.html")
+
+
+@csrf_exempt
+@login_required
+def like(request):
+    # function for adding/removing like and counting them by publication 
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        publication_like = data.get("body", "")
+        username_like = request.user.username
+        if Like.objects.filter(username_like=username_like, publication_like=publication_like).first():
+            like_delete = Like.objects.filter(username_like=username_like, publication_like=publication_like)
+            like_delete.delete()
+            number_likes = 0
+            number_likes = len(Like.objects.filter(publication_like=publication_like))
+            return JsonResponse({"message": "Like is deleted", "number_likes":number_likes}, status=201)
+        else:
+            new_like = Like.objects.create(username_like=username_like, publication_like=publication_like)
+            new_like.save()
+            number_likes = 0
+            number_likes = len(Like.objects.filter(publication_like=publication_like))
+            return JsonResponse({"message": "Like is created succesfully", "number_likes":number_likes}, status=201)
+    if request.method == "PUT":
+        username_like = request.user
+        data = json.loads(request.body)
+        publication_like = data.get("body", "")
+        number_likes = 0
+        number_likes = len(Like.objects.filter(publication_like=publication_like))
+        like_exists = len(Like.objects.filter(username_like=username_like, publication_like=publication_like))
+        return JsonResponse({"number_likes":number_likes, "like_exists":like_exists})
 
 
 @login_required
 def following(request):
-        is_followed_users = []
-        follower = request.user
-        follows = Follow.objects.filter(follower=follower)
-        for follow in follows:
-            is_followed_user = follow.is_followed
-            is_followed_users.append(is_followed_user)
-        publications = Publication.objects.filter(user__username__in=is_followed_users)
-        return JsonResponse([publication.serialize() for publication in publications], safe=False)
+    # function for presenting publications of followed users
+    page_number = int(request.GET.get('page'))
+    publication_per_page = int(request.GET.get('per_page', 3))
+    publication_per_page = 3
+    is_followed_users = []
+    follower = request.user
+    follows = Follow.objects.filter(follower=follower)
+    for follow in follows:
+        is_followed_user = follow.is_followed
+        is_followed_users.append(is_followed_user)
+    publications = Publication.objects.filter(user__username__in=is_followed_users)
+    paginator = Paginator(publications, publication_per_page)
+    page_obj = paginator.get_page(page_number)    
+    serialized_publications = [publication.serialize() for publication in page_obj]
+    return JsonResponse({
+                'publications': serialized_publications,
+                'meta': {
+                    'returned_page' : page_obj.number,
+                    'per_page': publication_per_page,
+                    'total_pages': paginator.num_pages,
+                    'total_publications': paginator.count,
+                },
+            })
 
 
-@csrf_exempt
-def index(request):
-    if request.method == 'PUT':
-            data = json.loads(request.body)
-            is_followed = data.get("body", "")
-            number_follows = 0
-            number_following = 0
-            number_follows = len(Follow.objects.filter(follower=is_followed))
-            number_following = len(Follow.objects.filter(is_followed=is_followed))
-            return JsonResponse({"number_follows":number_follows, "number_following":number_following})
-    else: 
-        return render(request, "network/index.html")
-
-# view for creation new publications
 @login_required
 @csrf_exempt
 def compose(request):
+    # function for creating new publication
     if request.method != "POST":
         return JsonResponse({"error": "Method should be POST"}, status=404)
-    
     try: 
         data = json.loads(request.body)
         body = data.get("body", "")
@@ -50,28 +86,65 @@ def compose(request):
         publication.save()
     except AttributeError:
         return JsonResponse({"error": "AttributeError catched"}, status=500)
-    
     return JsonResponse({"message": "Publication is created"}, status=201)
+
 
 @csrf_exempt
 @login_required
 def represent(request, tab):
-    if tab == "all":
-        publications = Publication.objects.all()
-    elif request.method == 'PUT':
-        publication = Publication.objects.get(id=tab)
-        publication.like = publication.like + 1
-        publication.save()
-        return JsonResponse(publication.serialize(), safe=False)
-    elif tab != "all":
-        user = User.objects.get(username=tab)
-        user = user.id       
-        publications = Publication.objects.filter(user=user)
-        return JsonResponse([publication.serialize() for publication in publications], safe=False)
+    # function for presenting all publications and certain user's publication, and counting follows/following
+    if request.method == 'PUT':
+            data = json.loads(request.body)
+            is_followed = data.get("body", "")
+            number_follows = 0
+            number_following = 0
+            number_follows = len(Follow.objects.filter(follower=is_followed))
+            number_following = len(Follow.objects.filter(is_followed=is_followed))
+            return JsonResponse({"number_follows":number_follows, "number_following":number_following})
+    if request.method == 'GET':
+        page_number = int(request.GET.get('page'))
+        # publication_per_page = int(request.GET.get('per_page', 3))
+        publication_per_page = 3
+        if tab == "all":
+            publications = Publication.objects.all().order_by("-timestamp")
+            paginator = Paginator(publications, publication_per_page)
+            page_obj = paginator.get_page(page_number)    
+            serialized_publications = [publication.serialize() for publication in page_obj]
+            return JsonResponse({
+                'publications': serialized_publications,
+                'meta': {
+                    'returned_page' : page_obj.number,
+                    'per_page': publication_per_page,
+                    'total_pages': paginator.num_pages,
+                    'total_publications': paginator.count,
+                },
+            })
+
+        # if tab == "all":
+        #     publications = Publication.objects.all()
+
+        elif tab != "all":
+            user = User.objects.get(username=tab)
+            user = user.id       
+            publications = Publication.objects.filter(user=user)
+            paginator = Paginator(publications, publication_per_page)
+            page_obj = paginator.get_page(page_number)    
+            serialized_publications = [publication.serialize() for publication in page_obj]
+            return JsonResponse({
+                'publications': serialized_publications,
+                'meta': {
+                    'returned_page' : page_obj.number,
+                    'per_page': publication_per_page,
+                    'total_pages': paginator.num_pages,
+                    'total_publications': paginator.count,
+                },
+            })
+    
     else:
         return JsonResponse({"error": "Invalis mailbox."}, status=400)
-    publications = publications.order_by("-timestamp")
-    return JsonResponse([publication.serialize() for publication in publications], safe=False)
+
+
+
 
 @csrf_exempt
 @login_required
@@ -83,13 +156,20 @@ def follow(request):
         if Follow.objects.filter(follower=follower, is_followed=is_followed).first():
             follow_delete = Follow.objects.filter(follower=follower, is_followed=is_followed)
             follow_delete.delete()
-            return JsonResponse({"message": "Follow is deleted"}, status=201)
+            return JsonResponse({"message": "The follow is deleted successfully"}, status=201)
         else:
             new_follow = Follow.objects.create(follower=follower, is_followed=is_followed)
             new_follow.save()
-            return JsonResponse({"message": "Created is succesed"}, status=201)
-    
+            return JsonResponse({"message": "The follow is created successfully"}, status=201)
+    if  request.method == 'PUT':
+        data = json.loads(request.body)
+        is_followed = data.get("body", "")
+        follower = request.user.username
+        follow_exist = len(Follow.objects.filter(follower=follower, is_followed=is_followed))
+        return JsonResponse({"follow_exist": follow_exist}, status=201)
 
+
+@csrf_exempt
 def login_view(request):
     if request.method == "POST":
 

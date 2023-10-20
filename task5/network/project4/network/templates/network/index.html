@@ -3,8 +3,8 @@
 
 {% block body %}
 
-    <div id="user-page-view">
-        <h4>User page</h4>
+    <div class="container" id="user-page-view">
+        <h4 id="title_username">User page</h4>
 
         <div id="number_follows"></div>
         <div id="number_following"></div>
@@ -17,15 +17,20 @@
 
         </form>
         
-        <div id="user-page-view-posts">
-            
+        <div id="user-page-view-posts"></div>
+
+        <div class="row justify-content-center" class="btn-group" role="group" aria-label="Basic example" >
+        <button class="btn btn-light" id="user_page_previous" >Previous</button>
+        <button class="btn btn-light" id="user_page_page" >Page</button>
+        <button class="btn btn-light" id="user_page_next" >Next</button>
         </div>
     </div>
 
-    <div id="all-posts-view">
+    <div class="container" id="all-posts-view">
         <h4>All Posts</h4>
-        <div class="border p-3 m-3" id="compose_view">
-            <h4>New post</h3>
+
+        <div class="form-group " id="compose_view" >
+            <h6>New post</h6>
             <form id="compose-form">
                 <div class="form-group">
                     <input disabled class="form-control" id="compose-user" value="{{ request.user }}">
@@ -34,13 +39,30 @@
                 <input id="submit_new_post" type="submit" class="btn btn-primary mt-2">
             </form>
         </div>
-        <div class="border p-3 m-3" id ="all_element_view"></div>
+        <div id ="all_element_view"></div>
+              
+
+        <div class="row justify-content-center" class="btn-group" role="group" aria-label="Basic example" >
+              <button class="btn btn-light" id="previous" >Previous</button>
+              <button class="btn btn-light" id="page" >Page</button>
+              <button class="btn btn-light" id="next" >Next</button>
+        </div>
+
     </div>
 
-    <div id="following-view">
+    <div class="container" id="following-view" >
         <h4>Following</h4>
-        <div class="border p-3 m-3" id ="filtred_element_view"></div>
+        <div  id="filtred_element_view"></div>
+
+        <div class="row justify-content-center" class="btn-group" role="group" aria-label="Basic example" >
+        <button class="btn btn-light" id="following_page_previous" >Previous</button>
+        <button class="btn btn-light" id="following_page_page" >Page</button>
+        <button class="btn btn-light" id="following_page_next" >Next</button>
+        </div>
+
     </div>
+
+
     
 {% endblock %}
 
