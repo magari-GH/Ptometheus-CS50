@@ -2,16 +2,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const base_page = 1;
     // all_posts_display('all');
-  all_posts_display('all', base_page);
-
-  const current_user = document.querySelector('#compose-user').value
-  document.querySelector('#user-page').addEventListener('click', () => user_page_display(`${current_user}`, page=base_page));
-  document.querySelector('#all-posts').addEventListener('click', () => all_posts_display(username = 'all', page=base_page));
-  document.querySelector('#following').addEventListener('click', () => following_display(`${current_user}`, page=base_page));
   
+
+  const current_user = document.querySelector('#compose-user').value;
+  console.log(current_user);
+  document.querySelector('#user-page').addEventListener('click', () => user_page_display(`${current_user}`, page=base_page));
+  document.querySelector('#all-posts').addEventListener('click', () => all_posts_display(username = 'all', page=base_page, current_user));
+  document.querySelector('#following').addEventListener('click', () => following_display(`${current_user}`, page=base_page));
+  all_posts_display('all', base_page, current_user);
 
   
 })
+
 function user_page_display(username, page) {
   document.querySelector('#user-page-view').style.display = 'block';
   document.querySelector('#all-posts-view').style.display = 'none';
@@ -98,97 +100,6 @@ function user_page_display(username, page) {
       })
   }
 
-  // function get_publication_of_user(username) {
-  //   // function for getting publication of certain user
-  //   fetch(`/${username}`)
-  //     .then(response => response.json())
-  //     .then(publications => {
-  //       console.log(publications);
-
-  //       publications.forEach(publication => {
-  //         const element = document.createElement('div');
-  //         element.setAttribute('class', 'div_publication');
-
-  //         element.style.border = '1px solid';
-  //         element.style.padding = "5px";
-  //         element.style.marginBottom = "10px";
-
-  //         const publication_id = publication.id
-  //         const publication_user = `<strong> ${publication.user} </strong> <hr>`;
-  //         const publication_body = `${publication.body} <hr>`;
-  //         const publication_timestamp = `<small> ${publication.timestamp} </small> <br>`;
-
-  //         element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp}`;
-  //         document.querySelector('#user-page-view-posts').append(element);
-
-  //         const button_like = document.createElement('button');
-  //         button_like.setAttribute('class', 'btn btn-light')
-  //         element.appendChild(button_like)
-
-  //         count_like()
-
-  //         function count_like() {
-  //         // function for counting like
-  //           fetch(`/like`, {
-  //             method: 'PUT',
-  //             headers: { 'Content-Type': 'application/json' },
-  //             body: JSON.stringify({
-  //               body: publication_id
-  //             })
-  //           })
-  //           .then(response => response.json())
-  //           .then(result => {
-  //             console.log(result)
-  //             like_text = `Like: ${result.number_likes}`
-  //             button_like.innerHTML = like_text
-  //             if (result.like_exists == 1) {
-  //               button_like.style.backgroundColor = 'lightblue';
-  //             }
-  //             else { button_like.style.backgroundColor = 'lightgray'; }
-  //           })
-  //         }
-
-  //         element.querySelector('strong').addEventListener('click', () => {
-  //           user_page_display(publication.user);
-  //         })
-
-  //         element.querySelector('button').addEventListener('click', () => {
-  //           add_remove_like();
-  //         })
-
-  //         function add_remove_like() {
-  //         // function for adding/removing likes
-  //           fetch(`/like`, {
-  //             method: 'POST',
-  //             headers: { 'Content-Type': 'application/json' },
-  //             body: JSON.stringify({
-  //               body: `${publication.id}`
-  //             })
-  //           })
-  //           .then(response => response.json())
-  //           .then(result => {
-  //             console.log(result)
-  //             like_text = `Like: ${result.number_likes}`
-  //             button_like.innerHTML = like_text
-  //             if (result.message == 'Like is created succesfully') {
-  //               button_like.style.backgroundColor = 'lightblue'
-  //             }
-  //             else {
-  //               button_like.style.backgroundColor = 'lightgray'
-  //             }
-  //           })
-  //           .catch(error => { console.log(error) })
-  //           return false;
-  //         }
-
-  //       })
-
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //     })
-  // }
-
   document.querySelector('#user_page_next').addEventListener('click', () => {load_next_user(username, returned_page_user)})
 
   function load_next_user(username, returned_page_user) {
@@ -242,9 +153,18 @@ function user_page_display(username, page) {
           element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp}`;
           document.querySelector('#user-page-view-posts').append(element);
 
+          
+          if (publication.user == username) {
+            const button_edit = document.createElement('button');
+            button_edit.setAttribute('class', 'btn btn-secondary');
+            button_edit.innerHTML = 'Edit';
+            element.appendChild(button_edit);
+          }
+
           const button_like = document.createElement('button');
-          button_like.setAttribute('class', 'btn btn-secondary')
-          element.appendChild(button_like)
+          button_like.setAttribute('class', 'btn btn-secondary');
+          button_like.setAttribute('class', 'button_like');
+          element.appendChild(button_like);
 
           count_like()
 
@@ -272,7 +192,7 @@ function user_page_display(username, page) {
             user_page_display(username=publication.user, page=1);
           })
 
-          element.querySelector('button').addEventListener('click', () => {
+          element.querySelector('.button_like').addEventListener('click', () => {
             add_remove_like();
           })
 
@@ -311,13 +231,13 @@ function user_page_display(username, page) {
 
 
 
-function all_posts_display(username, page) {
+function all_posts_display(username, page, current_user) {
   document.querySelector('#user-page-view').style.display = 'none';
   document.querySelector('#all-posts-view').style.display = 'block';
   document.querySelector('#following-view').style.display = 'none';
   document.querySelector('#all_element_view').innerHTML = "";
   // get_publication_of_user(username)
-  get_publication_of_user1(username, page);
+  get_publication_of_user1(username, page, current_user);
 
 
   document.querySelector('#compose-form').onsubmit = () => {compose_publication();
@@ -340,116 +260,25 @@ function all_posts_display(username, page) {
     document.querySelector('#compose-body').value = "";
     // all_posts_display('all', page=base_page)
   }
-
-  // function get_publication_of_user(username) {
-  //   // function for getting publication 
-  //   fetch(`/${username}`)
-  //     .then(response => response.json())
-  //     .then(publications => {
-  //       console.log(publications);
-
-  //       publications.forEach(publication => {
-  //         const element = document.createElement('div');
-  //         element.setAttribute('class', 'div_publication');
-
-  //         element.style.border = '1px solid';
-  //         element.style.padding = "5px";
-  //         element.style.marginBottom = "10px";
-
-  //         const publication_id = publication.id
-  //         const publication_user = `<strong> ${publication.user} </strong> <hr>`;
-  //         const publication_body = `${publication.body} <hr>`;
-  //         const publication_timestamp = `<small> ${publication.timestamp} </small> <br>`;
-
-  //         element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp}`;
-  //         document.querySelector('#all_element_view').append(element);
-
-  //         const button_like = document.createElement('button');
-  //         button_like.setAttribute('class', 'btn btn-light')
-  //         element.appendChild(button_like)
-
-  //         count_like()
-
-  //         function count_like() {
-  //           fetch(`/like`, {
-  //             method: 'PUT',
-  //             headers: { 'Content-Type': 'application/json' },
-  //             body: JSON.stringify({
-  //               body: publication_id
-  //             })
-  //           })
-  //           .then(response => response.json())
-  //           .then(result => {
-  //             console.log(result)
-  //             like_text = `Like: ${result.number_likes}`
-  //             button_like.innerHTML = like_text
-  //             if (result.like_exists == 1) {
-  //               button_like.style.backgroundColor = 'lightblue';
-  //             }
-  //             else { button_like.style.backgroundColor = 'lightgray'; }
-  //           })
-  //         }
-
-  //         element.querySelector('strong').addEventListener('click', () => {
-  //           user_page_display(publication.user);
-  //         })
-
-  //         element.querySelector('button').addEventListener('click', () => {
-  //           add_remove_like();
-  //         })
-
-  //         function add_remove_like() {
-  //           fetch(`/like`, {
-  //             method: 'POST',
-  //             headers: { 'Content-Type': 'application/json' },
-  //             body: JSON.stringify({
-  //               body: `${publication.id}`
-  //             })
-  //           })
-  //           .then(response => response.json())
-  //           .then(result => {
-  //             console.log(result)
-  //             like_text = `Like: ${result.number_likes}`
-  //             button_like.innerHTML = like_text
-  //             if (result.message == 'Like is created succesfully') {
-  //               button_like.style.backgroundColor = 'lightblue'
-  //             }
-  //             else {
-  //               button_like.style.backgroundColor = 'lightgray'
-  //             }
-  //           })
-  //           .catch(error => { console.log(error) })
-  //           return false;
-  //         }
-
-  //       })
-
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //     })
-  // }
-
-
   
   document.querySelector('#next').addEventListener('click', () => {load_next(returned_page)})
 
   function load_next(returned_page) {
     document.querySelector('#all_element_view').innerHTML = '';
-    get_publication_of_user1(username='all', page=returned_page+1)
+    get_publication_of_user1(username='all', page=returned_page+1, current_user)
   }
 
   document.querySelector('#previous').addEventListener('click', () => {load_previous(returned_page)})
 
   function load_previous(returned_page) {
     document.querySelector('#all_element_view').innerHTML = '';
-    get_publication_of_user1(username='all', page=returned_page-1)
+    get_publication_of_user1(username='all', page=returned_page-1, current_user)
   }
 
 
-  function get_publication_of_user1(username, page) {
+  function get_publication_of_user1(username, page, current_user) {
     // function for getting publication
-
+    console.log(current_user);
     fetch(`/${username}?page=${page}`)
       .then(response => response.json())
       .then(data => {
@@ -483,12 +312,22 @@ function all_posts_display(username, page) {
           const publication_body = `${publication.body} <hr>`;
           const publication_timestamp = `<small> ${publication.timestamp} </small> <br>`;
 
-          element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp}`;
+          element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp}` ;
           document.querySelector('#all_element_view').append(element);
 
+          console.log(current_user);
+          if (publication.user == current_user) {
+            const button_edit = document.createElement('button');
+            button_edit.setAttribute('class', 'btn btn-secondary');
+            button_edit.innerHTML = 'Edit';
+            element.appendChild(button_edit);
+          }
+  
           const button_like = document.createElement('button');
-          button_like.setAttribute('class', 'btn btn-secondary')
+          button_like.setAttribute('class', 'btn btn-secondary');
+          button_like.setAttribute('class', 'button_like');
           element.appendChild(button_like)
+
 
           count_like()
 
@@ -516,7 +355,7 @@ function all_posts_display(username, page) {
             user_page_display(username=publication.user, page=1);
           })
 
-          element.querySelector('button').addEventListener('click', () => {
+          element.querySelector('.button_like').addEventListener('click', () => {
             add_remove_like();
           })
 
@@ -578,6 +417,7 @@ function following_display(username, page) {
 
   function get_publication_of_user3(username, page) {
     // function for getting publication of following users
+
     fetch(`/following?page=${page}`)
       .then(response => response.json())
       .then(data => {
@@ -614,8 +454,16 @@ function following_display(username, page) {
           element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp}`;
           document.querySelector('#filtred_element_view').append(element);
 
+          if (publication.user == username) {
+            const button_edit = document.createElement('button');
+            button_edit.setAttribute('class', 'btn btn-secondary');
+            button_edit.innerHTML = 'Edit';
+            element.appendChild(button_edit);
+          }
+
           const button_like = document.createElement('button');
           button_like.setAttribute('class', 'btn btn-secondary')
+          button_like.setAttribute('class', 'button_like');
           element.appendChild(button_like)
 
           count_like()
@@ -645,7 +493,7 @@ function following_display(username, page) {
             user_page_display(username=publication.user, page=1);
           })
 
-          element.querySelector('button').addEventListener('click', () => {
+          element.querySelector('.button_like').addEventListener('click', () => {
             add_remove_like();
           })
 
