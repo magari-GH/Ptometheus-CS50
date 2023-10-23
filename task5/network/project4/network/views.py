@@ -75,19 +75,33 @@ def following(request):
 @login_required
 @csrf_exempt
 def compose(request):
-    # function for creating new publication
-    if request.method != "POST":
+    # function for creating and changing publication
+    if request.method == "GET":
         return JsonResponse({"error": "Method should be POST"}, status=404)
-    try: 
-        data = json.loads(request.body)
-        body = data.get("body", "")
-        user = request.user
-        publication = Publication(user=user, body=body)
-        publication.save()
-    except AttributeError:
-        return JsonResponse({"error": "AttributeError catched"}, status=500)
-    return JsonResponse({"message": "Publication is created"}, status=201)
-
+    elif request.method == "PUT":
+        try:
+            data = json.loads(request.body)
+            body = data.get("body", "")
+            publication_id = data.get("publication_id", "")
+            publication = Publication.objects.get(id=publication_id)
+            publication.body = body
+            publication.save()
+        except AttributeError:
+            return JsonResponse({"error": "AttributeError catched whive seving"}, status=500)
+        return JsonResponse({"message": "Publication is saved"}, status=201)
+   
+    elif request.method == "POST":
+        try: 
+            data = json.loads(request.body)
+            body = data.get("body", "")
+            user = request.user
+            publication = Publication(user=user, body=body)
+            publication.save()
+        except AttributeError:
+            return JsonResponse({"error": "AttributeError catched"}, status=500)
+        return JsonResponse({"message": "Publication is created"}, status=201)
+    else: 
+        return JsonResponse({"error": "Method should be POST"}, status=404)
 
 @csrf_exempt
 @login_required
