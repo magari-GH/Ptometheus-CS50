@@ -6,17 +6,18 @@
     <div class="container" id="user-page-view">
         <h4 id="title_username">User page</h4>
 
-        <div id="number_follows"></div>
-        <div id="number_following"></div>
+        <div class="form-control mb-2 w-25 " id="number_follows"></div>
+        <div class="form-control mb-2 w-25" id="number_following"></div>
 
-        <form id="follow_form">
+            <form id="follow_form">
 
-            <input id="follow_form_follower" disabled  type="text" value="{{ request.user.username }}" name="follower">
-            <input id="follow_form_is_followed" disabled  type="text" value="user3" name="is_followed">
-            <input id="submit_follow" type="submit" class="btn btn-primary mt-2" value="follow">
+                <input hidden id="follow_form_follower" disabled  type="text" value="{{ request.user.username }}" name="follower">
+                <input hidden id="follow_form_is_followed" disabled  type="text" value="user3" name="is_followed">
+                {% if request.user.username != "" %}
+                <input id="submit_follow" type="submit" class="btn btn-primary mb-3" value="follow">
+                {% endif %}
+            </form>
 
-        </form>
-        
         <div id="user-page-view-posts"></div>
 
         <div class="row justify-content-center" class="btn-group" role="group" aria-label="Basic example" >
@@ -29,14 +30,16 @@
     <div class="container" id="all-posts-view">
         <h4>All Posts</h4>
 
-        <div class="form-group " id="compose_view" >
-            <h6>New post</h6>
-            <form id="compose-form">
+        <div class="card-body text-dark bg-white mb-3 rounded-top border border-primary" id="compose_view" >
+            <h5>New post</h5>   
+            <form  id="compose-form">
                 <div class="form-group">
-                    <input disabled class="form-control" id="compose-user" value="{{ request.user }}">
+                    <input hidden disabled class="form-control" id="compose-user" value="{{ request.user }}">
                 </div>
                 <textarea class="form-control" id="compose-body" placeholder="Create your post"></textarea>
-                <input id="submit_new_post" type="submit" class="btn btn-primary mt-2">
+                {% if request.user.username != "" %}
+                <input id="submit_new_post" type="submit" class="btn btn-primary mt-2" value="Create">
+                {% endif %} 
             </form>
         </div>
         <div id ="all_element_view"></div>

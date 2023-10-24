@@ -1,15 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   const base_page = 1;
-  const current_user = document.querySelector('#compose-user').value;
-  publication_per_page = 10;
-  max_publication_on_page = 10;
+  current_user = document.querySelector('#compose-user').value;
+  publication_per_page = 2;
   console.log(current_user);
-  document.querySelector('#user-page').addEventListener('click', () => user_page_display(`${current_user}`, page=base_page, current_user));
-  document.querySelector('#all-posts').addEventListener('click', () => all_posts_display(username = 'all', page=base_page, current_user));
-  document.querySelector('#following').addEventListener('click', () => following_display(`${current_user}`, page=base_page));
   all_posts_display('all', base_page, current_user);
-
+  document.querySelector('#all-posts').addEventListener('click', () => all_posts_display(username = 'all', page=base_page, current_user));
+  document.querySelector('#user-page').addEventListener('click', () => user_page_display(username = `${current_user}`, page=base_page, current_user));
+  document.querySelector('#following').addEventListener('click', () => following_display(username = `${current_user}`, page=base_page));
+  
   
 })
 
@@ -115,7 +114,7 @@ function user_page_display(username, page, current_user) {
   function get_publication_of_user2(username, page, current_user) {
     // function for getting publication
     console.log(current_user);
-    fetch(`/${username}?page=${page}`)
+    fetch(`/${username}?page=${page}&per_page=${publication_per_page}`)
       .then(response => response.json())
       .then(data => {
         console.log(data.publications, data.meta);
@@ -124,7 +123,7 @@ function user_page_display(username, page, current_user) {
         total_pages = data.meta.total_pages;
         const total_publications = data.meta.total_publications;
 
-        if (total_publications < max_publication_on_page  ) {
+        if (total_publications < publication_per_page  ) {
           document.querySelector('#user_page_previous').style.display = 'none';
           document.querySelector('#user_page_next').style.display = 'none';
           document.querySelector('#user_page_page').style.display = 'none';
@@ -145,18 +144,18 @@ function user_page_display(username, page, current_user) {
 
        data.publications.forEach(publication => {
           const element = document.createElement('div');
-          element.setAttribute('class', 'card-body text-dark bg-light mb-3 rounded-top');
+          element.setAttribute('class', 'card-body text-dark bg-white mb-3 rounded-top border border-primary');
 
           element.style.border = '1px solid';
           element.style.padding = "5px";
           element.style.marginBottom = "10px";
 
           const publication_id = publication.id
-          const publication_user = `<strong> ${publication.user} </strong> <hr>`;
-          let publication_body = `${publication.body} <hr>`;
-          const publication_timestamp = `<small> ${publication.timestamp} </small> <br>`;
+          const publication_user = `<strong> ${publication.user} </strong> `;
+          let publication_body = `${publication.body} `;
+          const publication_timestamp = `<small> ${publication.timestamp} </small> `;
 
-          element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp}`;
+          element.innerHTML = `${publication_user} <hr> ${publication_body} <hr> ${publication_timestamp} <br>`;
           document.querySelector('#user-page-view-posts').append(element);
 
           function edit_publication() {
@@ -167,7 +166,7 @@ function user_page_display(username, page, current_user) {
             element.appendChild(form_compose);
             const button_save = document.createElement('button');
             button_save.setAttribute('id', 'batton_save');
-            button_save.setAttribute('class', 'btn btn-primary mt-2');
+            button_save.setAttribute('class', 'btn btn-primary m-3');
             button_save.innerHTML = 'Save';
             element.appendChild(button_save);
 
@@ -195,7 +194,7 @@ function user_page_display(username, page, current_user) {
             element.removeChild(button_save);
 
             publication_body = form_compose.value;
-            element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp}`;
+            element.innerHTML = `${publication_user} <hr> ${publication_body} <hr> ${publication_timestamp} <br>`;
             element.appendChild(button_edit);
             element.appendChild(button_like);
             return false;
@@ -218,7 +217,7 @@ function user_page_display(username, page, current_user) {
           }
 
           const button_like = document.createElement('button');
-          button_like.setAttribute('class', 'btn btn-secondary');
+          button_like.setAttribute('class', 'btn btn-secondary m-3');
           button_like.setAttribute('class', 'button_like');
           element.appendChild(button_like);
 
@@ -238,9 +237,9 @@ function user_page_display(username, page, current_user) {
               like_text = `Like: ${result.number_likes}`
               button_like.innerHTML = like_text
               if (result.like_exists == 1) {
-                button_like.setAttribute('class', 'btn btn-primary');
+                button_like.setAttribute('class', 'btn btn-primary m-3');
               }
-              else { button_like.setAttribute('class', 'btn btn-secondary')}
+              else { button_like.setAttribute('class', 'btn btn-secondary m-3')}
             })
           }
 
@@ -266,10 +265,10 @@ function user_page_display(username, page, current_user) {
               like_text = `Like: ${result.number_likes}`
               button_like.innerHTML = like_text
               if (result.message == 'Like is created succesfully') {
-                button_like.setAttribute('class', 'btn btn-primary')
+                button_like.setAttribute('class', 'btn btn-primary m-3')
               }
               else {
-                button_like.setAttribute('class', 'btn btn-secondary')
+                button_like.setAttribute('class', 'btn btn-secondary m-3')
               }
             })
             .catch(error => { console.log(error) })
@@ -311,7 +310,9 @@ function all_posts_display(username, page, current_user) {
       })
     })
     .then(response => response.json())
-    .then(result => {console.log(result)})
+    .then(result => {console.log(result)
+      all_posts_display(username, page, current_user) 
+    })
     .catch(error => {console.log(error)})
     document.querySelector('#compose-body').value = "";
   }
@@ -336,7 +337,7 @@ function all_posts_display(username, page, current_user) {
   function get_publication_of_user1(username, page, current_user) {
     // function for getting publication
     console.log(current_user);
-    fetch(`/${username}?page=${page}`)
+    fetch(`/${username}?page=${page}&per_page=${publication_per_page}`)
       .then(response => response.json())
       .then(data => {
         console.log(data.publications, data.meta);
@@ -346,7 +347,7 @@ function all_posts_display(username, page, current_user) {
         total_pages = data.meta.total_pages;
         const total_publications = data.meta.total_publications;
 
-        if (total_publications < max_publication_on_page  ) {
+        if (total_publications < publication_per_page  ) {
           document.querySelector('#previous').style.display = 'none';
           document.querySelector('#next').style.display = 'none';
           document.querySelector('#page').style.display = 'none';
@@ -367,18 +368,18 @@ function all_posts_display(username, page, current_user) {
        data.publications.forEach(publication => {
         //function for displaying all publication from promise
           const element = document.createElement('div');
-          element.setAttribute('class', 'card-body text-dark bg-light mb-3 rounded-top');
+          element.setAttribute('class', 'card-body text-dark bg-white mb-3 rounded-top border border-primary');
 
           element.style.border = '1px solid';
           element.style.padding = "5px";
           element.style.marginBottom = "10px";
 
           const publication_id = publication.id
-          const publication_user = `<strong> ${publication.user} </strong> <hr>`;
-          let publication_body = `${publication.body} <hr>`;
-          const publication_timestamp = `<small> ${publication.timestamp} </small> <br>`;
+          const publication_user = `<strong> ${publication.user} </strong> `;
+          let publication_body = `${publication.body} `;
+          const publication_timestamp = `<small> ${publication.timestamp} </small> `;
 
-          element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp}` ;
+          element.innerHTML = `${publication_user} <hr> ${publication_body} <hr> ${publication_timestamp} <br> `;
           document.querySelector('#all_element_view').append(element);
 
           function edit_publication() {
@@ -389,7 +390,7 @@ function all_posts_display(username, page, current_user) {
             element.appendChild(form_compose);
             const button_save = document.createElement('button');
             button_save.setAttribute('id', 'batton_save');
-            button_save.setAttribute('class', 'btn btn-primary mt-2');
+            button_save.setAttribute('class', 'btn btn-primary m-3');
             button_save.innerHTML = 'Save';
             element.appendChild(button_save);
 
@@ -418,7 +419,7 @@ function all_posts_display(username, page, current_user) {
             element.removeChild(button_save);
 
             publication_body = form_compose.value;
-            element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp}`;
+            element.innerHTML = `${publication_user} <hr> ${publication_body} <hr> ${publication_timestamp} <br> `;
             element.appendChild(button_edit);
             element.appendChild(button_like);
             return false;
@@ -442,7 +443,7 @@ function all_posts_display(username, page, current_user) {
           }
 
           const button_like = document.createElement('button');
-          button_like.setAttribute('class', 'btn btn-secondary');
+          button_like.setAttribute('class', 'btn btn-secondary m-3');
           button_like.setAttribute('class', 'button_like');
           element.appendChild(button_like);
 
@@ -463,9 +464,9 @@ function all_posts_display(username, page, current_user) {
               like_text = `Like: ${result.number_likes}`
               button_like.innerHTML = like_text
               if (result.like_exists == 1) {
-                button_like.setAttribute('class', 'btn btn-primary');
+                button_like.setAttribute('class', 'btn btn-primary m-3');
               }
-              else { button_like.setAttribute('class', 'btn btn-secondary'); }
+              else { button_like.setAttribute('class', 'btn btn-secondary m-3'); }
             })
           }
 
@@ -479,7 +480,6 @@ function all_posts_display(username, page, current_user) {
 
           function add_remove_like() {
             // function for adding/removing the like by user
-            alert(`${publication_id}`);
             fetch(`/like`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -493,10 +493,10 @@ function all_posts_display(username, page, current_user) {
               like_text = `Like: ${result.number_likes}`
               button_like.innerHTML = like_text
               if (result.message == 'Like is created succesfully') {
-                button_like.setAttribute('class', 'btn btn-primary')
+                button_like.setAttribute('class', 'btn btn-primary m-3')
               }
               else {
-                button_like.setAttribute('class', 'btn btn-secondary')
+                button_like.setAttribute('class', 'btn btn-secondary m-3')
               }
             })
             .catch(error => { console.log(error) })
@@ -538,7 +538,7 @@ function following_display(username, page) {
   function get_publication_of_user3(username, page) {
     // function for getting publication of following users
 
-    fetch(`/following?page=${page}`)
+    fetch(`/following?page=${page}&per_page=${publication_per_page}`)
       .then(response => response.json())
       .then(data => {
         console.log(data.publications, data.meta);
@@ -547,7 +547,7 @@ function following_display(username, page) {
         total_pages = data.meta.total_pages;
         const total_publications = data.meta.total_publications;
 
-        if (total_publications < max_publication_on_page  ) {
+        if (total_publications < publication_per_page  ) {
           document.querySelector('#following_page_previous').style.display = 'none';
           document.querySelector('#following_page_next').style.display = 'none';
           document.querySelector('#following_page_page').style.display = 'none';
@@ -567,30 +567,30 @@ function following_display(username, page) {
 
         data.publications.forEach(publication => {
           const element = document.createElement('div');
-          element.setAttribute('class', 'card-body text-dark bg-light mb-3 rounded-top');
+          element.setAttribute('class', 'card-body text-dark bg-white mb-3 rounded-top border border-primary');
 
           element.style.border = '1px solid';
           element.style.padding = "5px";
           element.style.marginBottom = "10px";
 
           const publication_id = publication.id
-          const publication_user = `<strong> ${publication.user} </strong> <hr>`;
-          const publication_body = `${publication.body} <hr>`;
-          const publication_timestamp = `<small> ${publication.timestamp} </small> <br>`;
+          const publication_user = `<strong> ${publication.user} </strong> `;
+          const publication_body = `${publication.body} `;
+          const publication_timestamp = `<small> ${publication.timestamp} </small> `;
 
-          element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp}`;
+          element.innerHTML = `${publication_user} <hr> ${publication_body} <hr> ${publication_timestamp} <br>`;
           document.querySelector('#filtred_element_view').append(element);
 
           if (publication.user == username) {
             const button_edit = document.createElement('button');
-            button_edit.setAttribute('class', 'btn btn-secondary');
+            button_edit.setAttribute('class', 'btn btn-secondary m-3');
             button_edit.setAttribute('class', 'button_edit');
             button_edit.innerHTML = 'Edit';
             element.appendChild(button_edit);
           }
 
           const button_like = document.createElement('button');
-          button_like.setAttribute('class', 'btn btn-secondary')
+          button_like.setAttribute('class', 'btn btn-secondary m-3')
           button_like.setAttribute('class', 'button_like');
           element.appendChild(button_like)
 
@@ -611,9 +611,9 @@ function following_display(username, page) {
               like_text = `Like: ${result.number_likes}`
               button_like.innerHTML = like_text
               if (result.like_exists == 1) {
-                button_like.setAttribute('class', 'btn btn-primary')
+                button_like.setAttribute('class', 'btn btn-primary m-3')
               }
-              else { button_like.setAttribute('class', 'btn btn-secondary') }
+              else { button_like.setAttribute('class', 'btn btn-secondary m-3') }
             })
           }
 
@@ -640,10 +640,10 @@ function following_display(username, page) {
               like_text = `Like: ${result.number_likes}`
               button_like.innerHTML = like_text
               if (result.message == 'Like is created succesfully') {
-                button_like.setAttribute('class', 'btn btn-primary')
+                button_like.setAttribute('class', 'btn btn-primary m-3')
               }
               else {
-                button_like.setAttribute('class', 'btn btn-secondary')
+                button_like.setAttribute('class', 'btn btn-secondary m-3')
               }
             })
             .catch(error => { console.log(error) })

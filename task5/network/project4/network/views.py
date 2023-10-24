@@ -18,7 +18,7 @@ def index(request):
 @csrf_exempt
 @login_required
 def like(request):
-    # function for adding/removing like and counting them by publication 
+    # function for adding/removing like and counting them by publication
     if request.method == 'POST':
         data = json.loads(request.body)
         publication_like = data.get("body", "")
@@ -50,7 +50,7 @@ def following(request):
     # function for presenting publications of followed users
     page_number = int(request.GET.get('page'))
     publication_per_page = int(request.GET.get('per_page', 3))
-    publication_per_page = 3
+    # publication_per_page = 10
     is_followed_users = []
     follower = request.user
     follows = Follow.objects.filter(follower=follower)
@@ -104,7 +104,6 @@ def compose(request):
         return JsonResponse({"error": "Method should be POST"}, status=404)
 
 @csrf_exempt
-@login_required
 def represent(request, tab):
     # function for presenting all publications and certain user's publication, and counting follows/following
     if request.method == 'PUT':
@@ -117,8 +116,8 @@ def represent(request, tab):
             return JsonResponse({"number_follows":number_follows, "number_following":number_following})
     if request.method == 'GET':
         page_number = int(request.GET.get('page'))
-        # publication_per_page = int(request.GET.get('per_page', 3))
-        publication_per_page = 3
+        publication_per_page = int(request.GET.get('per_page', 3))
+        # publication_per_page = 10
         if tab == "all":
             publications = Publication.objects.all().order_by("-timestamp")
             paginator = Paginator(publications, publication_per_page)
@@ -133,11 +132,8 @@ def represent(request, tab):
                     'total_publications': paginator.count,
                 },
             })
-
-        # if tab == "all":
-        #     publications = Publication.objects.all()
-
         elif tab != "all":
+            publication_per_page = int(request.GET.get('per_page', 3))
             user = User.objects.get(username=tab)
             user = user.id       
             publications = Publication.objects.filter(user=user)
