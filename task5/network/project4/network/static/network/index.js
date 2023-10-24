@@ -1,9 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   const base_page = 1;
-    // all_posts_display('all');
-  
-
   const current_user = document.querySelector('#compose-user').value;
   console.log(current_user);
   document.querySelector('#user-page').addEventListener('click', () => user_page_display(`${current_user}`, page=base_page));
@@ -157,6 +154,7 @@ function user_page_display(username, page) {
           if (publication.user == username) {
             const button_edit = document.createElement('button');
             button_edit.setAttribute('class', 'btn btn-secondary');
+            button_edit.setAttribute('class', 'button_edit');
             button_edit.innerHTML = 'Edit';
             element.appendChild(button_edit);
           }
@@ -236,13 +234,13 @@ function all_posts_display(username, page, current_user) {
   document.querySelector('#all-posts-view').style.display = 'block';
   document.querySelector('#following-view').style.display = 'none';
   document.querySelector('#all_element_view').innerHTML = "";
-  // get_publication_of_user(username)
   get_publication_of_user1(username, page, current_user);
 
 
   document.querySelector('#compose-form').onsubmit = () => {compose_publication();
     return false;
   }
+  
     
   function compose_publication() {
   // function for composing publication
@@ -258,12 +256,12 @@ function all_posts_display(username, page, current_user) {
     .then(result => {console.log(result)})
     .catch(error => {console.log(error)})
     document.querySelector('#compose-body').value = "";
-    // all_posts_display('all', page=base_page)
   }
   
   document.querySelector('#next').addEventListener('click', () => {load_next(returned_page)})
 
   function load_next(returned_page) {
+    // function for loading next page
     document.querySelector('#all_element_view').innerHTML = '';
     get_publication_of_user1(username='all', page=returned_page+1, current_user)
   }
@@ -271,6 +269,7 @@ function all_posts_display(username, page, current_user) {
   document.querySelector('#previous').addEventListener('click', () => {load_previous(returned_page)})
 
   function load_previous(returned_page) {
+    // function for loading previous page
     document.querySelector('#all_element_view').innerHTML = '';
     get_publication_of_user1(username='all', page=returned_page-1, current_user)
   }
@@ -284,6 +283,7 @@ function all_posts_display(username, page, current_user) {
       .then(data => {
         console.log(data.publications, data.meta);
 
+        // block to disale buttons if thre isn't next page
         returned_page = data.meta.returned_page;
         total_pages = data.meta.total_pages;
 
@@ -299,7 +299,9 @@ function all_posts_display(username, page, current_user) {
       
         document.querySelector('#page').innerHTML = returned_page;
 
+        
        data.publications.forEach(publication => {
+        //function for displaying all publication from promise
           const element = document.createElement('div');
           element.setAttribute('class', 'card-body text-dark bg-light mb-3 rounded-top');
 
@@ -309,29 +311,79 @@ function all_posts_display(username, page, current_user) {
 
           const publication_id = publication.id
           const publication_user = `<strong> ${publication.user} </strong> <hr>`;
-          const publication_body = `${publication.body} <hr>`;
+          let publication_body = `${publication.body} <hr>`;
           const publication_timestamp = `<small> ${publication.timestamp} </small> <br>`;
 
           element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp}` ;
           document.querySelector('#all_element_view').append(element);
 
-          console.log(current_user);
-          if (publication.user == current_user) {
-            const button_edit = document.createElement('button');
-            button_edit.setAttribute('class', 'btn btn-secondary');
-            button_edit.innerHTML = 'Edit';
+          function edit_publication() {
+            //function for eding the publication
+            form_compose = document.createElement('textarea');
+            form_compose.setAttribute('class', 'form-control');
+            form_compose.innerHTML = publication_body;
+            element.appendChild(form_compose);
+            const button_save = document.createElement('button');
+            button_save.setAttribute('id', 'batton_save');
+            button_save.setAttribute('class', 'btn btn-primary mt-2');
+            button_save.innerHTML = 'Save';
+            element.appendChild(button_save);
+
+            
+            element.querySelector('#batton_save').addEventListener('click', () => {
+              save_publication();
+            })
+
+            function save_publication() {
+              // function for saving edited publication on database
+              fetch(`/compose`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                body: form_compose.value,
+                publication_id: `${publication_id}`
+              })
+            })
+            .then(response => response.json())
+            .then(result => {
+              console.log(result)
+            })
+            .catch(error => { console.log(error) })
+
+            element.removeChild(form_compose);
+            element.removeChild(button_save);
+
+            publication_body = form_compose.value;
+            element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp}`;
             element.appendChild(button_edit);
+            element.appendChild(button_like);
+            return false;
+
+            }
+
           }
-  
+
+          const button_edit = document.createElement('button');
+          if (publication.user == current_user) {
+            button_edit.setAttribute('class', 'btn btn-secondary m-3');
+            button_edit.innerHTML = 'Edit';
+            button_edit.setAttribute('id', 'button_edit');
+            element.appendChild(button_edit);
+
+            element.querySelector('#button_edit').addEventListener('click', () => {
+              edit_publication();
+            })
+          }
+
           const button_like = document.createElement('button');
           button_like.setAttribute('class', 'btn btn-secondary');
           button_like.setAttribute('class', 'button_like');
-          element.appendChild(button_like)
-
+          element.appendChild(button_like);
 
           count_like()
 
           function count_like() {
+            // function for counting the likes of publication
             fetch(`/like`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
@@ -360,6 +412,8 @@ function all_posts_display(username, page, current_user) {
           })
 
           function add_remove_like() {
+            // function for adding/removing the like by user
+            alert(`${publication_id}`);
             fetch(`/like`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -385,7 +439,7 @@ function all_posts_display(username, page, current_user) {
 
         })
 
-      })
+    })
       .catch(error => {
         console.log(error);
       })
@@ -457,6 +511,7 @@ function following_display(username, page) {
           if (publication.user == username) {
             const button_edit = document.createElement('button');
             button_edit.setAttribute('class', 'btn btn-secondary');
+            button_edit.setAttribute('class', 'button_edit');
             button_edit.innerHTML = 'Edit';
             element.appendChild(button_edit);
           }
