@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const base_page = 1;
   const current_user = document.querySelector('#compose-user').value;
+  publication_per_page = 10;
+  max_publication_on_page = 10;
   console.log(current_user);
   document.querySelector('#user-page').addEventListener('click', () => user_page_display(`${current_user}`, page=base_page, current_user));
   document.querySelector('#all-posts').addEventListener('click', () => all_posts_display(username = 'all', page=base_page, current_user));
@@ -120,6 +122,13 @@ function user_page_display(username, page, current_user) {
 
         returned_page_user = data.meta.returned_page;
         total_pages = data.meta.total_pages;
+        const total_publications = data.meta.total_publications;
+
+        if (total_publications < max_publication_on_page  ) {
+          document.querySelector('#user_page_previous').style.display = 'none';
+          document.querySelector('#user_page_next').style.display = 'none';
+          document.querySelector('#user_page_page').style.display = 'none';
+        }
 
         document.querySelector('#user_page_previous').disabled = false;
         if (returned_page_user == 1) {
@@ -132,6 +141,7 @@ function user_page_display(username, page, current_user) {
         }
       
         document.querySelector('#user_page_page').innerHTML = returned_page_user;
+      
 
        data.publications.forEach(publication => {
           const element = document.createElement('div');
@@ -202,6 +212,7 @@ function user_page_display(username, page, current_user) {
             element.appendChild(button_edit);
 
             element.querySelector('#button_edit').addEventListener('click', () => {
+              element.innerHTML = `${publication_user} ${publication_timestamp}`;
               edit_publication();
             })
           }
@@ -333,6 +344,13 @@ function all_posts_display(username, page, current_user) {
         // block to disable buttons if thre isn't next page
         returned_page = data.meta.returned_page;
         total_pages = data.meta.total_pages;
+        const total_publications = data.meta.total_publications;
+
+        if (total_publications < max_publication_on_page  ) {
+          document.querySelector('#previous').style.display = 'none';
+          document.querySelector('#next').style.display = 'none';
+          document.querySelector('#page').style.display = 'none';
+        }
 
         document.querySelector('#previous').disabled = false;
         if (returned_page == 1) {
@@ -345,7 +363,6 @@ function all_posts_display(username, page, current_user) {
         }
       
         document.querySelector('#page').innerHTML = returned_page;
-
         
        data.publications.forEach(publication => {
         //function for displaying all publication from promise
@@ -418,7 +435,9 @@ function all_posts_display(username, page, current_user) {
             element.appendChild(button_edit);
 
             element.querySelector('#button_edit').addEventListener('click', () => {
+              element.innerHTML = `${publication_user}  ${publication_timestamp}`;
               edit_publication();
+              
             })
           }
 
@@ -526,6 +545,13 @@ function following_display(username, page) {
 
         following_returned_page = data.meta.returned_page;
         total_pages = data.meta.total_pages;
+        const total_publications = data.meta.total_publications;
+
+        if (total_publications < max_publication_on_page  ) {
+          document.querySelector('#following_page_previous').style.display = 'none';
+          document.querySelector('#following_page_next').style.display = 'none';
+          document.querySelector('#following_page_page').style.display = 'none';
+        }
 
         document.querySelector('#following_page_previous').disabled = false;
         if (following_returned_page == 1) {
