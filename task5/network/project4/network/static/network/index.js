@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const base_page = 1;
   const current_user = document.querySelector('#compose-user').value;
   console.log(current_user);
-  document.querySelector('#user-page').addEventListener('click', () => user_page_display(`${current_user}`, page=base_page));
+  document.querySelector('#user-page').addEventListener('click', () => user_page_display(`${current_user}`, page=base_page, current_user));
   document.querySelector('#all-posts').addEventListener('click', () => all_posts_display(username = 'all', page=base_page, current_user));
   document.querySelector('#following').addEventListener('click', () => following_display(`${current_user}`, page=base_page));
   all_posts_display('all', base_page, current_user);
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
 })
 
-function user_page_display(username, page) {
+function user_page_display(username, page, current_user) {
   document.querySelector('#user-page-view').style.display = 'block';
   document.querySelector('#all-posts-view').style.display = 'none';
   document.querySelector('#following-view').style.display = 'none';
@@ -21,8 +21,7 @@ function user_page_display(username, page) {
 
   check_follow(username);
   get_follows_following(username);
-  // get_publication_of_user(username);
-  get_publication_of_user2(username, page);
+  get_publication_of_user2(username, page, current_user);
  
 
   document.querySelector('#follow_form').onsubmit = () => {
@@ -111,9 +110,9 @@ function user_page_display(username, page) {
     get_publication_of_user2(username=username, page=returned_page_user-1);
   }
 
-  function get_publication_of_user2(username, page) {
+  function get_publication_of_user2(username, page, current_user) {
     // function for getting publication
-
+    console.log(current_user);
     fetch(`/${username}?page=${page}`)
       .then(response => response.json())
       .then(data => {
@@ -144,19 +143,67 @@ function user_page_display(username, page) {
 
           const publication_id = publication.id
           const publication_user = `<strong> ${publication.user} </strong> <hr>`;
-          const publication_body = `${publication.body} <hr>`;
+          let publication_body = `${publication.body} <hr>`;
           const publication_timestamp = `<small> ${publication.timestamp} </small> <br>`;
 
           element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp}`;
           document.querySelector('#user-page-view-posts').append(element);
 
-          
-          if (publication.user == username) {
-            const button_edit = document.createElement('button');
-            button_edit.setAttribute('class', 'btn btn-secondary');
-            button_edit.setAttribute('class', 'button_edit');
-            button_edit.innerHTML = 'Edit';
+          function edit_publication() {
+            //function for eding the publication
+            form_compose = document.createElement('textarea');
+            form_compose.setAttribute('class', 'form-control');
+            form_compose.innerHTML = publication_body;
+            element.appendChild(form_compose);
+            const button_save = document.createElement('button');
+            button_save.setAttribute('id', 'batton_save');
+            button_save.setAttribute('class', 'btn btn-primary mt-2');
+            button_save.innerHTML = 'Save';
+            element.appendChild(button_save);
+
+            element.querySelector('#batton_save').addEventListener('click', () => {
+              save_publication();
+            })
+
+            function save_publication() {
+              // function for saving edited publication on database
+              fetch(`/compose`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                body: form_compose.value,
+                publication_id: `${publication_id}`
+              })
+            })
+            .then(response => response.json())
+            .then(result => {
+              console.log(result)
+            })
+            .catch(error => { console.log(error) })
+
+            element.removeChild(form_compose);
+            element.removeChild(button_save);
+
+            publication_body = form_compose.value;
+            element.innerHTML = `${publication_user} ${publication_body} ${publication_timestamp}`;
             element.appendChild(button_edit);
+            element.appendChild(button_like);
+            return false;
+
+            }
+
+          }
+
+          const button_edit = document.createElement('button');
+          if (publication.user == current_user) {
+            button_edit.setAttribute('class', 'btn btn-secondary m-3');
+            button_edit.innerHTML = 'Edit';
+            button_edit.setAttribute('id', 'button_edit');
+            element.appendChild(button_edit);
+
+            element.querySelector('#button_edit').addEventListener('click', () => {
+              edit_publication();
+            })
           }
 
           const button_like = document.createElement('button');
@@ -283,7 +330,7 @@ function all_posts_display(username, page, current_user) {
       .then(data => {
         console.log(data.publications, data.meta);
 
-        // block to disale buttons if thre isn't next page
+        // block to disable buttons if thre isn't next page
         returned_page = data.meta.returned_page;
         total_pages = data.meta.total_pages;
 
