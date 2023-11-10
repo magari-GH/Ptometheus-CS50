@@ -7,7 +7,7 @@
         <h1>home</h1>
         <div class="row">
 
-            <div class="col-sm-3 mb-3 mb-sm-0">
+            <div class="col-sm-3 mb-3 mb-sm-0 p-3">
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title">Balance</h5>
@@ -17,7 +17,7 @@
               </div>
             </div>
 
-            <div class="col-sm-3">
+            <div class="col-sm-3 p-3">
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title">Monthly income</h5>
@@ -27,7 +27,7 @@
               </div>
             </div>
 
-            <div class="col-sm-3">
+            <div class="col-sm-3 p-3">
                 <div class="card">
                   <div class="card-body">
                     <h5 class="card-title">Monthly expense</h5>
@@ -37,40 +37,33 @@
                 </div>
             </div>
 
-            <div class="col-sm-3">
-                <div class="card">
-                  <div class="card-body">
-                    <h5 class="card-title">Add transaction</h5>
-                    <!-- <p class="card-text">300 $</p> -->
-                    <button class="btn btn-primary" id="add_transaction_button">Add</button>
-                  </div>
-                </div>
-            </div>
         </div>
 
+        <button class="btn btn-primary" id="add_transaction_button">Add transaction</button>
         <form id="form_transaction">
             <div class="input-group border p-2 mt-2">
-                <select class="form-control">
+                <select id="transaction_type_value" class="form-control">
                     <option selected>Transaction</option>
-                    <option value="1">Income</option>
-                    <option value="2">Expense</option>
+                    <option value="Income">Income</option>
+                    <option value="Expense">Expense</option>
                 </select>
                 <input hidden disabled class="form-control" value={{user.username}}>
-                <input class="form-control" type="text" placeholder="Category">
-                <input class="form-control" type="text" placeholder="Title of transaction">
-                <input class="form-control" type="number" step="0.01" value="0.00" placeholder="0.00">
-                <select class="form-control">
+                <input id="transaction_category_value" class="form-control" type="text" placeholder="Category">
+                <input id="transaction_title_value" class="form-control" type="text" placeholder="Title of transaction">
+                <input id="transaction_amount_value" class="form-control" type="number" step="0.01" value="0.00" placeholder="0.00">
+                <select id="transaction_currency_value" class="form-control">
                     <option selected>Currency</option>
-                    <option value="1">USD</option>
-                    <option value="2">EUR</option>
-                    <option value="3">UAH</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="UAH">UAH</option>
                 </select>
-                <select class="form-control">
+                <select id="transaction_account_value" class="form-control">
                     <option selected>Select account</option>
                     <option value="1">Create from list of account</option>
                     <option value="2">Create from list of account</option>
                 </select>
-                <input class="form-control" type="date"> <input class="btn btn-primary" type="submit" value="Save">
+                <input id="transaction_save_end_exit" class="btn btn-primary" type="button" value="Save transaction">
+                <input id="transaction_save_end_add" class="btn btn-primary" type="button" value="Add new">
             </div>
         </form>
 
@@ -96,34 +89,25 @@
 
     <div class="container" id="accounts">
         <h1>accounts</h1>
+
         <div id="account_container" class="row">
-
-            <div class="col-sm-3 mb-3 mb-sm-0 p-3">
-              <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title">Balance</h5>
-                  <p class="card-text"> 500 $</p>
-                </div>
-              </div>
-            </div>
-
         </div>
 
-        
         <button class="btn btn-primary" id="add_account_button">Add account</button>
 
         <form id="form_account">
           <div class="input-group border p-2 mt-2">
               <input hidden disabled class="form-control" value={{user.username}}>
-              <input class="form-control" type="text" placeholder="Title of account">
-              <input class="form-control" type="number" step="0.01" value="0.00" placeholder="0.00">
-              <select class="form-control">
+              <input id="account_title_value" class="form-control" type="text" placeholder="Title of account">
+              <input id="account_amount_value" class="form-control" type="number" step="0.01" value="0.00" placeholder="0.00">
+              <select id="account_currency_value" class="form-control">
                   <option selected>Currency</option>
-                  <option value="1">USD</option>
-                  <option value="2">EUR</option>
-                  <option value="3">UAH</option>
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="UAH">UAH</option>
               </select>
-              <input class="btn btn-primary" type="submit" value="Save">
+              <input id="account_save_end_exit" class="btn btn-primary" type="button" value="Save account">
+              <input id="account_save_end_add" class="btn btn-primary" type="button" value="Add new">
           </div>
         </form>
 

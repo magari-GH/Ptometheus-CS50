@@ -27,6 +27,53 @@ function add_transaction () {
     document.querySelector('#form_transaction').style.display = 'block';
 };
 
+document.querySelector('#transaction_save_end_exit').onclick = () => {
+    create_transaction();
+    document.querySelector('#transaction_type_value').value = "";
+    document.querySelector('#transaction_category_value').value = "";
+    document.querySelector('#transaction_title_value').value = "";
+    document.querySelector('#transaction_amount_value').value = "";
+    document.querySelector('#transaction_currency_value').value = "";
+    document.querySelector('#transaction_account_value').value = "";
+    document.querySelector('#transaction_account_value').value  = "";
+    document.querySelector('#form_transaction').style.display = 'none';
+    return false
+};
+
+document.querySelector('#transaction_save_end_add').addEventListener('click', () => {
+    create_transaction();
+    document.querySelector('#transaction_type_value').value = "";
+    document.querySelector('#transaction_category_value').value = "";
+    document.querySelector('#transaction_title_value').value = "";
+    document.querySelector('#transaction_amount_value').value = "";
+    document.querySelector('#transaction_currency_value').value = "";
+    document.querySelector('#transaction_account_value').value = "";
+    document.querySelector('#transaction_account_value').value  = "";
+    return false
+});
+
+function create_transaction() {
+    fetch('/create_transaction', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            type: document.querySelector('#transaction_type_value').value,
+            category: document.querySelector('#transaction_category_value').value,
+            title: document.querySelector('#transaction_title_value').value,
+            amount: document.querySelector('#transaction_amount_value').value,
+            currency: document.querySelector('#transaction_currency_value').value,
+            account: document.querySelector('#transaction_account_value').value,
+            date: document.querySelector('#transaction_account_value').value,
+        })
+    })
+        .then(response => response.json())
+        .then(result => {console.log(result)})
+        .catch(error => {console.log(error)})
+        return false
+};
+
+
+
 function history_display() {
     document.querySelector('#home').style.display = 'none';
     document.querySelector('#history').style.display = 'block';
@@ -36,7 +83,6 @@ function history_display() {
     document.querySelector('#setting').style.display = 'none';
     get_transactions_history();
     document.querySelector('#transaction_container_history').innerHTML ='';
-
 };
 
 function get_transactions_history() {
@@ -65,7 +111,7 @@ function get_transactions_history() {
         })
         .catch(error => {console.log(error)})
         return false
-}
+};
 
 
 function accounts_display() {
@@ -78,11 +124,49 @@ function accounts_display() {
     document.querySelector('#form_account').style.display = 'none';
     document.querySelector('#add_account_button').addEventListener('click', () => add_account());
     get_account();
+};
 
 function add_account() {
     document.querySelector('#form_account').style.display = 'block';
-    };
 };
+
+document.querySelector('#account_save_end_exit').onclick = (event) => {
+    create_account();
+    document.querySelector('#form_account').style.display = 'none';
+    event.stopPropagation();
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    return false;
+};
+
+document.querySelector('#account_save_end_add').onclick = (event) => {
+    create_account();
+    document.querySelector('#account_title_value').value = '';
+    document.querySelector('#account_amount_value').value = '';
+    document.querySelector('#account_currency_value').value = '';
+    event.stopPropagation();
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    return false;
+};
+
+
+function create_account() {
+    fetch('/create_account', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            title: document.querySelector('#account_title_value').value,
+            amount: document.querySelector('#account_amount_value').value,
+            currency: document.querySelector('#account_currency_value').value,
+        })
+    })
+        .then(response => response.json())
+        .then(result => {console.log(result)})
+        .catch(error => {console.log(error)})
+        return false
+};
+
 
 function get_account() {
     fetch(`/get_account`)
@@ -153,7 +237,7 @@ function get_account() {
         })
         .catch(error => {console.log(error)})
         return false
-}
+};
 
 function setting_display() {
     document.querySelector('#home').style.display = 'none';

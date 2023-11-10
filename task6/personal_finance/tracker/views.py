@@ -65,6 +65,45 @@ def get_transactions_history(request):
     else: 
         return JsonResponse({"error" : "Invalid request"}, status=400)
 
+@csrf_exempt
+def create_transaction(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            user = request.user
+            type = data.get("type", "")
+            category = data.get("category", "")
+            title = data.get("title", "")
+            amount = data.get("amount", "")
+            currency = data.get("currency", "")
+            account = data.get("account", "")
+            date = data.get("date", "")
+            transaction = Transaction(user=user, type=type, category=category, title=title, amount=amount, currency=currency, date=date)
+            transaction.save()
+        except AttributeError:
+            return JsonResponse({"error": "AttributeError catched"}, status=500)
+        return JsonResponse({'message': "Transaction is created"}, status=201)
+    else:
+        return JsonResponse({"error": "Method have to be POST"}, status=404)
+    
+    
+@csrf_exempt
+def create_account(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            user = request.user
+            title = data.get("title", "")
+            amount = data.get("amount", "")
+            currency = data.get("currency", "")
+            account = Account(user=user, title=title, amount=amount, currency=currency)
+            account.save()
+        except AttributeError:
+            return JsonResponse({"error": "AttributeError catched"}, status=500)
+        return JsonResponse({'message': "Account is created"}, status=201)
+    else:
+        return JsonResponse({"error": "Method have to be POST"}, status=404)
+
 
 def register(request):
     # function for user registration 
