@@ -58,7 +58,7 @@
                 <input hidden disabled class="form-control" value={{user.username}}>
                 <input class="form-control" type="text" placeholder="Category">
                 <input class="form-control" type="text" placeholder="Title of transaction">
-                <input class="form-control" type="number" step="0.01" value="=0.00" placeholder="0.00">
+                <input class="form-control" type="number" step="0.01" value="0.00" placeholder="0.00">
                 <select class="form-control">
                     <option selected>Currency</option>
                     <option value="1">USD</option>
@@ -75,7 +75,7 @@
         </form>
 
         <div class="card mt-3">
-            <div class="card-body">
+            <div id="transaction_container_home" class="card-body">
                 <h5 class="card-title">History of the transaction</h5>
                 <p class="card-text">transaction 1</p>
             </div>
@@ -86,7 +86,7 @@
     <div class="container" id="history">
         <h1>history</h1>
         <div class="card mt-3">
-            <div class="card-body">
+            <div id="transaction_container_history" class="card-body">
                 <h5 class="card-title">History of the transaction</h5>
                 <p class="card-text">transaction 1</p>
             </div>
@@ -96,48 +96,37 @@
 
     <div class="container" id="accounts">
         <h1>accounts</h1>
-        <div class="row">
+        <div id="account_container" class="row">
 
-            <div class="col-sm-3 mb-3 mb-sm-0">
+            <div class="col-sm-3 mb-3 mb-sm-0 p-3">
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title">Balance</h5>
                   <p class="card-text"> 500 $</p>
-                  <button class="btn btn-primary" id="accounts_button">Go to accounts</button>
                 </div>
               </div>
             </div>
 
-            <div class="col-sm-3">
-              <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title">Credit card</h5>
-                  <p class="card-text">400 $</p>
-                  <button class="btn btn-primary" id="incomes_button">Go to incomes</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-sm-3">
-                <div class="card">
-                  <div class="card-body">
-                    <h5 class="card-title">Cash</h5>
-                    <p class="card-text">300 $</p>
-                    <button class="btn btn-primary" id="expenses_button">Go to expenses</button>
-                  </div>
-                </div>
-            </div>
-
-            <div class="col-sm-3">
-                <div class="card">
-                  <div class="card-body">
-                    <h5 class="card-title">Add account</h5>
-                    <!-- <p class="card-text">300 $</p> -->
-                    <button class="btn btn-primary" id="add_transaction_button">Add</button>
-                  </div>
-                </div>
-            </div>
         </div>
+
+        
+        <button class="btn btn-primary" id="add_account_button">Add account</button>
+
+        <form id="form_account">
+          <div class="input-group border p-2 mt-2">
+              <input hidden disabled class="form-control" value={{user.username}}>
+              <input class="form-control" type="text" placeholder="Title of account">
+              <input class="form-control" type="number" step="0.01" value="0.00" placeholder="0.00">
+              <select class="form-control">
+                  <option selected>Currency</option>
+                  <option value="1">USD</option>
+                  <option value="2">EUR</option>
+                  <option value="3">UAH</option>
+              </select>
+              <input class="btn btn-primary" type="submit" value="Save">
+          </div>
+        </form>
+
     </div>
 
     <div class="container" id="incomes">
@@ -265,7 +254,6 @@
             </div>
 
             <div class="form-group">
-                <input disabled class="form-control " type="password" name="password" placeholder={{user.password}}>
                 <input class="btn btn-primary mt-3" type="button" value="Edit">    
             </div>
             

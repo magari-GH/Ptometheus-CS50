@@ -20,11 +20,12 @@ class Transaction(models.Model):
         return {
             "id": self.id,
             "user": self.user.username,
+            "type": self.type,
             "category": self.category,
             "title": self.title,
             "amount": self.amount,
             "currency": self.currency,
-            "date": self.date.strtime("%b %d %Y, %I:%M %p"),
+            "date": self.date.strftime("%b %d %Y, %I:%M %p"),
 
         }
     
