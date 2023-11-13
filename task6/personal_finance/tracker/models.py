@@ -13,7 +13,8 @@ class Transaction(models.Model):
     title = models.CharField(max_length=64)
     amount = models.FloatField(default=0)
     currency = models.CharField(max_length=3)
-    date = models.DateTimeField(auto_now_add=True)
+    account = models.CharField(max_length=64)
+    date = models.DateTimeField()
 
     def serialize(self):
         # function serializing model's fuilds for use by JSON
@@ -25,12 +26,13 @@ class Transaction(models.Model):
             "title": self.title,
             "amount": self.amount,
             "currency": self.currency,
+            "account": self.account,
             "date": self.date.strftime("%b %d %Y, %I:%M %p"),
 
         }
     
     def __str__(self):
-        return f'Transaction {self.id} of the {self.user} category {self.category} title {self.title} in the {self.amount} {self.currency} on {self.date}'
+        return f'Transaction {self.id} of the {self.user} category {self.category} title {self.title} in the {self.amount} {self.currency} account {self.account} on {self.date}'
 
 
 class Account(models.Model):

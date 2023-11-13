@@ -21,7 +21,24 @@ function home_display() {
     document.querySelector('#add_transaction_button').addEventListener('click', () => add_transaction());
     get_transactions_history();
     document.querySelector('#transaction_container_home').innerHTML = '';
+    document.querySelector('#transaction_account_value').innerHTML = '';
+    get_account();
+    get_monthly_info();
+
 };
+
+function get_monthly_info() {
+    fetch(`get_monthly_info`)
+    .then(response => response.json())
+    .then(data => {
+        console.log(data.monthly_income);
+        console.log(data.monthly_expense);
+        const monthly_income = data.monthly_income.amount__sum;
+        const monthly_expense = data.monthly_expense.amount__sum;
+        document.querySelector('#monthly_income_home').innerHTML = `${monthly_income} EUR`;
+        document.querySelector('#monthly_expense_home').innerHTML = `${monthly_expense} EUR`;
+    })
+}
 
 function add_transaction () {
     document.querySelector('#form_transaction').style.display = 'block';
@@ -63,7 +80,8 @@ function create_transaction() {
             amount: document.querySelector('#transaction_amount_value').value,
             currency: document.querySelector('#transaction_currency_value').value,
             account: document.querySelector('#transaction_account_value').value,
-            date: document.querySelector('#transaction_account_value').value,
+            // date: document.querySelector('input[type="datetime-local"]').value,
+            date: document.querySelector('#transaction_date_value').value,
         })
     })
         .then(response => response.json())
@@ -85,8 +103,11 @@ function history_display() {
     document.querySelector('#transaction_container_history').innerHTML ='';
 };
 
+
+
+
 function get_transactions_history() {
-    fetch(`/get_transactions_history?page=1&per_page=3`)
+    fetch(`/get_transactions_history?page=1&per_page=10`)
         .then(response => response.json())
         .then(data => {
             console.log(data.transactions);
@@ -101,10 +122,11 @@ function get_transactions_history() {
             const transaction_title = transaction.title;
             const transaction_amount = transaction.amount;
             const transaction_currency = transaction.currency;
+            const transaction_account = transaction.account;
             const transaction_date = transaction.date;
 
-            transaction_unit_home.innerHTML = `${transaction_type}  Category: ${transaction_category}  Title: ${transaction_title}  ${transaction_amount}  ${transaction_currency}  ${transaction_date}`;
-            transaction_unit_history.innerHTML = `${transaction_type}  Category: ${transaction_category}  Title: ${transaction_title}  ${transaction_amount}  ${transaction_currency}  ${transaction_date}`;
+            transaction_unit_home.innerHTML = `${transaction_type}  Category: ${transaction_category}  Title: ${transaction_title}  ${transaction_amount}  ${transaction_currency} ${transaction_date}`;
+            transaction_unit_history.innerHTML = `${transaction_type}  Category: ${transaction_category}  Title: ${transaction_title}  ${transaction_amount}  ${transaction_currency} ${transaction_date}`;
             document.querySelector('#transaction_container_home').append(transaction_unit_home);
             document.querySelector('#transaction_container_history').append(transaction_unit_history);
         })
@@ -122,8 +144,10 @@ function accounts_display() {
     document.querySelector('#expenses').style.display = 'none';
     document.querySelector('#setting').style.display = 'none';
     document.querySelector('#form_account').style.display = 'none';
+    document.querySelector('#account_container').innerHTML = '';
     document.querySelector('#add_account_button').addEventListener('click', () => add_account());
     get_account();
+    
 };
 
 function add_account() {
@@ -232,6 +256,10 @@ function get_account() {
             card_first.appendChild(card);
 
             document.querySelector('#account_container').append(card_first);
+
+            const account_option = document.createElement('option');
+            account_option.innerHTML = `${account_title}`;
+            document.querySelector('#transaction_account_value').append(account_option);
 
         })
         })

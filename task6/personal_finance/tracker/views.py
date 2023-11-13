@@ -1,3 +1,4 @@
+import datetime
 from django.shortcuts import render
 import json
 from django.contrib.auth.decorators import login_required
@@ -46,7 +47,7 @@ def get_transactions_history(request):
 
         # block for pagination
         page_namber = int(request.GET.get('page'))
-        transactions_per_page = int(request.GET.get('per_page', 3))
+        transactions_per_page = int(request.GET.get('per_page', 10))
         paginator = Paginator(transactions, transactions_per_page)
         page_obj = paginator.get_page(page_namber)
 
@@ -64,6 +65,20 @@ def get_transactions_history(request):
         })
     else: 
         return JsonResponse({"error" : "Invalid request"}, status=400)
+    
+def get_monthly_info(request):
+    if request.method == "GET":
+        user = request.user
+        today = datetime.date.today()
+        current_month = today.month
+        monthly_income = Transaction.objects.filter(date__month = current_month, type="Income").aggregate(Sum('amount'))
+        monthly_expense = Transaction.objects.filter(date__month = current_month, type="Expense").aggregate(Sum('amount'))
+        return JsonResponse({
+            'monthly_income': monthly_income,
+            'monthly_expense': monthly_expense,
+        })
+    else: 
+        return JsonResponse({"error" : "Invalid request"}, status=400)
 
 @csrf_exempt
 def create_transaction(request):
@@ -78,7 +93,13 @@ def create_transaction(request):
             currency = data.get("currency", "")
             account = data.get("account", "")
             date = data.get("date", "")
-            transaction = Transaction(user=user, type=type, category=category, title=title, amount=amount, currency=currency, date=date)
+            account = Account.objects.get(title=account)
+            if type == "Income":
+                account.amount = account.amount + int(amount)
+            else:
+                account.amount = account.amount - int(amount)
+            account.save()
+            transaction = Transaction(user=user, type=type, category=category, title=title, amount=amount, currency=currency, account=account, date=date)
             transaction.save()
         except AttributeError:
             return JsonResponse({"error": "AttributeError catched"}, status=500)
