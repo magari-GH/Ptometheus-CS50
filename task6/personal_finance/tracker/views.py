@@ -43,8 +43,14 @@ def get_transactions_history(request):
     # fucnction for represent history of the transactions
     if request.method == "GET":
         user = request.user
-        transactions = Transaction.objects.filter(user=user)
-
+        filter = request.GET.get('filter')
+        if filter == 'income':
+            transactions = Transaction.objects.filter(user=user, type="Income")
+        elif filter == 'expense':
+            transactions = Transaction.objects.filter(user=user, type="Expense")
+        else:
+            transactions = Transaction.objects.filter(user=user)
+        
         # block for pagination
         page_namber = int(request.GET.get('page'))
         transactions_per_page = int(request.GET.get('per_page', 10))
@@ -66,16 +72,32 @@ def get_transactions_history(request):
     else: 
         return JsonResponse({"error" : "Invalid request"}, status=400)
     
-def get_monthly_info(request):
+def get_transaction_info(request):
     if request.method == "GET":
         user = request.user
         today = datetime.date.today()
         current_month = today.month
+        current_year = today.year
         monthly_income = Transaction.objects.filter(date__month = current_month, type="Income").aggregate(Sum('amount'))
         monthly_expense = Transaction.objects.filter(date__month = current_month, type="Expense").aggregate(Sum('amount'))
+        previous_monthly_income = Transaction.objects.filter(date__month = current_month-1, type="Income").aggregate(Sum('amount'))
+        previous_monthly_expense = Transaction.objects.filter(date__month = current_month-1, type="Expense").aggregate(Sum('amount'))
+        yearly_income = Transaction.objects.filter(date__year = current_year, type="Income").aggregate(Sum('amount'))
+        yearly_expense = Transaction.objects.filter(date__year = current_year, type="Expense").aggregate(Sum('amount'))
+        month_namber = Transaction.objects.dates("date", "month").count()
+        total_income = Transaction.objects.filter(type="Income").aggregate(Sum('amount'))
+        total_expense = Transaction.objects.filter(type="Expense").aggregate(Sum('amount'))
+        avarage_income = total_income['amount__sum']/int(month_namber)
+        avarage_expense = total_expense['amount__sum']/int(month_namber)
         return JsonResponse({
             'monthly_income': monthly_income,
             'monthly_expense': monthly_expense,
+            'previous_monthly_income': previous_monthly_income,
+            'previous_monthly_expense': previous_monthly_expense,
+            'yearly_income': yearly_income,
+            'yearly_expense': yearly_expense,
+            'avarage_income': avarage_income,
+            'avarage_expense': avarage_expense,
         })
     else: 
         return JsonResponse({"error" : "Invalid request"}, status=400)

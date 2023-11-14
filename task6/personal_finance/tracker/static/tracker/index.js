@@ -19,25 +19,51 @@ function home_display() {
     document.querySelector('#setting').style.display = 'none';
     document.querySelector('#form_transaction').style.display = 'none';
     document.querySelector('#add_transaction_button').addEventListener('click', () => add_transaction());
-    get_transactions_history();
+    get_transactions_history(tag = 'all');
     document.querySelector('#transaction_container_home').innerHTML = '';
     document.querySelector('#transaction_account_value').innerHTML = '';
     get_account();
-    get_monthly_info();
+    get_transaction_info();
 
 };
 
-function get_monthly_info() {
-    fetch(`get_monthly_info`)
+function get_transaction_info() {
+    fetch(`/get_transaction_info`)
     .then(response => response.json())
     .then(data => {
         console.log(data.monthly_income);
         console.log(data.monthly_expense);
+        console.log(data.previous_monthly_income);
+        console.log(data.previous_monthly_expense);
+        console.log(data.yearly_income);
+        console.log(data.yearly_expense);
+        console.log(data.avarage_income);
+        console.log(data.avarage_expense);
+
         const monthly_income = data.monthly_income.amount__sum;
         const monthly_expense = data.monthly_expense.amount__sum;
+        const previous_monthly_income = data.previous_monthly_income.amount__sum;
+        const previous_monthly_expense = data.previous_monthly_expense.amount__sum;
+        const yearly_income = data.yearly_income.amount__sum;
+        const yearly_expense = data.yearly_expense.amount__sum;
+        const avarage_income = data.avarage_income;
+        const avarage_expense = data.avarage_expense
+
         document.querySelector('#monthly_income_home').innerHTML = `${monthly_income} EUR`;
+        document.querySelector('#monthly_income_incomes').innerHTML = `${monthly_income} EUR`;
         document.querySelector('#monthly_expense_home').innerHTML = `${monthly_expense} EUR`;
-    })
+        document.querySelector('#monthly_expense_expenses').innerHTML = `${monthly_expense} EUR`;
+
+        document.querySelector('#previous_monthly_income_incomes').innerHTML = `${previous_monthly_income} EUR`;
+        document.querySelector('#previous_monthly_expense_expenses').innerHTML = `${previous_monthly_expense} EUR`;
+       
+        document.querySelector('#yearly_income_incomes').innerHTML = `${yearly_income} EUR`;
+        document.querySelector('#yearly_expense_expenses').innerHTML = `${yearly_expense} EUR`;
+
+        document.querySelector('#avarage_income_incomes').innerHTML = `${avarage_income} EUR`;
+        document.querySelector('#avarage_expense_expenses').innerHTML = `${avarage_expense} EUR`;
+
+    })  
 }
 
 function add_transaction () {
@@ -99,15 +125,15 @@ function history_display() {
     document.querySelector('#incomes').style.display = 'none';
     document.querySelector('#expenses').style.display = 'none';
     document.querySelector('#setting').style.display = 'none';
-    get_transactions_history();
+    get_transactions_history(tag = 'all');
     document.querySelector('#transaction_container_history').innerHTML ='';
 };
 
 
 
 
-function get_transactions_history() {
-    fetch(`/get_transactions_history?page=1&per_page=10`)
+function get_transactions_history(tag) {
+    fetch(`/get_transactions_history?page=1&per_page=10&filter=${tag}`)
         .then(response => response.json())
         .then(data => {
             console.log(data.transactions);
@@ -115,6 +141,8 @@ function get_transactions_history() {
         data.transactions.forEach(transaction => {
             const transaction_unit_home = document.createElement('p');
             const transaction_unit_history = document.createElement('p');
+            const transaction_unit_incomes = document.createElement('p');
+            const transaction_unit_expenses = document.createElement('p');
             const transaction_id = transaction.id;
             const transaction_user = transaction.user;
             const transaction_type = transaction.type == 'Income' ? `${transaction.type.fontcolor('green')}` :  `${transaction.type.fontcolor('red')}`;
@@ -127,8 +155,12 @@ function get_transactions_history() {
 
             transaction_unit_home.innerHTML = `${transaction_type}  Category: ${transaction_category}  Title: ${transaction_title}  ${transaction_amount}  ${transaction_currency} ${transaction_date}`;
             transaction_unit_history.innerHTML = `${transaction_type}  Category: ${transaction_category}  Title: ${transaction_title}  ${transaction_amount}  ${transaction_currency} ${transaction_date}`;
+            transaction_unit_incomes.innerHTML = `${transaction_type}  Category: ${transaction_category}  Title: ${transaction_title}  ${transaction_amount}  ${transaction_currency} ${transaction_date}`;
+            transaction_unit_expenses.innerHTML = `${transaction_type}  Category: ${transaction_category}  Title: ${transaction_title}  ${transaction_amount}  ${transaction_currency} ${transaction_date}`;
             document.querySelector('#transaction_container_home').append(transaction_unit_home);
             document.querySelector('#transaction_container_history').append(transaction_unit_history);
+            document.querySelector('#transaction_container_incomes').append(transaction_unit_incomes);
+            document.querySelector('#transaction_container_expenses').append(transaction_unit_expenses);
         })
         })
         .catch(error => {console.log(error)})
@@ -213,11 +245,10 @@ function get_account() {
             const card_title = document.createElement('h5');
             card_title.setAttribute('class', 'card-title');
             card_title.innerText = "Balance:";
-            // card_title.innerText = `${account_title}`;
 
             const card_text = document.createElement('p');
             card_text.setAttribute('class', 'card-text');
-            card_text.innerText = `${sum_total}`;
+            card_text.innerText = `${sum_total} EUR`;
 
             card_body.appendChild(card_title);
             card_body.appendChild(card_text);
@@ -283,6 +314,8 @@ function incomes_display() {
     document.querySelector('#incomes').style.display = 'block';
     document.querySelector('#expenses').style.display = 'none';
     document.querySelector('#setting').style.display = 'none';
+    document.querySelector('#transaction_container_incomes').innerHTML = '';
+    get_transactions_history(tag='income')
 };
 
 function expenses_display() {
@@ -292,4 +325,6 @@ function expenses_display() {
     document.querySelector('#incomes').style.display = 'none';
     document.querySelector('#expenses').style.display = 'block';
     document.querySelector('#setting').style.display = 'none';
+    document.querySelector('#transaction_container_expenses').innerHTML = '';
+    get_transactions_history(tag='expense')
 };

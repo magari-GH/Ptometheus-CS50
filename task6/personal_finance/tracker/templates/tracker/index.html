@@ -5,7 +5,7 @@
 
     <div class="container" id="home">
         <h1>home</h1>
-        <div class="row">
+        <div id="account_container_home" class="row">
 
             <div class="col-sm-3 mb-3 mb-sm-0 p-3">
               <div class="card">
@@ -146,7 +146,7 @@
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title">Mounthly income</h5>
-                  <p class="card-text"> 500 $</p>
+                  <p class="card-text" id="monthly_income_incomes"> 500 $</p>
                   <button class="btn btn-primary" id="accounts_button">Go to accounts</button>
                 </div>
               </div>
@@ -156,7 +156,7 @@
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title">Previous income</h5>
-                  <p class="card-text">400 $</p>
+                  <p class="card-text" id="previous_monthly_income_incomes"></p>
                   <button class="btn btn-primary" id="incomes_button">Go to incomes</button>
                 </div>
               </div>
@@ -166,7 +166,7 @@
                 <div class="card">
                   <div class="card-body">
                     <h5 class="card-title">Avarage income</h5>
-                    <p class="card-text">300 $</p>
+                    <p class="card-text" id="avarage_income_incomes"></p>
                     <button class="btn btn-primary" id="expenses_button">Go to expenses</button>
                   </div>
                 </div>
@@ -176,7 +176,7 @@
                 <div class="card">
                   <div class="card-body">
                     <h5 class="card-title">Yearly income</h5>
-                    <p class="card-text">300 $</p>
+                    <p class="card-text" id="yearly_income_incomes"></p>
                     <button class="btn btn-primary" id="add_transaction_button">Add</button>
                   </div>
                 </div>
@@ -184,7 +184,7 @@
         </div>
 
         <div class="card mt-3">
-            <div class="card-body">
+            <div id="transaction_container_incomes" class="card-body" >
                 <h5 class="card-title">History of the income transaction</h5>
                 <p class="card-text">transaction 1</p>
             </div>
@@ -201,7 +201,7 @@
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title">Mounthly expense</h5>
-                  <p class="card-text"> 500 $</p>
+                  <p class="card-text" id="monthly_expense_expenses"></p>
                   <button class="btn btn-primary" id="accounts_button">Go to accounts</button>
                 </div>
               </div>
@@ -211,7 +211,7 @@
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title">Previous expense</h5>
-                  <p class="card-text">400 $</p>
+                  <p class="card-text" id="previous_monthly_expense_expenses"></p>
                   <button class="btn btn-primary" id="incomes_button">Go to incomes</button>
                 </div>
               </div>
@@ -221,7 +221,7 @@
                 <div class="card">
                   <div class="card-body">
                     <h5 class="card-title">Avarage expense</h5>
-                    <p class="card-text">300 $</p>
+                    <p class="card-text" id="avarage_expense_expenses"></p>
                     <button class="btn btn-primary" id="expenses_button">Go to expenses</button>
                   </div>
                 </div>
@@ -231,7 +231,7 @@
                 <div class="card">
                   <div class="card-body">
                     <h5 class="card-title">Yearly expense</h5>
-                    <p class="card-text">300 $</p>
+                    <p class="card-text" id="yearly_expense_expenses"></p>
                     <button class="btn btn-primary" id="add_transaction_button">Add</button>
                   </div>
                 </div>
@@ -239,7 +239,7 @@
         </div>
 
         <div class="card mt-3">
-            <div class="card-body">
+            <div id="transaction_container_expenses" class="card-body">
                 <h5 class="card-title">History of the expense transaction</h5>
                 <p class="card-text">transaction 1</p>
             </div>

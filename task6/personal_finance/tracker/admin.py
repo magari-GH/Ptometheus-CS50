@@ -10,7 +10,7 @@ class UserAdmin(admin.ModelAdmin):
 
 
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'category', 'title', 'amount', 'currency', 'account', 'date')
+    list_display = ('id', 'user', 'type', 'category', 'title', 'amount', 'currency', 'account', 'date')
 
 
 class AccountAdmin(admin.ModelAdmin):
