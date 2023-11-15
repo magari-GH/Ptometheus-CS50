@@ -117,7 +117,6 @@ function create_transaction() {
 };
 
 
-
 function history_display() {
     document.querySelector('#home').style.display = 'none';
     document.querySelector('#history').style.display = 'block';
@@ -128,8 +127,6 @@ function history_display() {
     get_transactions_history(tag = 'all');
     document.querySelector('#transaction_container_history').innerHTML ='';
 };
-
-
 
 
 function get_transactions_history(tag) {
@@ -146,7 +143,33 @@ function get_transactions_history(tag) {
             const transaction_id = transaction.id;
             const transaction_user = transaction.user;
             const transaction_type = transaction.type == 'Income' ? `${transaction.type.fontcolor('green')}` :  `${transaction.type.fontcolor('red')}`;
-            const transaction_category = transaction.category;
+            // const transaction_category = transaction.category == 'Housing' ? `${transaction.category.fontcolor('green')}` :  `${transaction.category.fontcolor('red')}`;
+            var transaction_category;
+            if (transaction.category=='Housing') {transaction_category = transaction.category.fontcolor('Aqua')}
+            else if (transaction.category=='Food') {transaction_category = transaction.category.fontcolor('Aquamarine')}
+            else if (transaction.category=='Fun') {transaction_category = transaction.category.fontcolor('Blue')}
+            else if (transaction.category=='Child expenses') {transaction_category = transaction.category.fontcolor('BlueViolet')}
+            else if (transaction.category=='Insurance') {transaction_category = transaction.category.fontcolor('Brown')}
+            else if (transaction.category=='Healthcare') {transaction_category = transaction.category.fontcolor('CadetBlue')}
+            else if (transaction.category=='Utilities') {transaction_category = transaction.category.fontcolor('Chartreuse')}
+            else if (transaction.category=='Personal Care') {transaction_category = transaction.category.fontcolor('Chocolate')}
+            else if (transaction.category=='Taxes') {transaction_category = transaction.category.fontcolor('Coral')}
+            else if (transaction.category=='Transportation') {transaction_category = transaction.category.fontcolor('CornflowerBlue')}
+            else if (transaction.category=='Gifts') {transaction_category = transaction.category.fontcolor('Crimson')}
+            else if (transaction.category=='Education') {transaction_category = transaction.category.fontcolor('Cyan')}
+            else if (transaction.category=='Income') {transaction_category = transaction.category.fontcolor('DarkGoldenRod')}
+            else if (transaction.category=='Giving') {transaction_category = transaction.category.fontcolor('DarkGreen')}
+            else if (transaction.category=='Home Supplies') {transaction_category = transaction.category.fontcolor('DarkOliveGreen')}
+            else if (transaction.category=='Consumer Debt') {transaction_category = transaction.category.fontcolor('DarkRed')}
+            else if (transaction.category=='Clothing') {transaction_category = transaction.category.fontcolor('DarkOrange')}
+            else if (transaction.category=='Savings') {transaction_category = transaction.category.fontcolor('DeepPink')}
+            else if (transaction.category=='Miscellaneous') {transaction_category = transaction.category.fontcolor('Fuchsia')}
+            else if (transaction.category=='Pets') {transaction_category = transaction.category.fontcolor('GreenYellow')}
+            else if (transaction.category=='Services') {transaction_category = transaction.category.fontcolor('IndianRed')}
+            else if (transaction.category=='Memberships') {transaction_category = transaction.category.fontcolor('Maroon')}
+
+           
+
             const transaction_title = transaction.title;
             const transaction_amount = transaction.amount;
             const transaction_currency = transaction.currency;
@@ -256,6 +279,7 @@ function get_account() {
             card_first.appendChild(card);
 
             document.querySelector('#account_container').append(card_first);
+            document.querySelector('#balance_home').innerText = `${sum_total} EUR`;
 
         data.accounts.forEach(account => {
 
@@ -315,8 +339,11 @@ function incomes_display() {
     document.querySelector('#expenses').style.display = 'none';
     document.querySelector('#setting').style.display = 'none';
     document.querySelector('#transaction_container_incomes').innerHTML = '';
-    get_transactions_history(tag='income')
+    get_transactions_history(tag='income');
+    chart_income();
 };
+
+
 
 function expenses_display() {
     document.querySelector('#home').style.display = 'none';
@@ -326,5 +353,6 @@ function expenses_display() {
     document.querySelector('#expenses').style.display = 'block';
     document.querySelector('#setting').style.display = 'none';
     document.querySelector('#transaction_container_expenses').innerHTML = '';
-    get_transactions_history(tag='expense')
+    get_transactions_history(tag='expense');
+    chart_expense();
 };

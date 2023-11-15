@@ -146,7 +146,54 @@ def create_account(request):
         return JsonResponse({'message': "Account is created"}, status=201)
     else:
         return JsonResponse({"error": "Method have to be POST"}, status=404)
+    
 
+def chart_income(request):
+    labels = []
+    data = []
+    user =request.user
+    transactions = Transaction.objects.order_by('date').filter(user=user, type='Income')
+    for transaction in transactions:
+        labels.append(transaction.date.strftime('%d/%m/%y'))
+        data.append(transaction.amount)
+
+    return JsonResponse(
+        data = {
+            'labels': labels,
+            'data': data,
+        })
+
+
+def chart_expense(request):
+    labels = []
+    data = []
+    user =request.user
+    transactions = Transaction.objects.order_by('date').filter(user=user, type='Expense')
+    for transaction in transactions:
+        labels.append(transaction.date.strftime('%d/%m/%y'))
+        data.append(transaction.amount)
+
+    return JsonResponse(
+        data = {
+            'labels': labels,
+            'data': data,
+        })
+
+
+def chart_account(request):
+    labels = []
+    data = []
+    user =request.user
+    accounts = Account.objects.order_by('id').filter(user=user)
+    for account in accounts:
+        labels.append(account.title)
+        data.append(account.amount)
+
+    return JsonResponse(
+        data = {
+            'labels': labels,
+            'data': data,
+        })
 
 def register(request):
     # function for user registration 
@@ -184,7 +231,6 @@ def login_view(request):
 
         # authentication
         user = authenticate(request, username=username, password=password)
-
         # check if successful
         if user is not None:
             login(request, user)

@@ -4,6 +4,9 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name="index"),
+    path("chart_income", views.chart_income, name="chart_income"),
+    path("chart_expense", views.chart_expense, name="chart_expense"),
+    path("chart_account",views.chart_account, name="chart_account"),
     path("get_transaction_info", views.get_transaction_info, name="get_monthly_info"),
     path("get_transactions_history", views.get_transactions_history, name="get_transactions_history"),
     path("get_account", views.get_account, name="get_account"),
