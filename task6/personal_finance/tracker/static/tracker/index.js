@@ -1,5 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+    page = 1;
+    transactions_per_page = 5;
+
     home_display();
     document.querySelector('#home_button').addEventListener('click', () => home_display());
     document.querySelector('#history_button').addEventListener('click', () => history_display());
@@ -17,9 +20,12 @@ function home_display() {
     document.querySelector('#incomes').style.display = 'none';
     document.querySelector('#expenses').style.display = 'none';
     document.querySelector('#setting').style.display = 'none';
+
     document.querySelector('#form_transaction').style.display = 'none';
     document.querySelector('#add_transaction_button').addEventListener('click', () => add_transaction());
+
     get_transactions_history(tag = 'all');
+
     document.querySelector('#transaction_container_home').innerHTML = '';
     document.querySelector('#transaction_account_value').innerHTML = '';
     get_account();
@@ -28,6 +34,7 @@ function home_display() {
 };
 
 function get_transaction_info() {
+    document.querySelector('#transaction_account_value').innerHTML = '';
     fetch(`/get_transaction_info`)
     .then(response => response.json())
     .then(data => {
@@ -113,7 +120,12 @@ function create_transaction() {
         .then(response => response.json())
         .then(result => {console.log(result)})
         .catch(error => {console.log(error)})
+        // call function for reload the history of transactions
+        get_transactions_history(tag = 'all');
+        get_account();
+        get_transaction_info();
         return false
+        
 };
 
 
@@ -124,17 +136,63 @@ function history_display() {
     document.querySelector('#incomes').style.display = 'none';
     document.querySelector('#expenses').style.display = 'none';
     document.querySelector('#setting').style.display = 'none';
+
     get_transactions_history(tag = 'all');
     document.querySelector('#transaction_container_history').innerHTML ='';
 };
 
 
+
+document.querySelector('#next').addEventListener('click', () => {load_next(returned_page)})
+
+function load_next(returned_page) {
+  // function for loading next page
+  document.querySelector('#transaction_container_history').innerHTML = '';
+  get_transactions_history(page=returned_page+1)
+}
+
+document.querySelector('#previous').addEventListener('click', () => {load_previous(returned_page)})
+
+function load_previous(returned_page) {
+  // function for loading previous page
+  document.querySelector('#transaction_container_history').innerHTML = '';
+  get_transactions_history(page=returned_page-1)
+}
+
+
+
 function get_transactions_history(tag) {
-    fetch(`/get_transactions_history?page=1&per_page=10&filter=${tag}`)
+    document.querySelector('#transaction_container_home').innerHTML = '';
+    fetch(`/get_transactions_history?page=${page}&per_page=${transactions_per_page}&filter=${tag}`)
         .then(response => response.json())
         .then(data => {
             console.log(data.transactions);
             console.log(data.pagination);
+
+            returned_page = data.pagination.returned_page;
+            toal_pages = data.pagination.total_pages;
+            const total_tranactions = data.pagination.total_transations;
+
+            
+        if (total_tranactions < transactions_per_page ) {
+            document.querySelector('#previous').style.display = 'none';
+            document.querySelector('#next').style.display = 'none';
+            document.querySelector('#page').style.display = 'none';
+          }
+  
+          document.querySelector('#previous').disabled = false;
+          if (returned_page == 1) {
+            document.querySelector('#previous').disabled = true;
+          }
+        
+          document.querySelector('#next').disabled = false;
+          if (returned_page == data.pagination.total_pages) {
+            document.querySelector('#next').disabled = true;
+          }
+        
+          document.querySelector('#page').innerHTML = returned_page;
+
+
         data.transactions.forEach(transaction => {
             const transaction_unit_home = document.createElement('p');
             const transaction_unit_history = document.createElement('p');
@@ -168,7 +226,6 @@ function get_transactions_history(tag) {
             else if (transaction.category=='Services') {transaction_category = transaction.category.fontcolor('IndianRed')}
             else if (transaction.category=='Memberships') {transaction_category = transaction.category.fontcolor('Maroon')}
 
-           
 
             const transaction_title = transaction.title;
             const transaction_amount = transaction.amount;
@@ -202,6 +259,7 @@ function accounts_display() {
     document.querySelector('#account_container').innerHTML = '';
     document.querySelector('#add_account_button').addEventListener('click', () => add_account());
     get_account();
+    chart_account();
     
 };
 
@@ -338,8 +396,10 @@ function incomes_display() {
     document.querySelector('#incomes').style.display = 'block';
     document.querySelector('#expenses').style.display = 'none';
     document.querySelector('#setting').style.display = 'none';
+
     document.querySelector('#transaction_container_incomes').innerHTML = '';
     get_transactions_history(tag='income');
+
     chart_income();
 };
 
@@ -352,7 +412,9 @@ function expenses_display() {
     document.querySelector('#incomes').style.display = 'none';
     document.querySelector('#expenses').style.display = 'block';
     document.querySelector('#setting').style.display = 'none';
+
     document.querySelector('#transaction_container_expenses').innerHTML = '';
     get_transactions_history(tag='expense');
+
     chart_expense();
 };

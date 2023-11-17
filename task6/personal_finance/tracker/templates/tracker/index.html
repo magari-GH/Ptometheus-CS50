@@ -103,11 +103,16 @@
     <div class="container" id="history">
         <h1>history</h1>
         <div class="card mt-3">
-            <div id="transaction_container_history" class="card-body">
+            <div id="transaction_container_history" class="card-body" style="height: 400px;">
                 <h5 class="card-title">History of the transaction</h5>
                 <p class="card-text">transaction 1</p>
             </div>
         </div>
+        <div class="row justify-content-center" class="btn-group" role="group" aria-label="Basic example" >
+          <button class="btn btn-primary" id="previous" >Previous</button>
+          <button class="btn btn-primary" id="page" >Page</button>
+          <button class="btn btn-primary" id="next" >Next</button>
+      </div>
     </div>
 
 
@@ -145,7 +150,6 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
         <script>
-          chart_account()
 
           function chart_account() {
               fetch(`/chart_account`)
@@ -229,7 +233,7 @@
       
 
 
-        <div class="col" style="width: 100px;">
+        <div class="col" style="width: 100px; height: 300px;">
           <canvas id="myChart_incomes"></canvas>
         </div>
         
@@ -324,14 +328,13 @@
             </div>
         </div>
 
-        <div class="col" style="width: 100px;">
+        <div class="col" style="width: 100px; height: 300px;">
           <canvas id="myChart_expenses"></canvas>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
         <script>
-          chart_expense()
 
           function chart_expense() {
               fetch(`/chart_expense`)

@@ -45,15 +45,15 @@ def get_transactions_history(request):
         user = request.user
         filter = request.GET.get('filter')
         if filter == 'income':
-            transactions = Transaction.objects.filter(user=user, type="Income")
+            transactions = Transaction.objects.filter(user=user, type="Income").order_by('-date')
         elif filter == 'expense':
-            transactions = Transaction.objects.filter(user=user, type="Expense")
+            transactions = Transaction.objects.filter(user=user, type="Expense").order_by('-date')
         else:
-            transactions = Transaction.objects.filter(user=user)
+            transactions = Transaction.objects.filter(user=user).order_by('-date')
         
         # block for pagination
         page_namber = int(request.GET.get('page'))
-        transactions_per_page = int(request.GET.get('per_page', 10))
+        transactions_per_page = int(request.GET.get('per_page', 4))
         paginator = Paginator(transactions, transactions_per_page)
         page_obj = paginator.get_page(page_namber)
 
@@ -117,9 +117,9 @@ def create_transaction(request):
             date = data.get("date", "")
             account = Account.objects.get(title=account)
             if type == "Income":
-                account.amount = account.amount + int(amount)
+                account.amount = account.amount + float(amount)
             else:
-                account.amount = account.amount - int(amount)
+                account.amount = account.amount - float(amount)
             account.save()
             transaction = Transaction(user=user, type=type, category=category, title=title, amount=amount, currency=currency, account=account, date=date)
             transaction.save()
