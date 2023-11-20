@@ -61,12 +61,15 @@ def get_transactions_history(request):
     if request.method == "GET":
         user = request.user
         filter = request.GET.get('filter')
-        if filter == 'income':
+        if filter == 'Income':
             transactions = Transaction.objects.filter(user=user, type="Income").order_by('-date')
-        elif filter == 'expense':
+        elif filter == 'Expense':
             transactions = Transaction.objects.filter(user=user, type="Expense").order_by('-date')
-        else:
+        elif filter == 'all':
             transactions = Transaction.objects.filter(user=user).order_by('-date')
+        else:
+            category = Category.objects.get(title=filter)
+            transactions = Transaction.objects.filter(user=user, category=category).order_by('-date')
         
         # block for pagination
         page_namber = int(request.GET.get('page'))
@@ -126,7 +129,8 @@ def create_transaction(request):
             data = json.loads(request.body)
             user = request.user
             type = data.get("type", "")
-            category = data.get("category", "")
+            category_title = data.get("category", "")
+            category = Category.objects.get(title=category_title)
             title = data.get("title", "")
             amount = data.get("amount", "")
             currency = data.get("currency", "")

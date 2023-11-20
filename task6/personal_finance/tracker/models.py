@@ -7,9 +7,10 @@ class User(AbstractUser):
 
 
 class Transaction(models.Model):
-    user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="transactions")
+    user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="users")
     type = models.CharField(max_length=64)
-    category = models.CharField(max_length=64)
+    # category = models.CharField(max_length=64)
+    category = models.ForeignKey("Category", on_delete=models.CASCADE, related_name="categoties")
     title = models.CharField(max_length=64)
     amount = models.FloatField(default=0)
     currency = models.CharField(max_length=3)
@@ -22,7 +23,8 @@ class Transaction(models.Model):
             "id": self.id,
             "user": self.user.username,
             "type": self.type,
-            "category": self.category,
+            "category": self.category.title,
+            "color": self.category.color,
             "title": self.title,
             "amount": self.amount,
             "currency": self.currency,

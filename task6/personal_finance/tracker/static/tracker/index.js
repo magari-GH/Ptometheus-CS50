@@ -244,6 +244,11 @@ function load_previous(returned_page) {
 
 function get_transactions_history(tag) {
     document.querySelector('#transaction_container_home').innerHTML = '';
+    document.querySelector('#transaction_container_history').innerHTML = '';
+    document.querySelector('#transaction_container_incomes').innerHTML = '';
+    document.querySelector('#transaction_container_expenses').innerHTML = '';
+
+
     fetch(`/get_transactions_history?page=${page}&per_page=${transactions_per_page}&filter=${tag}`)
         .then(response => response.json())
         .then(data => {
@@ -282,51 +287,63 @@ function get_transactions_history(tag) {
             const transaction_id = transaction.id;
             const transaction_user = transaction.user;
             const transaction_type = transaction.type == 'Income' ? `${transaction.type.fontcolor('green')}` :  `${transaction.type.fontcolor('red')}`;
-            // const transaction_category = transaction.category == 'Housing' ? `${transaction.category.fontcolor('green')}` :  `${transaction.category.fontcolor('red')}`;
-            var transaction_category;
-            if (transaction.category=='Housing') {transaction_category = transaction.category.fontcolor('Aqua')}
-            else if (transaction.category=='Food') {transaction_category = transaction.category.fontcolor('Aquamarine')}
-            else if (transaction.category=='Fun') {transaction_category = transaction.category.fontcolor('Blue')}
-            else if (transaction.category=='Child expenses') {transaction_category = transaction.category.fontcolor('BlueViolet')}
-            else if (transaction.category=='Insurance') {transaction_category = transaction.category.fontcolor('Brown')}
-            else if (transaction.category=='Healthcare') {transaction_category = transaction.category.fontcolor('CadetBlue')}
-            else if (transaction.category=='Utilities') {transaction_category = transaction.category.fontcolor('Chartreuse')}
-            else if (transaction.category=='Personal Care') {transaction_category = transaction.category.fontcolor('Chocolate')}
-            else if (transaction.category=='Taxes') {transaction_category = transaction.category.fontcolor('Coral')}
-            else if (transaction.category=='Transportation') {transaction_category = transaction.category.fontcolor('CornflowerBlue')}
-            else if (transaction.category=='Gifts') {transaction_category = transaction.category.fontcolor('Crimson')}
-            else if (transaction.category=='Education') {transaction_category = transaction.category.fontcolor('Cyan')}
-            else if (transaction.category=='Income') {transaction_category = transaction.category.fontcolor('DarkGoldenRod')}
-            else if (transaction.category=='Giving') {transaction_category = transaction.category.fontcolor('DarkGreen')}
-            else if (transaction.category=='Home Supplies') {transaction_category = transaction.category.fontcolor('DarkOliveGreen')}
-            else if (transaction.category=='Consumer Debt') {transaction_category = transaction.category.fontcolor('DarkRed')}
-            else if (transaction.category=='Clothing') {transaction_category = transaction.category.fontcolor('DarkOrange')}
-            else if (transaction.category=='Savings') {transaction_category = transaction.category.fontcolor('DeepPink')}
-            else if (transaction.category=='Miscellaneous') {transaction_category = transaction.category.fontcolor('Fuchsia')}
-            else if (transaction.category=='Pets') {transaction_category = transaction.category.fontcolor('GreenYellow')}
-            else if (transaction.category=='Services') {transaction_category = transaction.category.fontcolor('IndianRed')}
-            else if (transaction.category=='Memberships') {transaction_category = transaction.category.fontcolor('Maroon')}
-
-
+            const transaction_category = transaction.category.fontcolor(`${transaction.color}`);
+            // const transaction_category = `<strong> ${transaction.category}</strong>`;
             const transaction_title = transaction.title;
             const transaction_amount = transaction.amount;
             const transaction_currency = transaction.currency;
             const transaction_account = transaction.account;
             const transaction_date = transaction.date;
+            // transaction_unit_home.innerHTML = `${transaction_type}  Category: ${transaction_category}  Title: ${transaction_title}  ${transaction_amount}  ${transaction_currency} ${transaction_date}`;
 
-            transaction_unit_home.innerHTML = `${transaction_type}  Category: ${transaction_category}  Title: ${transaction_title}  ${transaction_amount}  ${transaction_currency} ${transaction_date}`;
-            transaction_unit_history.innerHTML = `${transaction_type}  Category: ${transaction_category}  Title: ${transaction_title}  ${transaction_amount}  ${transaction_currency} ${transaction_date}`;
-            transaction_unit_incomes.innerHTML = `${transaction_type}  Category: ${transaction_category}  Title: ${transaction_title}  ${transaction_amount}  ${transaction_currency} ${transaction_date}`;
-            transaction_unit_expenses.innerHTML = `${transaction_type}  Category: ${transaction_category}  Title: ${transaction_title}  ${transaction_amount}  ${transaction_currency} ${transaction_date}`;
+            transaction_unit_home.innerHTML = `<b> ${transaction_type} </b>  Category: <strong> ${transaction_category} </strong>  Title: ${transaction_title}  ${transaction_amount}  ${transaction_currency} ${transaction_date}`;
+            transaction_unit_history.innerHTML = `<b> ${transaction_type} </b>  Category: <strong> ${transaction_category} </strong>  Title: ${transaction_title}  ${transaction_amount}  ${transaction_currency} ${transaction_date}`;
+            transaction_unit_incomes.innerHTML = `<b> ${transaction_type} </b> Category: <strong> ${transaction_category} </strong>  Title: ${transaction_title}  ${transaction_amount}  ${transaction_currency} ${transaction_date}`;
+            transaction_unit_expenses.innerHTML = `<b> ${transaction_type} </b> Category: <strong> ${transaction_category} </strong>  Title: ${transaction_title}  ${transaction_amount}  ${transaction_currency} ${transaction_date}`;
+            
             document.querySelector('#transaction_container_home').append(transaction_unit_home);
             document.querySelector('#transaction_container_history').append(transaction_unit_history);
-            document.querySelector('#transaction_container_incomes').append(transaction_unit_incomes);
+            document.querySelector('#transaction_container_incomes').append(transaction_unit_incomes);      
             document.querySelector('#transaction_container_expenses').append(transaction_unit_expenses);
+
+            transaction_unit_home.querySelector('strong').addEventListener('click', () => {
+                get_transactions_history(tag=`${transaction.category}`)
+            })
+
+            transaction_unit_history.querySelector('strong').addEventListener('click', () => {
+                get_transactions_history(tag=`${transaction.category}`)
+            })
+
+            transaction_unit_incomes.querySelector('strong').addEventListener('click', () => {
+                get_transactions_history(tag=`${transaction.category}`)
+            })
+
+            transaction_unit_expenses.querySelector('strong').addEventListener('click', () => {
+                get_transactions_history(tag=`${transaction.category}`)
+            })
+
+            transaction_unit_home.querySelector('b').addEventListener('click', () => {
+                get_transactions_history(tag=`${transaction.type}`)
+            })
+
+            transaction_unit_history.querySelector('b').addEventListener('click', () => {
+                get_transactions_history(tag=`${transaction.type}`)
+            })
+
+            // transaction_unit_incomes.querySelector('b').addEventListener('click', () => {
+            //     get_transactions_history(tag=`${transaction.type}`)
+            // })
+
+            // transaction_unit_expenses.querySelector('b').addEventListener('click', () => {
+            //     get_transactions_history(tag=`${transaction.type}`)
+            // })
+
         })
         })
         .catch(error => {console.log(error)})
         return false
 };
+
 
 
 function accounts_display() {
@@ -482,7 +499,7 @@ function incomes_display() {
     document.querySelector('#setting').style.display = 'none';
 
     document.querySelector('#transaction_container_incomes').innerHTML = '';
-    get_transactions_history(tag='income');
+    get_transactions_history(tag='Income');
 
     chart_income();
 };
@@ -498,7 +515,7 @@ function expenses_display() {
     document.querySelector('#setting').style.display = 'none';
 
     document.querySelector('#transaction_container_expenses').innerHTML = '';
-    get_transactions_history(tag='expense');
+    get_transactions_history(tag='Expense');
 
     chart_expense();
 };
