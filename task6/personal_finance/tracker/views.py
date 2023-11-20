@@ -8,7 +8,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-from .models import User, Transaction, Account
+from .models import User, Transaction, Account, Category
 from django.core.paginator import Paginator
 
 from django.db.models import Avg, Sum
@@ -34,6 +34,23 @@ def get_account(request):
             'accounts': serialised_accounts,
             'sum_total': sum_total,
             # 'curennsies': curennsies,
+        })
+    else: 
+        return JsonResponse({"error" : "Invalid request"}, status=400)
+
+
+def get_category(request):
+    # fucnction for represent accounts
+    if request.method == "GET":
+        user = request.user
+        type = request.GET.get('type')
+        if type == "all":
+            categories = Category.objects.filter(user=user)
+        else:
+            categories = Category.objects.filter(user=user, type=type)
+        serialised_categories = [category.serialize() for category in categories]
+        return JsonResponse({
+            'categories': serialised_categories,
         })
     else: 
         return JsonResponse({"error" : "Invalid request"}, status=400)
@@ -144,6 +161,24 @@ def create_account(request):
         except AttributeError:
             return JsonResponse({"error": "AttributeError catched"}, status=500)
         return JsonResponse({'message': "Account is created"}, status=201)
+    else:
+        return JsonResponse({"error": "Method have to be POST"}, status=404)
+    
+
+@csrf_exempt
+def create_category(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            user = request.user
+            title = data.get("title", "")
+            type = data.get("type", "")
+            color = data.get("color", "")
+            category = Category(user=user, title=title, type=type, color=color)
+            category.save()
+        except AttributeError:
+            return JsonResponse({"error": "AttributeError catched"}, status=500)
+        return JsonResponse({'message': "Category is created"}, status=201)
     else:
         return JsonResponse({"error": "Method have to be POST"}, status=404)
     

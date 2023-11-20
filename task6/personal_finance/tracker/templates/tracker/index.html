@@ -40,6 +40,8 @@
         </div>
 
         <button class="btn btn-primary" id="add_transaction_button">Add transaction</button>
+        <button class="btn btn-primary" id="add_category_button">Add category</button>
+
         <form id="form_transaction">
             <div class="input-group border p-2 mt-2">
                 <select id="transaction_type_value" class="form-control">
@@ -50,28 +52,6 @@
                 <input hidden disabled class="form-control" value={{user.username}}>
                 <select id="transaction_category_value" class="form-control">
                   <option selected>Category</option>
-                  <option id="Housing" value="Housing">Housing</option>
-                  <option value="Food">Food</option>
-                  <option value="Fun">Fun</option>
-                  <option value="Child expenses">Child expenses</option>
-                  <option value="Insurance">Insurance</option>
-                  <option value="Healthcare">Healthcare</option>
-                  <option value="Utilities">Utilities</option>
-                  <option value="Personal Care">Personal Care</option>
-                  <option value="Taxes">Taxes</option>
-                  <option value="Transportation">Transportation</option>
-                  <option value="Gifts">Gifts</option>
-                  <option value="Education">Education</option>
-                  <option value="Income">Income</option>
-                  <option value="Giving">Giving</option>
-                  <option value="Home Supplies">Home Supplies</option>
-                  <option value="Consumer Debt">Consumer Debt</option>
-                  <option value="Clothing">Clothing</option>
-                  <option value="Savings">Savings</option>
-                  <option value="Miscellaneous">Miscellaneous</option>
-                  <option value="Pets">Pets</option>
-                  <option value="Services">Services</option>
-                  <option value="Memberships">Memberships</option>
               </select>
                 <input id="transaction_title_value" class="form-control" type="text" placeholder="Title of transaction">
                 <input id="transaction_amount_value" class="form-control" type="number" step="0.01" value="0.00" placeholder="0.00">
@@ -90,6 +70,30 @@
             <input id="transaction_save_end_exit" class="btn btn-primary mt-3" type="button" value="Save transaction">
             <input id="transaction_save_end_add" class="btn btn-primary mt-3" type="button" value="Save and add new transaction">
         </form>
+
+
+
+        
+
+        <form id="form_category">
+          <div class="input-group border p-2 mt-2">
+            <input hidden disabled class="form-control" value={{user.username}}>
+            <input id="category_title_value" class="form-control" type="text" placeholder="Title of category">
+
+            <select id="category_type_value" class="form-control">
+              <option selected>Choose Type</option>
+              <option value="Income">Income</option>
+              <option value="Expense">Expense</option>
+            </select>
+            <label for="category_color_value" class="form-control">Color</label>
+            <input id="category_color_value" type="color" class="form-control">
+            
+          </div>
+            <br>
+            <input id="category_save_end_exit" class="btn btn-primary" type="button" value="Save category">
+            <input id="category_save_end_add" class="btn btn-primary" type="button" value="Add new">
+        </form>
+
 
         <div class="card mt-3">
             <div id="transaction_container_home" class="card-body">

@@ -22,7 +22,10 @@ function home_display() {
     document.querySelector('#setting').style.display = 'none';
 
     document.querySelector('#form_transaction').style.display = 'none';
+    document.querySelector('#form_category').style.display = 'none';
+
     document.querySelector('#add_transaction_button').addEventListener('click', () => add_transaction());
+    document.querySelector('#add_category_button').addEventListener('click', () => add_category());
 
     get_transactions_history(tag = 'all');
 
@@ -75,6 +78,13 @@ function get_transaction_info() {
 
 function add_transaction () {
     document.querySelector('#form_transaction').style.display = 'block';
+    document.querySelector('#form_category').style.display = 'none';
+    get_category(type="all");
+};
+
+function add_category() {
+    document.querySelector('#form_category').style.display = 'block';
+    document.querySelector('#form_transaction').style.display = 'none';
 };
 
 document.querySelector('#transaction_save_end_exit').onclick = () => {
@@ -102,6 +112,23 @@ document.querySelector('#transaction_save_end_add').addEventListener('click', ()
     return false
 });
 
+document.querySelector('#category_save_end_exit').onclick = () => {
+    create_category();
+    document.querySelector('#category_title_value').value = "";
+    document.querySelector('#category_type_value').value = "";
+    document.querySelector('#category_color_value').value = "#000000";
+    document.querySelector('#form_category').style.display = 'none';
+    return false
+};
+
+document.querySelector('#category_save_end_add').addEventListener('click', () => {
+    create_category();
+    document.querySelector('#category_title_value').value = "";
+    document.querySelector('#category_type_value').value = "";
+    document.querySelector('#category_color_value').value = "#000000";
+    return false
+});
+
 function create_transaction() {
     fetch('/create_transaction', {
         method: 'POST',
@@ -126,6 +153,60 @@ function create_transaction() {
         get_transaction_info();
         return false
         
+};
+
+function create_category() {
+    fetch('/create_category', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            title: document.querySelector('#category_title_value').value,
+            type: document.querySelector('#category_type_value').value,
+            color: document.querySelector('#category_color_value').value,
+        })
+    })
+        .then(response => response.json())
+        .then(result => {console.log(result)})
+        .catch(error => {console.log(error)})
+        // call function for reload the history of transactions
+
+        // create function to refresh list of category
+        return false
+        
+};
+document.querySelector('#transaction_type_value').addEventListener('change', () => {
+    const selected_type = document.querySelector('#transaction_type_value').value;
+    get_category(type=`${selected_type}`);
+})
+
+function get_category(type) {
+    const options = document.querySelectorAll('.transaction_category_select')
+    options.forEach(option  => {
+        option.remove()})
+
+    fetch(`/get_category?type=${type}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.categories);
+
+        data.categories.forEach(category => {
+
+            const category_id = category.id;
+            const category_user = category.user;
+            const category_title = category.title;
+            const category_type = category.type;
+            const category_color = category.color;
+
+            const category_option = document.createElement('option');
+            category_option.innerHTML = `${category_title}`;
+            category_option.style.color = `${category_color}`;
+            category_option.setAttribute('class', 'transaction_category_select')
+            document.querySelector('#transaction_category_value').append(category_option);
+
+        })
+        })
+        .catch(error => {console.log(error)})
+        return false
 };
 
 
@@ -289,6 +370,7 @@ document.querySelector('#account_save_end_add').onclick = (event) => {
 
 
 function create_account() {
+    document.querySelector('#account_container').innerHTML = '';
     fetch('/create_account', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -301,7 +383,9 @@ function create_account() {
         .then(response => response.json())
         .then(result => {console.log(result)})
         .catch(error => {console.log(error)})
+        get_account();
         return false
+        
 };
 
 
