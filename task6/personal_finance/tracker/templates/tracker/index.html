@@ -94,13 +94,63 @@
             <input id="category_save_end_add" class="btn btn-primary" type="button" value="Add new">
         </form>
 
-
-        <div class="card mt-3">
+        <div class="row m-0">
+          <div class="card mt-3" class="col">
             <div id="transaction_container_home" class="card-body">
                 <h5 class="card-title">History of the transaction</h5>
                 <p class="card-text">transaction 1</p>
             </div>
           </div>
+
+          <div class="col" style="width: 100px; height: 300px;">
+            <canvas id="myChart"></canvas>
+          </div>
+          <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+          <script>
+
+            function chart_income_and_expense() {
+                fetch(`/chart_income_and_expense`)
+                .then(response => response.json())
+                .then(data => {
+                        console.log(data);
+                    labels_income = data.labels
+                    data_income = data.data
+                    labels_expense = data.labels_expense
+                    data_expense = data.data_expense
+        
+              const ctx_ei = document.getElementById('myChart');
+            
+              var myChart_expenses_new = new Chart(ctx_ei, {
+                type: 'bar',
+                data: {
+                  labels: labels_income,
+                  datasets: [{
+                    label: 'income EUR per day',
+                    data: data_income,
+                    borderWidth: 1
+                  }, {
+                    label: 'expense EUR per day',
+                    data: data_expense,
+                    borderWidth: 1
+                  }]
+                },
+                
+                
+                options: {
+                  scales: {
+                    y: {
+                      beginAtZero: true
+                    }
+                  }
+                }
+              });
+              // myChart_expenses_new.destroy();
+            })
+            }
+          </script>
+
+
         </div>
     </div>
 
@@ -126,7 +176,9 @@
         <div id="account_container" class="row">
         </div>
 
-        <button class="btn btn-primary" id="add_account_button">Add account</button>
+        <button class="btn btn-primary m-1" id="add_account_button">Add account</button>
+        <button class="btn btn-primary m-1" id="edit_account_button">Edit account</button>
+        <button class="btn btn-primary m-1" id="delete_account_button">Delete account</button>
 
         <form id="form_account">
           <div class="input-group border p-2 mt-2">
@@ -142,6 +194,42 @@
               <input id="account_save_end_exit" class="btn btn-primary" type="button" value="Save account">
               <input id="account_save_end_add" class="btn btn-primary" type="button" value="Add new">
           </div>
+        </form>
+
+        <form id="edit_form_account">
+          <div class="input-group border p-2 mt-2">
+              <input hidden disabled class="form-control" value={{user.username}}>
+              <select id="account_edit_value" class="form-control">
+                <option selected>Select account</option>
+              </select>
+              <input id="edit_account_title_value" class="form-control" type="text" placeholder="NEW title of account">
+              <input id="edit_account_amount_value" class="form-control" type="number" step="0.01" value="0.00" placeholder="0.00">
+              <select id="edit_account_currency_value" class="form-control">
+                  <option selected>Currency</option>
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="UAH">UAH</option>
+              </select>
+              <input id="account_edit_end_save" class="btn btn-primary" type="button" value="Save account">
+          </div>
+        </form>
+
+        <form id="delete_form_account">
+          <div class="input-group border p-2 mt-2">
+              <input hidden disabled class="form-control" value={{user.username}}>
+              <select id="account_delete_value" class="form-control">
+                <option selected>Select account</option>
+              </select>
+              <input id="delete_account_title_value" class="form-control" type="text" placeholder="Title of account">
+              <input id="delete_account_amount_value" class="form-control" type="number" step="0.01" value="0.00" placeholder="0.00">
+              <select id="delete_account_currency_value" class="form-control">
+                  <option selected>Currency</option>
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="UAH">UAH</option>
+              </select>
+              <input id="account_delete" class="btn btn-primary" type="button" value="Delete">
+            </div>
         </form>
         
         <div class="row p-3">
@@ -163,9 +251,9 @@
                   labels_account = data.labels
                   data_account = data.data
       
-            const ctx = document.getElementById('myChart_accounts');
+            const ctx_a = document.getElementById('myChart_accounts');
           
-            new Chart(ctx, {
+            var myChart_accounts_new = new Chart(ctx_a, {
               type: 'pie',
               data: {
                 labels: labels_account,
@@ -177,9 +265,10 @@
               },
 
             });
-  
+            // myChart_accounts_new.destroy();
           })
           }
+          
         </script>
       </div>
     </div>
@@ -253,17 +342,19 @@
                 labels_income = data.labels
                 data_income = data.data
     
-          const ctx = document.getElementById('myChart_incomes');
+          const ctx_in = document.getElementById('myChart_incomes');
         
-          new Chart(ctx, {
+          var myChart_incomes_new = new Chart(ctx_in, {
             type: 'bar',
             data: {
               labels: labels_income,
               datasets: [{
                 label: 'EUR per day',
                 data: data_income,
-                borderWidth: 1
+                borderWidth: 1,
+
               }]
+              
             },
             options: {
               scales: {
@@ -272,8 +363,9 @@
                 }
               }
             }
+            
           });
-
+          // myChart_incomes_new.destroy();
         })
         }
         </script>
@@ -348,9 +440,9 @@
                   labels_expense = data.labels
                   data_expense = data.data
       
-            const ctx = document.getElementById('myChart_expenses');
+            const ctx_ex = document.getElementById('myChart_expenses');
           
-            new Chart(ctx, {
+            var myChart_expenses_new = new Chart(ctx_ex, {
               type: 'bar',
               data: {
                 labels: labels_expense,
@@ -368,7 +460,7 @@
                 }
               }
             });
-  
+            // myChart_expenses_new.destroy();
           })
           }
         </script>

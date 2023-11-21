@@ -37,6 +37,20 @@ def get_account(request):
         })
     else: 
         return JsonResponse({"error" : "Invalid request"}, status=400)
+    
+
+def get_account_detail(request):
+    if request.method == "GET":
+        user = request.user
+        account = request.GET.get('selected_account')
+        account = Account.objects.filter(user=user, title=account).first()
+        serialised_account = account.serialize()
+        return JsonResponse({
+            'account': serialised_account,
+        })
+    else: 
+        return JsonResponse({"error" : "Invalid request"}, status=400)
+    
 
 
 def get_category(request):
@@ -170,6 +184,42 @@ def create_account(request):
     
 
 @csrf_exempt
+def edit_account(request):
+    if request.method == "PUT":
+        try:
+            data = json.loads(request.body)
+            user = request.user
+            selected_account= data.get("selected_account", "")
+            title = data.get("title", "")
+            amount = data.get("amount", "")
+            currency = data.get("currency", "")
+            account = Account.objects.filter(user=user, title=selected_account).first()
+            account.title = title
+            account.amount = amount
+            account.currency = currency
+            account.save()
+        except AttributeError:
+            return JsonResponse({"error": "AttributeError catched"}, status=500)
+        return JsonResponse({'message': "Account is edited"}, status=201)
+    else:
+        return JsonResponse({"error": "Method have to be PUT"}, status=404)
+
+@csrf_exempt
+def delete_account(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            user = request.user
+            selected_account= data.get("selected_account", "")
+            account = Account.objects.filter(user=user, title=selected_account).first()
+            account.delete()
+        except AttributeError:
+            return JsonResponse({"error": "AttributeError catched"}, status=500)
+        return JsonResponse({'message': "Account is deleted"}, status=201)
+    else:
+        return JsonResponse({"error": "Method have to be PUT"}, status=404)
+
+@csrf_exempt
 def create_category(request):
     if request.method == "POST":
         try:
@@ -216,6 +266,31 @@ def chart_expense(request):
         data = {
             'labels': labels,
             'data': data,
+        })
+
+
+def chart_income_and_expense(request):
+    labels = []
+    data = []
+    labels_expense = []
+    data_expense = []
+    user =request.user
+    transactions = Transaction.objects.order_by('date').filter(user=user, type='Income')
+    for transaction in transactions:
+        labels.append(transaction.date.strftime('%d/%m/%y'))
+        data.append(transaction.amount)
+
+    transactions = Transaction.objects.order_by('date').filter(user=user, type='Expense')
+    for transaction in transactions:
+        labels_expense.append(transaction.date.strftime('%d/%m/%y'))
+        data_expense.append(transaction.amount)
+
+    return JsonResponse(
+        data = {
+            'labels': labels,
+            'data': data,
+            'labels_expense': labels_expense,
+            'data_expense': data_expense,
         })
 
 

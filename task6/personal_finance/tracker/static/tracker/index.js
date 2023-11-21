@@ -30,14 +30,15 @@ function home_display() {
     get_transactions_history(tag = 'all');
 
     document.querySelector('#transaction_container_home').innerHTML = '';
-    document.querySelector('#transaction_account_value').innerHTML = '';
+    // document.querySelector('#transaction_account_value').innerHTML = '';
     get_account();
     get_transaction_info();
+    chart_income_and_expense();
 
 };
 
 function get_transaction_info() {
-    document.querySelector('#transaction_account_value').innerHTML = '';
+    // document.querySelector('#transaction_account_value').innerHTML = '';
     fetch(`/get_transaction_info`)
     .then(response => response.json())
     .then(data => {
@@ -182,7 +183,8 @@ document.querySelector('#transaction_type_value').addEventListener('change', () 
 function get_category(type) {
     const options = document.querySelectorAll('.transaction_category_select')
     options.forEach(option  => {
-        option.remove()})
+        option.remove()
+    })
 
     fetch(`/get_category?type=${type}`)
         .then(response => response.json())
@@ -353,17 +355,39 @@ function accounts_display() {
     document.querySelector('#incomes').style.display = 'none';
     document.querySelector('#expenses').style.display = 'none';
     document.querySelector('#setting').style.display = 'none';
+    
     document.querySelector('#form_account').style.display = 'none';
+    document.querySelector('#edit_form_account').style.display = 'none';
+    document.querySelector('#delete_form_account').style.display = 'none';
+
     document.querySelector('#account_container').innerHTML = '';
-    document.querySelector('#add_account_button').addEventListener('click', () => add_account());
+    
     get_account();
     chart_account();
+    document.querySelector('#add_account_button').addEventListener('click', () => add_account());
+    document.querySelector('#edit_account_button').addEventListener('click', () => edit_account_display());
+    document.querySelector('#delete_account_button').addEventListener('click', () => delete_account_display());
     
 };
 
 function add_account() {
     document.querySelector('#form_account').style.display = 'block';
+    document.querySelector('#edit_form_account').style.display = 'none';
+    document.querySelector('#delete_form_account').style.display = 'none';
 };
+
+function edit_account_display() {
+    document.querySelector('#form_account').style.display = 'none';
+    document.querySelector('#edit_form_account').style.display = 'block';
+    document.querySelector('#delete_form_account').style.display = 'none';
+};
+
+function delete_account_display() {
+    document.querySelector('#form_account').style.display = 'none';
+    document.querySelector('#edit_form_account').style.display = 'none';
+    document.querySelector('#delete_form_account').style.display = 'block';
+};
+
 
 document.querySelector('#account_save_end_exit').onclick = (event) => {
     create_account();
@@ -407,6 +431,22 @@ function create_account() {
 
 
 function get_account() {
+    // document.querySelector('#account_edit_value').innerHTML = ""
+    const options_account = document.querySelectorAll('.transaction_account_select')
+    options_account.forEach(option_account => {
+        option_account.remove()
+    });
+
+    const options_account_edit = document.querySelectorAll('.account_edit_select')
+    options_account_edit.forEach(option_account_edit => {
+        option_account_edit.remove()
+    });
+
+    const options_account_delete = document.querySelectorAll('.account_delete_value')
+    options_account_delete.forEach(option_account_delete => {
+        option_account_delete.remove()
+    });
+
     fetch(`/get_account`)
         .then(response => response.json())
         .then(data => {
@@ -444,7 +484,9 @@ function get_account() {
 
             const account_id = account.id;
             const account_user = account.user;
-            const account_title = account.title;
+            let title_account = account.title;
+            let edit_title_account = account.title;
+            let delete_title_account = account.title;
             const account_amount = account.amount;
             const account_currency = account.currency;
 
@@ -458,7 +500,7 @@ function get_account() {
 
             const card_title = document.createElement('h5');
             card_title.setAttribute('class', 'card-title');
-            card_title.innerText = `${account_title}`;
+            card_title.innerText = `${title_account}`;
 
             const card_text = document.createElement('p');
             card_text.setAttribute('class', 'card-text');
@@ -471,15 +513,120 @@ function get_account() {
 
             document.querySelector('#account_container').append(card_first);
 
+
             const account_option = document.createElement('option');
-            account_option.innerHTML = `${account_title}`;
+            account_option.innerHTML = `${title_account}`;
+            account_option.setAttribute('class', 'transaction_account_select')
             document.querySelector('#transaction_account_value').append(account_option);
+            
+
+            const account_option_edit = document.createElement('option');
+            account_option_edit.innerHTML = `${edit_title_account}`;
+            account_option.setAttribute('class', 'account_edit_select')
+            document.querySelector('#account_edit_value').append(account_option_edit);
+
+
+            const account_option_delete = document.createElement('option');
+            account_option_delete.innerHTML = `${delete_title_account}`;
+            account_option_delete.setAttribute('class', 'account_option_delete')
+            document.querySelector('#account_delete_value').append(account_option_delete);
 
         })
         })
         .catch(error => {console.log(error)})
         return false
 };
+
+document.querySelector('#account_edit_value').addEventListener('change', () => {
+    const selected_edit_account = document.querySelector('#account_edit_value').value;
+    get_account_detail(account=`${selected_edit_account}`);
+})
+
+document.querySelector('#account_delete_value').addEventListener('change', () => {
+    const selected_delete_account = document.querySelector('#account_delete_value').value;
+    get_account_detail(account=`${selected_delete_account}`);
+})
+
+
+function get_account_detail(account){
+    if (account == "Select account") {
+
+        document.querySelector("#edit_account_title_value").value = "";
+        document.querySelector("#edit_account_amount_value").value = "";
+        document.querySelector("#edit_account_currency_value").value = "Currency";
+
+        document.querySelector("#delete_account_title_value").value = "";
+        document.querySelector("#delete_account_amount_value").value = "";
+        document.querySelector("#delete_account_currency_value").value = "Currency";
+    }
+
+    fetch(`/get_account_detail?selected_account=${account}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.account);
+            console.log(account);
+
+            const account_id = data.account.id;
+            const account_user = data.account.user;
+            const account_title = data.account.title;
+            const account_amount = data.account.amount;
+            const account_currency = data.account.currency;
+
+            document.querySelector("#edit_account_title_value").value = account_title;
+            document.querySelector("#edit_account_amount_value").value = account_amount;
+            document.querySelector("#edit_account_currency_value").value = account_currency;
+
+            document.querySelector("#delete_account_title_value").value = account_title;
+            document.querySelector("#delete_account_amount_value").value = account_amount;
+            document.querySelector("#delete_account_currency_value").value = account_currency;
+
+
+        })
+        .catch(error => {console.log(error)})
+        return false
+}
+
+document.querySelector('#account_edit_end_save').addEventListener('click', () => {
+    edit_account();
+})
+
+function edit_account() {
+    // document.querySelector('#account_container').innerHTML = '';
+    fetch('/edit_account', {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            selected_account: document.querySelector('#account_edit_value').value,
+            title: document.querySelector('#edit_account_title_value').value,
+            amount: document.querySelector('#edit_account_amount_value').value,
+            currency: document.querySelector('#edit_account_currency_value').value,
+        })
+    })
+        .then(response => response.json())
+        .then(result => {console.log(result)})
+        .catch(error => {console.log(error)})
+        return false
+};
+
+document.querySelector('#account_delete').addEventListener('click', () => {
+    delete_account();
+})
+
+function delete_account() {
+    fetch('/delete_account', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            selected_account: document.querySelector('#account_delete_value').value,
+        })
+    })
+        .then(response => response.json())
+        .then(result => {console.log(result)})
+        .catch(error => {console.log(error)})
+        return false
+};
+
+
 
 function setting_display() {
     document.querySelector('#home').style.display = 'none';
