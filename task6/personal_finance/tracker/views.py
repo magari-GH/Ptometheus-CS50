@@ -106,6 +106,8 @@ def get_transactions_history(request):
     else: 
         return JsonResponse({"error" : "Invalid request"}, status=400)
     
+
+@login_required
 def get_transaction_info(request):
     if request.method == "GET":
         user = request.user

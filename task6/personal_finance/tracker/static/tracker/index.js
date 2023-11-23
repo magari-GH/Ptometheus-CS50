@@ -23,6 +23,7 @@ function home_display() {
 
     document.querySelector('#form_transaction').style.display = 'none';
     document.querySelector('#form_category').style.display = 'none';
+    
 
     document.querySelector('#add_transaction_button').addEventListener('click', () => add_transaction());
     document.querySelector('#add_category_button').addEventListener('click', () => add_category());
@@ -51,14 +52,14 @@ function get_transaction_info() {
         console.log(data.avarage_income);
         console.log(data.avarage_expense);
 
-        const monthly_income = data.monthly_income.amount__sum;
-        const monthly_expense = data.monthly_expense.amount__sum;
-        const previous_monthly_income = data.previous_monthly_income.amount__sum;
-        const previous_monthly_expense = data.previous_monthly_expense.amount__sum;
-        const yearly_income = data.yearly_income.amount__sum;
-        const yearly_expense = data.yearly_expense.amount__sum;
-        const avarage_income = data.avarage_income;
-        const avarage_expense = data.avarage_expense
+        const monthly_income = data.monthly_income.amount__sum == null ?  "0.00" : data.monthly_income.amount__sum;
+        const monthly_expense = data.monthly_expense.amount__sum == null ?  "0.00" : data.monthly_expense.amount__sum;
+        const previous_monthly_income = data.previous_monthly_income.amount__sum == null ?  "0.00" : data.previous_monthly_income.amount__sum;
+        const previous_monthly_expense = data.previous_monthly_expense.amount__sum == null ?  "0.00" : data.previous_monthly_expense.amount__sum;
+        const yearly_income = data.yearly_income.amount__sum == null ?  "0.00" : data.yearly_income.amount__sum;
+        const yearly_expense = data.yearly_expense.amount__sum == null ?  "0.00" : data.yearly_expense.amount__sum;
+        const avarage_income = data.avarage_income == null ?  "0.00" : data.avarage_income;
+        const avarage_expense = data.avarage_expense == null ?  '0.00' : data.avarage_expense;
 
         document.querySelector('#monthly_income_home').innerHTML = `${monthly_income} EUR`;
         document.querySelector('#monthly_income_incomes').innerHTML = `${monthly_income} EUR`;
@@ -76,6 +77,7 @@ function get_transaction_info() {
 
     })  
 }
+
 
 function add_transaction () {
     document.querySelector('#form_transaction').style.display = 'block';
@@ -392,9 +394,9 @@ function delete_account_display() {
 document.querySelector('#account_save_end_exit').onclick = (event) => {
     create_account();
     document.querySelector('#form_account').style.display = 'none';
-    event.stopPropagation();
-    event.preventDefault();
-    event.stopImmediatePropagation();
+    // event.stopPropagation();
+    // event.preventDefault();
+    // event.stopImmediatePropagation();
     return false;
 };
 
@@ -403,9 +405,9 @@ document.querySelector('#account_save_end_add').onclick = (event) => {
     document.querySelector('#account_title_value').value = '';
     document.querySelector('#account_amount_value').value = '';
     document.querySelector('#account_currency_value').value = '';
-    event.stopPropagation();
-    event.preventDefault();
-    event.stopImmediatePropagation();
+    // event.stopPropagation();
+    // event.preventDefault();
+    // event.stopImmediatePropagation();
     return false;
 };
 

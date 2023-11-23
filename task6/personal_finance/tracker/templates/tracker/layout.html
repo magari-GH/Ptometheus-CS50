@@ -2,52 +2,57 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Finance Tracker</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" href="{% static 'tracker/styles.css' %}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personal Finance Tracker</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="{% static 'tracker/styles.css' %}">
 </head>
+
 <body>
-    
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="{% url 'index' %}">Personal Finance Tracker</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>
 
-          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-
-            <div class="container-fluid justify-content-start btn-group">
-              {% if user.is_authenticated %}
-              <button class="btn btn-sm btn-primary" type="button" id="home_button">Home</button>
-
-              <button class="btn btn-sm btn-primary" type="button" id="history_button">History</button>
-
-              <button class="btn btn-sm btn-primary" type="button" id="setting_button">Setting</button>
-            </div>
-
-            <div class="container-fluid justify-content-end">
-              <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
-              {% else %}
-            </div>
-
-            <div class="container-fluid justify-content-end"></div>
-              <a class="nav-link" href="{% url 'login' %}">Login</a>
-              <a class="nav-link" href="{% url 'register' %}">Register</a>
-              {% endif %}
-            </div>
-
-          </div>
-        </div>
-      </nav>
+  <nav class="navbar navbar-expand-lg bg-body-tertiary pl-5">
     <div class="container-fluid">
-        {% block body %}
-        {% endblock %}
+      <a class="navbar-brand pl-4" href="{% url 'index' %}">Personal Finance Tracker</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+        aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="navbar-collapse" id="navbarNavAltMarkup">
+
+        <div class="container-fluid justify-content-start btn-group">
+          {% if user.is_authenticated %}
+          <button class="btn btn-primary btn-sm" type="button" id="home_button">Home</button>
+
+          <button class="btn btn-primary btn-sm" type="button" id="history_button">History</button>
+
+          <button class="btn btn-primary btn-sm" type="button" id="setting_button">Setting</button>
+        </div>
+
+        <div class="container-fluid justify-content-end">
+          <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+          {% else %}
+        </div>
+
+        <div class="container-fluid justify-content-end"></div>
+        <a class="nav-link" href="{% url 'login' %}">Login</a>
+        <a class="nav-link" href="{% url 'register' %}">Register</a>
+        {% endif %}
+      </div>
+
     </div>
-    {% block script %}
+    </div>
+  </nav>
+  <div class="container-fluid">
+    {% block body %}
     {% endblock %}
+  </div>
+  {% block script %}
+  {% endblock %}
 </body>
+
 </html>

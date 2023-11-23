@@ -3,256 +3,264 @@
 
 {% block body %}
 
-    <div class="container" id="home">
-        <h1>home</h1>
-        <div id="account_container_home" class="row">
+<div class="container" id="home">
+  <!-- <h1>home</h1> -->
+  <div id="account_container_home" class="row">
 
-            <div class="col-sm-3 mb-3 mb-sm-0 p-3">
-              <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title">Balance</h5>
-                  <p class="card-text" id="balance_home"> 500 $</p>
-                  <button class="btn btn-primary" id="accounts_button">Go to accounts</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-sm-3 p-3">
-              <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title">Monthly income</h5>
-                  <p class="card-text" id="monthly_income_home"></p>
-                  <button class="btn btn-primary" id="incomes_button">Go to incomes</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-sm-3 p-3">
-                <div class="card">
-                  <div class="card-body">
-                    <h5 class="card-title">Monthly expense</h5>
-                    <p class="card-text" id="monthly_expense_home"></p>
-                    <button class="btn btn-primary" id="expenses_button">Go to expenses</button>
-                  </div>
-                </div>
-            </div>
-
+    <div class="col-sm-3 mb-3 mb-sm-0 p-3">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Balance</h5>
+          <p class="card-text" id="balance_home"></p>
+          <button class="btn btn-primary btn-sm" id="accounts_button">Go to accounts</button>
         </div>
-
-        <button class="btn btn-primary" id="add_transaction_button">Add transaction</button>
-        <button class="btn btn-primary" id="add_category_button">Add category</button>
-
-        <form id="form_transaction">
-            <div class="input-group border p-2 mt-2">
-                <select id="transaction_type_value" class="form-control">
-                    <option selected>Transaction</option>
-                    <option value="Income">Income</option>
-                    <option value="Expense">Expense</option>
-                </select>
-                <input hidden disabled class="form-control" value={{user.username}}>
-                <select id="transaction_category_value" class="form-control">
-                  <option selected>Category</option>
-              </select>
-                <input id="transaction_title_value" class="form-control" type="text" placeholder="Title of transaction">
-                <input id="transaction_amount_value" class="form-control" type="number" step="0.01" value="0.00" placeholder="0.00">
-                <select id="transaction_currency_value" class="form-control">
-                    <option selected>Currency</option>
-                    <option value="USD">USD</option>
-                    <option value="EUR">EUR</option>
-                    <option value="UAH">UAH</option>
-                </select>
-                <select id="transaction_account_value" class="form-control">
-                    <option selected>Select account</option>
-                </select>
-                <input type="datetime-local" name="name" id="transaction_date_value">
-                <br>
-            </div>
-            <input id="transaction_save_end_exit" class="btn btn-primary mt-3" type="button" value="Save transaction">
-            <input id="transaction_save_end_add" class="btn btn-primary mt-3" type="button" value="Save and add new transaction">
-        </form>
-
-
-
-        
-
-        <form id="form_category">
-          <div class="input-group border p-2 mt-2">
-            <input hidden disabled class="form-control" value={{user.username}}>
-            <input id="category_title_value" class="form-control" type="text" placeholder="Title of category">
-
-            <select id="category_type_value" class="form-control">
-              <option selected>Choose Type</option>
-              <option value="Income">Income</option>
-              <option value="Expense">Expense</option>
-            </select>
-            <label for="category_color_value" class="form-control">Color</label>
-            <input id="category_color_value" type="color" class="form-control">
-            
-          </div>
-            <br>
-            <input id="category_save_end_exit" class="btn btn-primary" type="button" value="Save category">
-            <input id="category_save_end_add" class="btn btn-primary" type="button" value="Add new">
-        </form>
-
-        <div class="row m-0">
-          <div class="card mt-3" class="col">
-            <div id="transaction_container_home" class="card-body">
-                <h5 class="card-title">History of the transaction</h5>
-                <p class="card-text">transaction 1</p>
-            </div>
-          </div>
-
-          <div class="col" style="width: 100px; height: 300px;">
-            <canvas id="myChart"></canvas>
-          </div>
-          <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-          <script>
-
-            function chart_income_and_expense() {
-                fetch(`/chart_income_and_expense`)
-                .then(response => response.json())
-                .then(data => {
-                        console.log(data);
-                    labels_income = data.labels
-                    data_income = data.data
-                    labels_expense = data.labels_expense
-                    data_expense = data.data_expense
-        
-              const ctx_ei = document.getElementById('myChart');
-            
-              var myChart_expenses_new = new Chart(ctx_ei, {
-                type: 'bar',
-                data: {
-                  labels: labels_income,
-                  datasets: [{
-                    label: 'income EUR per day',
-                    data: data_income,
-                    borderWidth: 1
-                  }, {
-                    label: 'expense EUR per day',
-                    data: data_expense,
-                    borderWidth: 1
-                  }]
-                },
-                
-                
-                options: {
-                  scales: {
-                    y: {
-                      beginAtZero: true
-                    }
-                  }
-                }
-              });
-              // myChart_expenses_new.destroy();
-            })
-            }
-          </script>
-
-
-        </div>
-    </div>
-
-    <div class="container" id="history">
-        <h1>history</h1>
-        <div class="card mt-3">
-            <div id="transaction_container_history" class="card-body" style="height: 400px;">
-                <h5 class="card-title">History of the transaction</h5>
-                <p class="card-text">transaction 1</p>
-            </div>
-        </div>
-        <div class="row justify-content-center" class="btn-group" role="group" aria-label="Basic example" >
-          <button class="btn btn-primary" id="previous" >Previous</button>
-          <button class="btn btn-primary" id="page" >Page</button>
-          <button class="btn btn-primary" id="next" >Next</button>
       </div>
     </div>
 
-
-    <div class="container" id="accounts">
-        <h1>accounts</h1>
-
-        <div id="account_container" class="row">
+    <div class="col-sm-3 p-3">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Monthly income</h5>
+          <p class="card-text" id="monthly_income_home"></p>
+          <button class="btn btn-primary btn-sm" id="incomes_button">Go to incomes</button>
         </div>
+      </div>
+    </div>
 
-        <button class="btn btn-primary m-1" id="add_account_button">Add account</button>
-        <button class="btn btn-primary m-1" id="edit_account_button">Edit account</button>
-        <button class="btn btn-primary m-1" id="delete_account_button">Delete account</button>
-
-        <form id="form_account">
-          <div class="input-group border p-2 mt-2">
-              <input hidden disabled class="form-control" value={{user.username}}>
-              <input id="account_title_value" class="form-control" type="text" placeholder="Title of account">
-              <input id="account_amount_value" class="form-control" type="number" step="0.01" value="0.00" placeholder="0.00">
-              <select id="account_currency_value" class="form-control">
-                  <option selected>Currency</option>
-                  <option value="USD">USD</option>
-                  <option value="EUR">EUR</option>
-                  <option value="UAH">UAH</option>
-              </select>
-              <input id="account_save_end_exit" class="btn btn-primary" type="button" value="Save account">
-              <input id="account_save_end_add" class="btn btn-primary" type="button" value="Add new">
-          </div>
-        </form>
-
-        <form id="edit_form_account">
-          <div class="input-group border p-2 mt-2">
-              <input hidden disabled class="form-control" value={{user.username}}>
-              <select id="account_edit_value" class="form-control">
-                <option selected>Select account</option>
-              </select>
-              <input id="edit_account_title_value" class="form-control" type="text" placeholder="NEW title of account">
-              <input id="edit_account_amount_value" class="form-control" type="number" step="0.01" value="0.00" placeholder="0.00">
-              <select id="edit_account_currency_value" class="form-control">
-                  <option selected>Currency</option>
-                  <option value="USD">USD</option>
-                  <option value="EUR">EUR</option>
-                  <option value="UAH">UAH</option>
-              </select>
-              <input id="account_edit_end_save" class="btn btn-primary" type="button" value="Save account">
-          </div>
-        </form>
-
-        <form id="delete_form_account">
-          <div class="input-group border p-2 mt-2">
-              <input hidden disabled class="form-control" value={{user.username}}>
-              <select id="account_delete_value" class="form-control">
-                <option selected>Select account</option>
-              </select>
-              <input id="delete_account_title_value" class="form-control" type="text" placeholder="Title of account">
-              <input id="delete_account_amount_value" class="form-control" type="number" step="0.01" value="0.00" placeholder="0.00">
-              <select id="delete_account_currency_value" class="form-control">
-                  <option selected>Currency</option>
-                  <option value="USD">USD</option>
-                  <option value="EUR">EUR</option>
-                  <option value="UAH">UAH</option>
-              </select>
-              <input id="account_delete" class="btn btn-primary" type="button" value="Delete">
-            </div>
-        </form>
-        
-        <div class="row p-3">
-
-        <div class="col-6"></div>
-        <div class="col-4 border" style="height: 275px;">
-          <canvas id="myChart_accounts"></canvas>
+    <div class="col-sm-3 p-3">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Monthly expense</h5>
+          <p class="card-text" id="monthly_expense_home"></p>
+          <button class="btn btn-primary btn-sm" id="expenses_button">Go to expenses</button>
         </div>
+      </div>
+    </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </div>
 
-        <script>
+  {% if user.is_authenticated %}
+  <button class="btn btn-primary btn-sm" id="add_transaction_button">Add transaction</button>
+  <button class="btn btn-primary btn-sm" id="add_category_button">Add category</button>
+  {% endif %}
 
-          function chart_account() {
-              fetch(`/chart_account`)
-              .then(response => response.json())
-              .then(data => {
-                      console.log(data);
-                  labels_account = data.labels
-                  data_account = data.data
-      
+  <form id="form_transaction">
+    <div class="input-group border p-2 mt-2">
+      <select id="transaction_type_value" class="form-control">
+        <option selected>Transaction</option>
+        <option value="Income">Income</option>
+        <option value="Expense">Expense</option>
+      </select>
+      <input hidden disabled class="form-control" value={{user.username}}>
+      <select id="transaction_category_value" class="form-control">
+        <option selected>Category</option>
+      </select>
+      <input id="transaction_title_value" class="form-control" type="text" placeholder="Title of transaction">
+      <input id="transaction_amount_value" class="form-control" type="number" step="0.01" value="0.00"
+        placeholder="0.00">
+      <select id="transaction_currency_value" class="form-control">
+        <option selected>Currency</option>
+        <!-- <option value="USD">USD</option> -->
+        <option value="EUR">EUR</option>
+        <!-- <option value="UAH">UAH</option> -->
+      </select>
+      <select id="transaction_account_value" class="form-control">
+        <option selected>Select account</option>
+      </select>
+      <input type="datetime-local" name="name" id="transaction_date_value">
+      <br>
+    </div>
+    <input id="transaction_save_end_exit" class="btn btn-primary btn-sm mt-3" type="button" value="Save transaction">
+    <input id="transaction_save_end_add" class="btn btn-primary btn-sm mt-3" type="button"
+      value="Save and add new transaction">
+  </form>
+
+
+
+
+
+  <form id="form_category">
+    <div class="input-group border p-2 mt-2">
+      <input hidden disabled class="form-control" value={{user.username}}>
+      <input id="category_title_value" class="form-control" type="text" placeholder="Title of category">
+
+      <select id="category_type_value" class="form-control">
+        <option selected>Choose Type</option>
+        <option value="Income">Income</option>
+        <option value="Expense">Expense</option>
+      </select>
+      <label for="category_color_value" class="form-control">Color</label>
+      <input id="category_color_value" type="color" class="form-control">
+
+    </div>
+    <br>
+    <input id="category_save_end_exit" class="btn btn-primary btn-sm" type="button" value="Save category">
+    <input id="category_save_end_add" class="btn btn-primary btn-sm" type="button" value="Add new">
+  </form>
+
+  {% if user.is_authenticated %}
+  <div class="row m-0">
+    <div class="card mt-3" class="col" style="height: 275px;">
+      <div id="transaction_container_home" class="card-body">
+        <h5 class="card-title">History of the transaction</h5>
+        <p class="card-text">transaction 1</p>
+      </div>
+    </div>
+
+    <div class="col mt-3" style="width: 100px; height: 275px;">
+      <canvas id="myChart"></canvas>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+
+      function chart_income_and_expense() {
+        fetch(`/chart_income_and_expense`)
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+            labels_income = data.labels
+            data_income = data.data
+            labels_expense = data.labels_expense
+            data_expense = data.data_expense
+
+            const ctx_ei = document.getElementById('myChart');
+
+            var myChart_expenses_new = new Chart(ctx_ei, {
+              type: 'bar',
+              data: {
+                labels: labels_income,
+                datasets: [{
+                  label: 'income EUR per day',
+                  data: data_income,
+                  borderWidth: 1
+                }, {
+                  label: 'expense EUR per day',
+                  data: data_expense,
+                  borderWidth: 1
+                }]
+              },
+
+
+              options: {
+                scales: {
+                  y: {
+                    beginAtZero: true
+                  }
+                }
+              }
+            });
+            // myChart_expenses_new.destroy();
+          })
+      }
+    </script>
+
+
+  </div>
+  {% endif %}
+</div>
+
+
+<div class="container" id="history">
+  <h1>history</h1>
+  <div class="card mt-3">
+    <div id="transaction_container_history" class="card-body" style="height: 400px;">
+      <h5 class="card-title">History of the transaction</h5>
+    </div>
+  </div>
+  <div class="row justify-content-center" class="btn-group" role="group" aria-label="Basic example">
+    <button class="btn btn-primary btn-sm" id="previous">Previous</button>
+    <button class="btn btn-primary btn-sm" id="page">Page</button>
+    <button class="btn btn-primary btn-sm" id="next">Next</button>
+  </div>
+</div>
+
+
+<div class="container" id="accounts">
+  <h1>accounts</h1>
+
+  <div id="account_container" class="row">
+  </div>
+
+  <button class="btn btn-primary btn-sm m-1" id="add_account_button">Add account</button>
+  <button class="btn btn-primary btn-sm m-1" id="edit_account_button">Edit account</button>
+  <button class="btn btn-primary btn-sm m-1" id="delete_account_button">Delete account</button>
+
+  <form id="form_account">
+    <div class="input-group border p-2 mt-2">
+      <input hidden disabled class="form-control" value={{user.username}}>
+      <input id="account_title_value" class="form-control" type="text" placeholder="Title of account">
+      <input id="account_amount_value" class="form-control" type="number" step="0.01" value="0.00" placeholder="0.00">
+      <select id="account_currency_value" class="form-control">
+        <option selected>Currency</option>
+        <!-- <option value="USD">USD</option> -->
+        <option value="EUR">EUR</option>
+        <!-- <option value="UAH">UAH</option> -->
+      </select>
+      <input id="account_save_end_exit" class="btn btn-primary btn-sm" type="button" value="Save account">
+      <input id="account_save_end_add" class="btn btn-primary btn-sm" type="button" value="Add new">
+    </div>
+  </form>
+
+  <form id="edit_form_account">
+    <div class="input-group border p-2 mt-2">
+      <input hidden disabled class="form-control" value={{user.username}}>
+      <select id="account_edit_value" class="form-control">
+        <option selected>Select account</option>
+      </select>
+      <input id="edit_account_title_value" class="form-control" type="text" placeholder="NEW title of account">
+      <input id="edit_account_amount_value" class="form-control" type="number" step="0.01" value="0.00"
+        placeholder="0.00">
+      <select id="edit_account_currency_value" class="form-control">
+        <option selected>Currency</option>
+        <!-- <option value="USD">USD</option> -->
+        <option value="EUR">EUR</option>
+        <!-- <option value="UAH">UAH</option> -->
+      </select>
+      <input id="account_edit_end_save" class="btn btn-primary btn-sm" type="button" value="Save account">
+    </div>
+  </form>
+
+  <form id="delete_form_account">
+    <div class="input-group border p-2 mt-2">
+      <input hidden disabled class="form-control" value={{user.username}}>
+      <select id="account_delete_value" class="form-control">
+        <option selected>Select account</option>
+      </select>
+      <input id="delete_account_title_value" class="form-control" type="text" placeholder="Title of account">
+      <input id="delete_account_amount_value" class="form-control" type="number" step="0.01" value="0.00"
+        placeholder="0.00">
+      <select id="delete_account_currency_value" class="form-control">
+        <option selected>Currency</option>
+        <!-- <option value="USD">USD</option> -->
+        <option value="EUR">EUR</option>
+        <!-- <option value="UAH">UAH</option> -->
+      </select>
+      <input id="account_delete" class="btn btn-primary btn-sm" type="button" value="Delete">
+    </div>
+  </form>
+
+  <div class="row p-3">
+
+    <div class="col-6"></div>
+    <div class="col-4 border" style="height: 275px;">
+      <canvas id="myChart_accounts"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+
+      function chart_account() {
+        fetch(`/chart_account`)
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+            labels_account = data.labels
+            data_account = data.data
+
             const ctx_a = document.getElementById('myChart_accounts');
-          
+
             var myChart_accounts_new = new Chart(ctx_a, {
               type: 'pie',
               data: {
@@ -267,181 +275,181 @@
             });
             // myChart_accounts_new.destroy();
           })
-          }
-          
-        </script>
+      }
+
+    </script>
+  </div>
+</div>
+
+<div class="container" id="incomes">
+  <h1>incomes</h1>
+
+  <div class="row">
+
+    <div class="col-sm-3 mb-3 mb-sm-0">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Mounthly income</h5>
+          <p class="card-text" id="monthly_income_incomes"></p>
+        </div>
       </div>
     </div>
 
-    <div class="container" id="incomes">
-        <h1>incomes</h1>
-
-        <div class="row">
-
-            <div class="col-sm-3 mb-3 mb-sm-0">
-              <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title">Mounthly income</h5>
-                  <p class="card-text" id="monthly_income_incomes"> 500 $</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-sm-3">
-              <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title">Previous income</h5>
-                  <p class="card-text" id="previous_monthly_income_incomes"></p>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-sm-3">
-                <div class="card">
-                  <div class="card-body">
-                    <h5 class="card-title">Avarage income</h5>
-                    <p class="card-text" id="avarage_income_incomes"></p>
-                  </div>
-                </div>
-            </div>
-
-            <div class="col-sm-3">
-                <div class="card">
-                  <div class="card-body">
-                    <h5 class="card-title">Yearly income</h5>
-                    <p class="card-text" id="yearly_income_incomes"></p>
-                  </div>
-                </div>
-            </div>
-
+    <div class="col-sm-3">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Previous income</h5>
+          <p class="card-text" id="previous_monthly_income_incomes"></p>
         </div>
+      </div>
+    </div>
 
-      <div class="row m-0">
-        <div class="card mt-3" class="col">
-            <div id="transaction_container_incomes" class="card-body" >
-                <h5 class="card-title">History of the income transaction</h5>
-            </div>
+    <div class="col-sm-3">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Avarage income</h5>
+          <p class="card-text" id="avarage_income_incomes"></p>
         </div>
+      </div>
+    </div>
 
-      
-
-
-        <div class="col" style="width: 100px; height: 300px;">
-          <canvas id="myChart_incomes"></canvas>
+    <div class="col-sm-3">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Yearly income</h5>
+          <p class="card-text" id="yearly_income_incomes"></p>
         </div>
-        
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        
-        <script>
-        
-        function chart_income() {
-            fetch(`/chart_income`)
-            .then(response => response.json())
-            .then(data => {
-                    console.log(data);
-                labels_income = data.labels
-                data_income = data.data
-    
-          const ctx_in = document.getElementById('myChart_incomes');
-        
-          var myChart_incomes_new = new Chart(ctx_in, {
-            type: 'bar',
-            data: {
-              labels: labels_income,
-              datasets: [{
-                label: 'EUR per day',
-                data: data_income,
-                borderWidth: 1,
+      </div>
+    </div>
 
-              }]
-              
-            },
-            options: {
-              scales: {
-                y: {
-                  beginAtZero: true
+  </div>
+
+  <div class="row m-0">
+    <div class="card mt-3" class="col">
+      <div id="transaction_container_incomes" class="card-body">
+        <h5 class="card-title">History of the income transaction</h5>
+      </div>
+    </div>
+
+
+
+
+    <div class="col" style="width: 100px; height: 300px;">
+      <canvas id="myChart_incomes"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+
+      function chart_income() {
+        fetch(`/chart_income`)
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+            labels_income = data.labels
+            data_income = data.data
+
+            const ctx_in = document.getElementById('myChart_incomes');
+
+            var myChart_incomes_new = new Chart(ctx_in, {
+              type: 'bar',
+              data: {
+                labels: labels_income,
+                datasets: [{
+                  label: 'EUR per day',
+                  data: data_income,
+                  borderWidth: 1,
+
+                }]
+
+              },
+              options: {
+                scales: {
+                  y: {
+                    beginAtZero: true
+                  }
                 }
               }
-            }
-            
-          });
-          // myChart_incomes_new.destroy();
-        })
-        }
-        </script>
-        
-      </div>
 
+            });
+            // myChart_incomes_new.destroy();
+          })
+      }
+    </script>
+
+  </div>
+
+</div>
+
+<div class="container" id="expenses">
+  <h1>expenses</h1>
+
+  <div class="row">
+
+    <div class="col-sm-3 mb-3 mb-sm-0">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Mounthly expense</h5>
+          <p class="card-text" id="monthly_expense_expenses"></p>
+        </div>
+      </div>
     </div>
 
-    <div class="container" id="expenses">
-        <h1>expenses</h1>
-
-        <div class="row">
-
-            <div class="col-sm-3 mb-3 mb-sm-0">
-              <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title">Mounthly expense</h5>
-                  <p class="card-text" id="monthly_expense_expenses"></p>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-sm-3">
-              <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title">Previous expense</h5>
-                  <p class="card-text" id="previous_monthly_expense_expenses"></p>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-sm-3">
-                <div class="card">
-                  <div class="card-body">
-                    <h5 class="card-title">Avarage expense</h5>
-                    <p class="card-text" id="avarage_expense_expenses"></p>
-                  </div>
-                </div>
-            </div>
-
-            <div class="col-sm-3">
-                <div class="card">
-                  <div class="card-body">
-                    <h5 class="card-title">Yearly expense</h5>
-                    <p class="card-text" id="yearly_expense_expenses"></p>
-                  </div>
-                </div>
-            </div>
-
+    <div class="col-sm-3">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Previous expense</h5>
+          <p class="card-text" id="previous_monthly_expense_expenses"></p>
         </div>
+      </div>
+    </div>
 
-      <div class="row m-0">
-        <div class="card mt-3" class="col">
-            <div id="transaction_container_expenses" class="card-body">
-                <h5 class="card-title">History of the expenses transaction</h5>
-            </div>
+    <div class="col-sm-3">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Avarage expense</h5>
+          <p class="card-text" id="avarage_expense_expenses"></p>
         </div>
+      </div>
+    </div>
 
-        <div class="col" style="width: 100px; height: 300px;">
-          <canvas id="myChart_expenses"></canvas>
+    <div class="col-sm-3">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Yearly expense</h5>
+          <p class="card-text" id="yearly_expense_expenses"></p>
         </div>
+      </div>
+    </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </div>
 
-        <script>
+  <div class="row m-0">
+    <div class="card mt-3" class="col">
+      <div id="transaction_container_expenses" class="card-body">
+        <h5 class="card-title">History of the expenses transaction</h5>
+      </div>
+    </div>
 
-          function chart_expense() {
-              fetch(`/chart_expense`)
-              .then(response => response.json())
-              .then(data => {
-                      console.log(data);
-                  labels_expense = data.labels
-                  data_expense = data.data
-      
+    <div class="col" style="width: 100px; height: 300px;">
+      <canvas id="myChart_expenses"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+
+      function chart_expense() {
+        fetch(`/chart_expense`)
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+            labels_expense = data.labels
+            data_expense = data.data
+
             const ctx_ex = document.getElementById('myChart_expenses');
-          
+
             var myChart_expenses_new = new Chart(ctx_ex, {
               type: 'bar',
               data: {
@@ -462,60 +470,60 @@
             });
             // myChart_expenses_new.destroy();
           })
-          }
-        </script>
+      }
+    </script>
 
-      </div>
+  </div>
 
+</div>
+
+
+<div class="container" id="setting">
+  <h1>setting</h1>
+
+  <div class="row mb-3">
+
+    <div class="col">
+      <p>User's name: {{user.username}}</p>
+      <!-- <input disabled class="form-control" autofocus type="text" name="username" placeholder={{user.username}}> -->
+    </div>
+    <div class="col">
     </div>
 
+  </div>
 
-    <div class="container" id="setting">
-        <h1>setting</h1>
+  <div class="row">
 
-      <div class="row mb-3">
+    <div class="col">
+      <p>User's email: {{user.email}}</p>
 
-        <div class="col">
-          <p>User's name: {{user.username}}</p>
-          <!-- <input disabled class="form-control" autofocus type="text" name="username" placeholder={{user.username}}> -->
-        </div>
-        <div class="col">
-        </div>
-
-      </div>
-
-      <div class="row">
-
-        <div class="col">
-          <p>User's email: {{user.email}}</p>
-
-        </div>
-        <div class="col">
-          <input id="edit_email_button" class="btn btn-primary" type="button" value="Edit email">
-        </div>
-        
-      </div>
-
-      <form action="" method="post" class="border p-2">
-        {% csrf_token %}
-        <div class="form-group">
-          <input class="form-control" type="email" name="email" placeholder="{{user.email}}">
-        </div> 
-        <div class="form-group">
-            <input class="form-control" type="password" name="password" placeholder="Password">  
-        </div>
-        <input class="btn btn-primary" type="submit" value="Change">
-      </form>
-
-
-        
+    </div>
+    <div class="col">
+      <input id="edit_email_button" class="btn btn-primary btn-sm" type="button" value="Edit email">
     </div>
 
-    
+  </div>
+
+  <form action="" method="post" class="border p-2">
+    {% csrf_token %}
+    <div class="form-group">
+      <input class="form-control" type="email" name="email" placeholder="{{user.email}}">
+    </div>
+    <div class="form-group">
+      <input class="form-control" type="password" name="password" placeholder="Password">
+    </div>
+    <input class="btn btn-primary btn-sm" type="submit" value="Change">
+  </form>
+
+
+
+</div>
+
+
 
 
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'tracker/index.js' %}"></script>
+<script src="{% static 'tracker/index.js' %}"></script>
 {% endblock %}
