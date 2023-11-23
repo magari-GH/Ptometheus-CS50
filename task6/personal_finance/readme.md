@@ -84,7 +84,7 @@ This project is licensed under the [MIT License]???
 
 UML Component diagram of the project Personal Finance Tracker
 
-![UML Component diagram of project Personal Finance Tracker.] (https://github.com/magari-GH/prometheus-CS50/blob/main/task6/personal_finance/Component%20diagram%20PFT%2023.11.23.svg)
+![UML Component diagram of project Personal Finance Tracker.](https://github.com/magari-GH/prometheus-CS50/blob/main/task6/personal_finance/Component%20diagram%20PFT%2023.11.23.svg?raw=true))
 
 ## Difference and complexity 
 The Personal Finance Tracker is a web application built to help users manage and track their personal finances effortlessly. It provides a user-friendly interface for recording income, and expenses and gaining insights into financial trends. 
