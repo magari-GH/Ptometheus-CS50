@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+
 # Create your models here.
 class User(AbstractUser):
     pass
@@ -10,7 +11,9 @@ class Transaction(models.Model):
     user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="users")
     type = models.CharField(max_length=64)
     # category = models.CharField(max_length=64)
-    category = models.ForeignKey("Category", on_delete=models.CASCADE, related_name="categoties")
+    category = models.ForeignKey(
+        "Category", on_delete=models.CASCADE, related_name="categoties"
+    )
     title = models.CharField(max_length=64)
     amount = models.FloatField(default=0)
     currency = models.CharField(max_length=3)
@@ -31,9 +34,9 @@ class Transaction(models.Model):
             "account": self.account,
             "date": self.date.strftime("%b %d %Y, %I:%M %p"),
         }
-    
+
     def __str__(self):
-        return f'Transaction {self.id} of the {self.user} category {self.category} title {self.title} in the {self.amount} {self.currency} account {self.account} on {self.date}'
+        return f"Transaction {self.id} of the {self.user} category {self.category} title {self.title} in the {self.amount} {self.currency} account {self.account} on {self.date}"
 
 
 class Account(models.Model):
@@ -51,13 +54,15 @@ class Account(models.Model):
             "amount": self.amount,
             "currency": self.currency,
         }
-    
+
     def __str__(self):
-        return f'Account number {self.id} of the {self.user} called {self.title} current total is {self.amount} {self.currency}'
+        return f"Account number {self.id} of the {self.user} called {self.title} current total is {self.amount} {self.currency}"
 
 
 class Category(models.Model):
-    user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="categories")
+    user = models.ForeignKey(
+        "User", on_delete=models.CASCADE, related_name="categories"
+    )
     title = models.CharField(max_length=64)
     type = models.CharField(max_length=64)
     color = models.CharField(max_length=64, default="#000000")
@@ -70,8 +75,6 @@ class Category(models.Model):
             "type": self.type,
             "color": self.color,
         }
-    
+
     def __str__(self):
-        return f'Category number {self.id} of the {self.user} called {self.title} of type {self.title} color {self.color}'
-
-
+        return f"Category number {self.id} of the {self.user} called {self.title} of type {self.title} color {self.color}"

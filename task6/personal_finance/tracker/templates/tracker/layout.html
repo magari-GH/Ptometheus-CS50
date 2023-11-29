@@ -16,7 +16,11 @@
 
   <nav class="navbar navbar-expand-lg bg-body-tertiary pl-5">
     <div class="container-fluid">
-      <a class="navbar-brand pl-4" href="{% url 'index' %}">Personal Finance Tracker</a>
+      {% if user.is_authenticated %}
+      <a  id ="project_title_on" class="navbar-brand pl-4"  href="{% url 'index' %}">Personal Finance Tracker</a>
+      {% else %}
+      <a  id ="project_title_off" class="navbar-brand pl-4" >Personal Finance Tracker</a>
+      {% endif %}
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
         aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -30,7 +34,7 @@
 
           <button class="btn btn-primary btn-sm" type="button" id="history_button">History</button>
 
-          <button class="btn btn-primary btn-sm" type="button" id="setting_button">Setting</button>
+          <button class="btn btn-primary btn-sm" type="button" id="setting_button">Profile</button>
         </div>
 
         <div class="container-fluid justify-content-end">

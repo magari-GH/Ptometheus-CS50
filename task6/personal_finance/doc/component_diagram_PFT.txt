@@ -1,0 +1,45 @@
+@startuml
+!theme plain
+
+skin rose
+
+title Component Diagram of the project Personal Finance Tracker
+
+component [Server_Side] as SS {
+  component [Models] as M {
+  }
+  component [Views] as V {
+  }
+  
+  component [Urls] as U
+}
+
+component [Client_Side] as CS {
+  component [Static] as S {
+    component [index.js] as IJS
+    component styles.css as SC
+  }
+  component      [Templates] as T 
+}
+
+database SQLite3 {
+  frame User
+  frame Account
+  frame "Transaction"
+}
+
+T --> U : form data
+T --> IJS : form data
+T <--> SC
+IJS --> T : data for rendering
+IJS --> U : fetch
+U --> V : request
+V <--> M
+V --> IJS : JSON
+V --> T : data for rendering
+
+M --> SQLite3 : query
+SQLite3 --> M : dataset
+
+
+@enduml

@@ -23,43 +23,41 @@ function home_display() {
 
     document.querySelector('#form_transaction').style.display = 'none';
     document.querySelector('#form_category').style.display = 'none';
-    
 
-    document.querySelector('#add_transaction_button').addEventListener('click', () => add_transaction());
-    document.querySelector('#add_category_button').addEventListener('click', () => add_category());
 
-    get_transactions_history(tag = 'all');
-
+    get_transactions_history(page=page, transactions_per_page=transactions_per_page, tag='all');
     document.querySelector('#transaction_container_home').innerHTML = '';
     // document.querySelector('#transaction_account_value').innerHTML = '';
     get_account();
     get_transaction_info();
     chart_income_and_expense();
-
 };
+
+document.querySelector('#add_transaction_button').addEventListener('click', () => add_transaction());
+document.querySelector('#add_category_button').addEventListener('click', () => add_category());
 
 function get_transaction_info() {
     // document.querySelector('#transaction_account_value').innerHTML = '';
     fetch(`/get_transaction_info`)
     .then(response => response.json())
     .then(data => {
-        console.log(data.monthly_income);
-        console.log(data.monthly_expense);
-        console.log(data.previous_monthly_income);
-        console.log(data.previous_monthly_expense);
-        console.log(data.yearly_income);
-        console.log(data.yearly_expense);
-        console.log(data.avarage_income);
-        console.log(data.avarage_expense);
+        console.log(data)
 
-        const monthly_income = data.monthly_income.amount__sum == null ?  "0.00" : data.monthly_income.amount__sum;
-        const monthly_expense = data.monthly_expense.amount__sum == null ?  "0.00" : data.monthly_expense.amount__sum;
+        const monthly_income = data.monthly_income.amount__sum == null ?  "0.00" : data.monthly_income.amount__sum.toFixed(2);
+        const monthly_expense = data.monthly_expense.amount__sum == null ?  "0.00" : data.monthly_expense.amount__sum.toFixed(2);
         const previous_monthly_income = data.previous_monthly_income.amount__sum == null ?  "0.00" : data.previous_monthly_income.amount__sum;
         const previous_monthly_expense = data.previous_monthly_expense.amount__sum == null ?  "0.00" : data.previous_monthly_expense.amount__sum;
-        const yearly_income = data.yearly_income.amount__sum == null ?  "0.00" : data.yearly_income.amount__sum;
-        const yearly_expense = data.yearly_expense.amount__sum == null ?  "0.00" : data.yearly_expense.amount__sum;
-        const avarage_income = data.avarage_income == null ?  "0.00" : data.avarage_income;
-        const avarage_expense = data.avarage_expense == null ?  '0.00' : data.avarage_expense;
+        const yearly_income = data.yearly_income.amount__sum == null ?  "0.00" : data.yearly_income.amount__sum.toFixed(2);
+        const yearly_expense = data.yearly_expense.amount__sum == null ?  "0.00" : data.yearly_expense.amount__sum.toFixed(2);
+        const month_number = data.month_number
+        const total_income = data.total_income.amount__sum
+        const total_expense = data.total_expense.amount__sum
+        let avarage_income = 0.00
+        let avarage_expense = 0.00
+        if (month_number != null) {
+            if (total_income != null) {avarage_income = total_income/month_number}
+            if (total_expense != null) {avarage_expense = total_expense/month_number}  
+        }
 
         document.querySelector('#monthly_income_home').innerHTML = `${monthly_income} EUR`;
         document.querySelector('#monthly_income_incomes').innerHTML = `${monthly_income} EUR`;
@@ -72,8 +70,8 @@ function get_transaction_info() {
         document.querySelector('#yearly_income_incomes').innerHTML = `${yearly_income} EUR`;
         document.querySelector('#yearly_expense_expenses').innerHTML = `${yearly_expense} EUR`;
 
-        document.querySelector('#avarage_income_incomes').innerHTML = `${avarage_income} EUR`;
-        document.querySelector('#avarage_expense_expenses').innerHTML = `${avarage_expense} EUR`;
+        document.querySelector('#avarage_income_incomes').innerHTML = `${avarage_income.toFixed(2)} EUR`;
+        document.querySelector('#avarage_expense_expenses').innerHTML = `${avarage_expense.toFixed(2)} EUR`;
 
     })  
 }
@@ -90,8 +88,10 @@ function add_category() {
     document.querySelector('#form_transaction').style.display = 'none';
 };
 
+
 document.querySelector('#transaction_save_end_exit').onclick = () => {
     create_transaction();
+    chart_income_and_expense();
     document.querySelector('#transaction_type_value').value = "";
     document.querySelector('#transaction_category_value').value = "";
     document.querySelector('#transaction_title_value').value = "";
@@ -100,11 +100,13 @@ document.querySelector('#transaction_save_end_exit').onclick = () => {
     document.querySelector('#transaction_account_value').value = "";
     document.querySelector('#transaction_account_value').value  = "";
     document.querySelector('#form_transaction').style.display = 'none';
+    get_transactions_history(page=page, transactions_per_page=transactions_per_page, tag='all')
     return false
 };
 
 document.querySelector('#transaction_save_end_add').addEventListener('click', () => {
     create_transaction();
+    chart_income_and_expense();
     document.querySelector('#transaction_type_value').value = "";
     document.querySelector('#transaction_category_value').value = "";
     document.querySelector('#transaction_title_value').value = "";
@@ -112,6 +114,8 @@ document.querySelector('#transaction_save_end_add').addEventListener('click', ()
     document.querySelector('#transaction_currency_value').value = "";
     document.querySelector('#transaction_account_value').value = "";
     document.querySelector('#transaction_account_value').value  = "";
+    create_transaction(tag = 'all');
+    location.reload()
     return false
 });
 
@@ -148,10 +152,11 @@ function create_transaction() {
         })
     })
         .then(response => response.json())
-        .then(result => {console.log(result)})
+        .then(result => {console.log(result);
+        })
         .catch(error => {console.log(error)})
-        // call function for reload the history of transactions
-        get_transactions_history(tag = 'all');
+        chart_income_and_expense();
+        get_transactions_history(page=page, transactions_per_page=transactions_per_page, tag='all')
         get_account();
         get_transaction_info();
         return false
@@ -221,8 +226,7 @@ function history_display() {
     document.querySelector('#incomes').style.display = 'none';
     document.querySelector('#expenses').style.display = 'none';
     document.querySelector('#setting').style.display = 'none';
-
-    get_transactions_history(tag = 'all');
+    get_transactions_history(page=1, transactions_per_page=transactions_per_page, tag='all');
     document.querySelector('#transaction_container_history').innerHTML ='';
 };
 
@@ -233,7 +237,7 @@ document.querySelector('#next').addEventListener('click', () => {load_next(retur
 function load_next(returned_page) {
   // function for loading next page
   document.querySelector('#transaction_container_history').innerHTML = '';
-  get_transactions_history(page=returned_page+1)
+  get_transactions_history(page=returned_page+1, transactions_per_page=transactions_per_page, tag='all')
 }
 
 document.querySelector('#previous').addEventListener('click', () => {load_previous(returned_page)})
@@ -241,34 +245,36 @@ document.querySelector('#previous').addEventListener('click', () => {load_previo
 function load_previous(returned_page) {
   // function for loading previous page
   document.querySelector('#transaction_container_history').innerHTML = '';
-  get_transactions_history(page=returned_page-1)
+  get_transactions_history(page=returned_page-1, transactions_per_page=transactions_per_page, tag='all')
 }
 
 
 
-function get_transactions_history(tag) {
-    document.querySelector('#transaction_container_home').innerHTML = '';
-    document.querySelector('#transaction_container_history').innerHTML = '';
-    document.querySelector('#transaction_container_incomes').innerHTML = '';
-    document.querySelector('#transaction_container_expenses').innerHTML = '';
-
+function get_transactions_history(page, transactions_per_page, tag) {
 
     fetch(`/get_transactions_history?page=${page}&per_page=${transactions_per_page}&filter=${tag}`)
         .then(response => response.json())
         .then(data => {
+
+            document.querySelector('#transaction_container_home').innerHTML = '';
+            document.querySelector('#transaction_container_history').innerHTML = '';
+            document.querySelector('#transaction_container_incomes').innerHTML = '';
+            document.querySelector('#transaction_container_expenses').innerHTML = '';
+
             console.log(data.transactions);
             console.log(data.pagination);
 
             returned_page = data.pagination.returned_page;
-            toal_pages = data.pagination.total_pages;
-            const total_tranactions = data.pagination.total_transations;
-
+            total_pages = data.pagination.total_page;
+            // console.log(data.pagination.total_tranactions);
+            let total_transations = data.pagination.total_transations;
             
-        if (total_tranactions < transactions_per_page ) {
-            document.querySelector('#previous').style.display = 'none';
-            document.querySelector('#next').style.display = 'none';
-            document.querySelector('#page').style.display = 'none';
-          }
+
+        // if (total_transations <= transactions_per_page) {
+        //     document.querySelector('#previous').style.display = 'none';
+        //     document.querySelector('#next').style.display = 'none';
+        //     document.querySelector('#page').style.display = 'none';
+        //   }
   
           document.querySelector('#previous').disabled = false;
           if (returned_page == 1) {
@@ -276,11 +282,18 @@ function get_transactions_history(tag) {
           }
         
           document.querySelector('#next').disabled = false;
-          if (returned_page == data.pagination.total_pages) {
+          if (returned_page == total_pages) {
             document.querySelector('#next').disabled = true;
           }
         
           document.querySelector('#page').innerHTML = returned_page;
+        if (data.transactions == 0) {
+            const empty_message = "You don't have any transaction yet. Create own category and add a transaction."
+            document.querySelector('#transaction_container_home').innerHTML = empty_message;
+            document.querySelector('#transaction_container_history').innerHTML = empty_message;
+            document.querySelector('#transaction_container_incomes').innerHTML = empty_message;
+            document.querySelector('#transaction_container_expenses').innerHTML = empty_message;
+        }
 
 
         data.transactions.forEach(transaction => {
@@ -311,27 +324,27 @@ function get_transactions_history(tag) {
             document.querySelector('#transaction_container_expenses').append(transaction_unit_expenses);
 
             transaction_unit_home.querySelector('strong').addEventListener('click', () => {
-                get_transactions_history(tag=`${transaction.category}`)
+                get_transactions_history(page=page, transactions_per_page=transactions_per_page, tag=`${transaction.category}`)
             })
 
             transaction_unit_history.querySelector('strong').addEventListener('click', () => {
-                get_transactions_history(tag=`${transaction.category}`)
+                get_transactions_history(page=page, transactions_per_page=transactions_per_page, tag=`${transaction.category}`)
             })
 
             transaction_unit_incomes.querySelector('strong').addEventListener('click', () => {
-                get_transactions_history(tag=`${transaction.category}`)
+                get_transactions_history(page=page, transactions_per_page=transactions_per_page, tag=`${transaction.category}`)
             })
 
             transaction_unit_expenses.querySelector('strong').addEventListener('click', () => {
-                get_transactions_history(tag=`${transaction.category}`)
+                get_transactions_history(page=page, transactions_per_page=transactions_per_page, tag=`${transaction.category}`)
             })
 
             transaction_unit_home.querySelector('b').addEventListener('click', () => {
-                get_transactions_history(tag=`${transaction.type}`)
+                get_transactions_history(page=page, transactions_per_page=transactions_per_page, tag=`${transaction.type}`)
             })
 
             transaction_unit_history.querySelector('b').addEventListener('click', () => {
-                get_transactions_history(tag=`${transaction.type}`)
+                get_transactions_history(page=page, transactions_per_page=transactions_per_page, tag=`${transaction.type}`)
             })
 
             // transaction_unit_incomes.querySelector('b').addEventListener('click', () => {
@@ -341,7 +354,6 @@ function get_transactions_history(tag) {
             // transaction_unit_expenses.querySelector('b').addEventListener('click', () => {
             //     get_transactions_history(tag=`${transaction.type}`)
             // })
-
         })
         })
         .catch(error => {console.log(error)})
@@ -366,11 +378,11 @@ function accounts_display() {
     
     get_account();
     chart_account();
+};
+
     document.querySelector('#add_account_button').addEventListener('click', () => add_account());
     document.querySelector('#edit_account_button').addEventListener('click', () => edit_account_display());
     document.querySelector('#delete_account_button').addEventListener('click', () => delete_account_display());
-    
-};
 
 function add_account() {
     document.querySelector('#form_account').style.display = 'block';
@@ -382,18 +394,32 @@ function edit_account_display() {
     document.querySelector('#form_account').style.display = 'none';
     document.querySelector('#edit_form_account').style.display = 'block';
     document.querySelector('#delete_form_account').style.display = 'none';
+    get_account()
+    
+    document.querySelector('#account_edit_value').value =""
+    document.querySelector('#edit_account_title_value').value =""
+    document.querySelector('#edit_account_amount_value').value=""
+    document.querySelector('#edit_account_currency_value').value="Currency"
+
 };
 
 function delete_account_display() {
     document.querySelector('#form_account').style.display = 'none';
     document.querySelector('#edit_form_account').style.display = 'none';
     document.querySelector('#delete_form_account').style.display = 'block';
+    get_account()
+    document.querySelector('#account_delete_value').value=""
+    document.querySelector('#delete_account_title_value').value =""
+    document.querySelector('#delete_account_amount_value').value=""
+    document.querySelector('#delete_account_currency_value').value="Currency"
 };
 
 
 document.querySelector('#account_save_end_exit').onclick = (event) => {
     create_account();
     document.querySelector('#form_account').style.display = 'none';
+    get_account();
+    chart_account();
     // event.stopPropagation();
     // event.preventDefault();
     // event.stopImmediatePropagation();
@@ -402,6 +428,8 @@ document.querySelector('#account_save_end_exit').onclick = (event) => {
 
 document.querySelector('#account_save_end_add').onclick = (event) => {
     create_account();
+    get_account();
+    chart_account();
     document.querySelector('#account_title_value').value = '';
     document.querySelector('#account_amount_value').value = '';
     document.querySelector('#account_currency_value').value = '';
@@ -409,11 +437,11 @@ document.querySelector('#account_save_end_add').onclick = (event) => {
     // event.preventDefault();
     // event.stopImmediatePropagation();
     return false;
-};
+}; 
 
 
 function create_account() {
-    document.querySelector('#account_container').innerHTML = '';
+    
     fetch('/create_account', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -426,6 +454,10 @@ function create_account() {
         .then(response => response.json())
         .then(result => {console.log(result)})
         .catch(error => {console.log(error)})
+        document.querySelector('#account_title_value').value = '';
+        document.querySelector('#account_amount_value').value = '';
+        document.querySelector('#account_currency_value').value = '';
+        chart_account();
         get_account();
         return false
         
@@ -433,30 +465,34 @@ function create_account() {
 
 
 function get_account() {
-    // document.querySelector('#account_edit_value').innerHTML = ""
-    const options_account = document.querySelectorAll('.transaction_account_select')
-    options_account.forEach(option_account => {
-        option_account.remove()
-    });
 
-    const options_account_edit = document.querySelectorAll('.account_edit_select')
-    options_account_edit.forEach(option_account_edit => {
-        option_account_edit.remove()
-    });
-
-    const options_account_delete = document.querySelectorAll('.account_delete_value')
-    options_account_delete.forEach(option_account_delete => {
-        option_account_delete.remove()
-    });
-
+    
     fetch(`/get_account`)
         .then(response => response.json())
         .then(data => {
+
+            const options_account = document.querySelectorAll('.transaction_account_select')
+            options_account.forEach(option_account => {
+                option_account.remove()
+            });
+        
+            const options_account_edit = document.querySelectorAll('.account_select_edit')
+            options_account_edit.forEach(option_account_edit => {
+                option_account_edit.remove()
+            });
+        
+            const options_account_delete = document.querySelectorAll('.account_select_delete')
+            options_account_delete.forEach(option_account_delete => {
+                option_account_delete.remove()
+            });
+
+            document.querySelector('#account_container').innerHTML = ""
             console.log(data.accounts);
             console.log(data.sum_total);
             console.log(data.curennsies);
 
-            const sum_total = data.sum_total.amount__sum;
+            const sum_total = data.sum_total.amount__sum == null ? "0.00" : data.sum_total.amount__sum.toFixed(2);
+            
 
             const card_first = document.createElement('div');
             card_first.setAttribute('class', 'col-sm-3 p-3');
@@ -489,7 +525,7 @@ function get_account() {
             let title_account = account.title;
             let edit_title_account = account.title;
             let delete_title_account = account.title;
-            const account_amount = account.amount;
+            const account_amount = account.amount.toFixed(2);
             const account_currency = account.currency;
 
             const card_first = document.createElement('div');
@@ -524,13 +560,13 @@ function get_account() {
 
             const account_option_edit = document.createElement('option');
             account_option_edit.innerHTML = `${edit_title_account}`;
-            account_option.setAttribute('class', 'account_edit_select')
+            account_option_edit.setAttribute('class', 'account_select_edit')
             document.querySelector('#account_edit_value').append(account_option_edit);
 
 
             const account_option_delete = document.createElement('option');
             account_option_delete.innerHTML = `${delete_title_account}`;
-            account_option_delete.setAttribute('class', 'account_option_delete')
+            account_option_delete.setAttribute('class', 'account_select_delete')
             document.querySelector('#account_delete_value').append(account_option_delete);
 
         })
@@ -590,10 +626,11 @@ function get_account_detail(account){
 
 document.querySelector('#account_edit_end_save').addEventListener('click', () => {
     edit_account();
+    get_account();
+    chart_account();
 })
 
 function edit_account() {
-    // document.querySelector('#account_container').innerHTML = '';
     fetch('/edit_account', {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
@@ -607,11 +644,15 @@ function edit_account() {
         .then(response => response.json())
         .then(result => {console.log(result)})
         .catch(error => {console.log(error)})
+        document.querySelector('#edit_form_account').style.display = 'none';
+        get_account()
         return false
 };
 
 document.querySelector('#account_delete').addEventListener('click', () => {
     delete_account();
+    get_account();
+    chart_account();
 })
 
 function delete_account() {
@@ -625,6 +666,9 @@ function delete_account() {
         .then(response => response.json())
         .then(result => {console.log(result)})
         .catch(error => {console.log(error)})
+        document.querySelector('#delete_form_account').style.display = 'none';
+        get_account()
+        chart_account();
         return false
 };
 
@@ -648,8 +692,7 @@ function incomes_display() {
     document.querySelector('#setting').style.display = 'none';
 
     document.querySelector('#transaction_container_incomes').innerHTML = '';
-    get_transactions_history(tag='Income');
-
+    get_transactions_history(page=page, transactions_per_page=transactions_per_page, tag='Income')
     chart_income();
 };
 
@@ -664,7 +707,7 @@ function expenses_display() {
     document.querySelector('#setting').style.display = 'none';
 
     document.querySelector('#transaction_container_expenses').innerHTML = '';
-    get_transactions_history(tag='Expense');
+    get_transactions_history(page=page, transactions_per_page=transactions_per_page, tag='Expense')
 
     chart_expense();
 };
