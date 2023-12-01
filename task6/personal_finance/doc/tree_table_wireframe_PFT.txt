@@ -2,32 +2,32 @@
 title File structure of the project Personal Finance Tracker
 {
     {T
-     + personal_finance
+     + personal_finance    | root directory, container for the project
      ++ diagrams           | directory is used to store uml diagrams of the project
      ++ doc                | contains source code of the generated images
-     ++ personal_finance
-     +++ asgi.py
-     +++ setting.py
-     +++ urls.py
-     +++ wsgi.py
-     ++ tracker
-     +++ migrations
+     ++ personal_finance   | project's directory
+     +++ asgi.py           
+     +++ setting.py        
+     +++ urls.py          
+     +++ wsgi.py           
+     ++ tracker            | application's directory
+     +++ migrations        | directory to store migration files
      +++ static\ tracker   | directory is used to store static files such as CSS, JavaScript, images
      +++++ index.js        | handles data fetching from the backend, updating the UI, and handling user interactions using event listeners
      +++++ styles.css      | includes styles for the various components, layouts, and elements
-     +++ templates\tracker | directory to store HTML templates for rendering dynamic content
+     +++ templates\ tracker| directory to store HTML templates for rendering dynamic content
      ++++ index.html       | template for the main dashboard page
      ++++ layout.html      | template contains the common structure shared across multiple pages
      ++++ login.html       | template for rendering login form
      ++++ register.html    | template for rendering register form
-     ++++ admin.py         | used to define the configuration for the Django admin interface
-     ++++ apps.py
-     ++++ models.py        | contains defineted the data models for the application
-     ++++ tests.py
-     ++++ urls.py          | contains a mapping between the URL patterns and the views handle those patterns
-     ++++ views.py         | includes the Python functions (views) that handle HTTP requests and return HTTP responses
-     ++ db.sqlite3
-     ++ manage.py
+     +++ admin.py          | used to define the configuration for the Django admin interface
+     +++ apps.py          
+     +++ models.py         | contains defineted data models for the application
+     +++ tests.py         
+     +++ urls.py           | contains a mapping between the URL patterns and the views handle those patterns
+     +++ views.py          | includes the Python functions (views) that handle HTTP requests and return HTTP responses
+     ++ db.sqlite3         | database
+     ++ manage.py          | command-line utility that let interact with the project
      ++ readme.md          | file is the documentation and introduction to the project
 
     }
