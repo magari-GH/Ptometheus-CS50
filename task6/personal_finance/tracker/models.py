@@ -18,6 +18,7 @@ class Transaction(models.Model):
     amount = models.FloatField(default=0)
     currency = models.CharField(max_length=3)
     account = models.CharField(max_length=64)
+    # account = models.ForeignKey("Account", on_delete=models.CASCADE, related_name="accounts")
     date = models.DateTimeField()
 
     def serialize(self):

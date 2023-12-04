@@ -22,7 +22,11 @@ function home_display() {
     document.querySelector('#setting').style.display = 'none';
 
     document.querySelector('#form_transaction').style.display = 'none';
+    document.querySelector('#edit_form_transaction').style.display = 'none';
+    document.querySelector('#delete_form_transaction').style.display = 'none';
     document.querySelector('#form_category').style.display = 'none';
+    document.querySelector('#edit_form_category').style.display = 'none';
+    document.querySelector('#delete_form_category').style.display = 'none';
 
 
     get_transactions_history(page=page, transactions_per_page=transactions_per_page, tag='all');
@@ -34,7 +38,13 @@ function home_display() {
 };
 
 document.querySelector('#add_transaction_button').addEventListener('click', () => add_transaction());
+document.querySelector('#edit_transaction_button').addEventListener('click', () => edit_transaction_display());
+document.querySelector('#delete_transaction_button').addEventListener('click', () => delete_transaction_display());
 document.querySelector('#add_category_button').addEventListener('click', () => add_category());
+document.querySelector('#edit_category_button').addEventListener('click', () => edit_category_display());
+document.querySelector('#delete_category_button').addEventListener('click', () => delete_category_display());
+
+
 
 function get_transaction_info() {
     // document.querySelector('#transaction_account_value').innerHTML = '';
@@ -76,16 +86,207 @@ function get_transaction_info() {
     })  
 }
 
-
 function add_transaction () {
     document.querySelector('#form_transaction').style.display = 'block';
+    document.querySelector('#edit_form_transaction').style.display = 'none';
+    document.querySelector('#delete_form_transaction').style.display = 'none';
     document.querySelector('#form_category').style.display = 'none';
+    document.querySelector('#edit_form_category').style.display = 'none';
+    document.querySelector('#delete_form_category').style.display = 'none';
     get_category(type="all");
 };
 
-function add_category() {
-    document.querySelector('#form_category').style.display = 'block';
+function create_transaction() {
+    fetch('/create_transaction', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            type: document.querySelector('#transaction_type_value').value,
+            category: document.querySelector('#transaction_category_value').value,
+            title: document.querySelector('#transaction_title_value').value,
+            amount: document.querySelector('#transaction_amount_value').value,
+            currency: document.querySelector('#transaction_currency_value').value,
+            account: document.querySelector('#transaction_account_value').value,
+            // date: document.querySelector('input[type="datetime-local"]').value,
+            date: document.querySelector('#transaction_date_value').value,
+        })
+    })
+        .then(response => response.json())
+        .then(result => {console.log(result);
+        })
+        .catch(error => {console.log(error)})
+        chart_income_and_expense();
+        get_transactions_history(page=page, transactions_per_page=transactions_per_page, tag='all')
+        get_account();
+        get_transaction_info();
+        return false
+        
+};
+
+document.querySelector('#transaction_edit_select').addEventListener('change', () => {
+    const selected_edit_transaction = document.querySelector('#transaction_edit_select').value;
+    get_transaction_detail(transaction=`${selected_edit_transaction}`);
+})
+
+document.querySelector('#transaction_delete_select').addEventListener('change', () => {
+    const selected_delete_transaction = document.querySelector('#transaction_delete_select').value;
+    get_transaction_detail(transaction=`${selected_delete_transaction}`);
+})
+
+
+function get_transaction_detail(transaction) {
+    if (transaction == "Select transaction") {
+
+        document.querySelector("#transaction_edit_type").value = "";
+        document.querySelector("#transaction_edit_category").value = "";
+        document.querySelector("#transaction_edit_title").value = "";
+        document.querySelector("#transaction_edit_amount").value = "";
+        document.querySelector("#transaction_edit_currency").value = "";
+        document.querySelector("#transaction_edit_account").value = "";
+        document.querySelector("#transaction_edit_date").value = "";
+
+        document.querySelector("#transaction_delete_type").value = "";
+        document.querySelector("#transaction_delete_category").value = "";
+        document.querySelector("#transaction_delete_title").value = "";
+        document.querySelector("#transaction_delete_amount").value = "";
+        document.querySelector("#transaction_delete_currency").value = "";
+        document.querySelector("#transaction_delete_account").value = "";
+        document.querySelector("#transaction_delete_date").value = "";
+    }
+
+    fetch(`/get_transaction_detail?selected_transaction=${transaction}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.transaction);
+            console.log(transaction);
+
+            const transaction_id = data.transaction.id;
+            const transaction_user = data.transaction.user;
+            const transaction_title = data.transaction.title;
+            const transaction_type = data.transaction.type;
+            const transaction_category = data.transaction.category;
+            const transaction_amount = data.transaction.amount;
+            const transaction_currency = data.transaction.currency;
+            const transaction_account = data.transaction.account;
+            const transaction_date = data.transaction.date;
+
+            document.querySelector("#transaction_edit_type").value = transaction_type;
+            document.querySelector("#transaction_edit_category").value = transaction_category;
+            document.querySelector("#transaction_edit_title").value = transaction_title;
+            document.querySelector("#transaction_edit_amount").value = transaction_amount;
+            document.querySelector("#transaction_edit_currency").value = transaction_currency;
+            document.querySelector("#transaction_edit_account").value = transaction_account;
+            document.querySelector("#transaction_edit_date").value = transaction_date;
+    
+            document.querySelector("#transaction_delete_type").value = transaction_type;
+            document.querySelector("#transaction_delete_category").value = transaction_category;
+            document.querySelector("#transaction_delete_title").value = transaction_title;
+            document.querySelector("#transaction_delete_amount").value = transaction_amount;
+            document.querySelector("#transaction_delete_currency").value = transaction_currency;
+            document.querySelector("#transaction_delete_account").value = transaction_account;
+            document.querySelector("#transaction_delete_date").value = transaction_date;
+
+        })
+        .catch(error => {console.log(error)})
+        return false
+};
+
+
+function edit_transaction_display () {
     document.querySelector('#form_transaction').style.display = 'none';
+    document.querySelector('#edit_form_transaction').style.display = 'block';
+    document.querySelector('#delete_form_transaction').style.display = 'none';
+    document.querySelector('#form_category').style.display = 'none';
+    document.querySelector('#edit_form_category').style.display = 'none';
+    document.querySelector('#delete_form_category').style.display = 'none';
+    get_category(type="all");
+};
+
+function delete_transaction_display () {
+    document.querySelector('#form_transaction').style.display = 'none';
+    document.querySelector('#edit_form_transaction').style.display = 'none';
+    document.querySelector('#delete_form_transaction').style.display = 'block';
+    document.querySelector('#form_category').style.display = 'none';
+    document.querySelector('#edit_form_category').style.display = 'none';
+    document.querySelector('#delete_form_category').style.display = 'none';
+    get_category(type="all");
+};
+
+
+function get_category_detail(category){
+    if (category == "Select category") {
+
+        document.querySelector("#category_edit_title").value = "";
+        document.querySelector("#category_edit_type").value = "Choose Type";
+        document.querySelector("#category_edit_color").value = "";
+
+        document.querySelector("#category_delete_title").value = "";
+        document.querySelector("#category_delete_type").value = "Choose Type";
+        document.querySelector("#category_delete_color").value = "";
+    }
+
+    fetch(`/get_category_detail?selected_category=${category}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.category);
+            console.log(category);
+
+            const category_id = data.category.id;
+            const category_user = data.category.user;
+            const category_title = data.category.title;
+            const category_type = data.category.type;
+            const category_color = data.category.color;
+
+            document.querySelector("#category_edit_title").value = category_title;
+            document.querySelector("#category_edit_type").value = category_type;
+            document.querySelector("#category_edit_color").value = category_color;
+
+            document.querySelector("#category_delete_title").value = category_title;
+            document.querySelector("#category_delete_type").value = category_type;
+            document.querySelector("#category_delete_color").value = category_color;
+
+
+        })
+        .catch(error => {console.log(error)})
+        return false
+}
+
+function add_category() {
+    document.querySelector('#form_transaction').style.display = 'none';
+    document.querySelector('#edit_form_transaction').style.display = 'none';
+    document.querySelector('#delete_form_transaction').style.display = 'none';
+    document.querySelector('#form_category').style.display = 'block';
+    document.querySelector('#edit_form_category').style.display = 'none';
+    document.querySelector('#delete_form_category').style.display = 'none';
+};
+
+function edit_category_display() {
+    document.querySelector('#form_transaction').style.display = 'none';
+    document.querySelector('#edit_form_transaction').style.display = 'none';
+    document.querySelector('#delete_form_transaction').style.display = 'none';
+    document.querySelector('#form_category').style.display = 'none';
+    document.querySelector('#edit_form_category').style.display = 'block';
+    document.querySelector('#delete_form_category').style.display = 'none';
+    get_category(type="all")
+    document.querySelector('#category_edit_select').value = "";
+    document.querySelector('#category_edit_title').value = "";
+    document.querySelector('#category_edit_type').value = "Choose Type";
+    document.querySelector('#category_edit_color').value = "#000000";
+
+};
+
+function delete_category_display() {
+    document.querySelector('#form_transaction').style.display = 'none';
+    document.querySelector('#edit_form_transaction').style.display = 'none';
+    document.querySelector('#delete_form_transaction').style.display = 'none';
+    document.querySelector('#form_category').style.display = 'none';
+    document.querySelector('#edit_form_category').style.display = 'none';
+    document.querySelector('#delete_form_category').style.display = 'block';
+    get_category(type="all")
+    document.querySelector('#category_delete_select').value = "";
+    document.querySelector('#category_delete_title').value = "";
+    document.querySelector('#category_delete_type').value = "Choose Type";
+    document.querySelector('#category_delete_color').value = "#000000";
 };
 
 
@@ -136,32 +337,8 @@ document.querySelector('#category_save_end_add').addEventListener('click', () =>
     return false
 });
 
-function create_transaction() {
-    fetch('/create_transaction', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            type: document.querySelector('#transaction_type_value').value,
-            category: document.querySelector('#transaction_category_value').value,
-            title: document.querySelector('#transaction_title_value').value,
-            amount: document.querySelector('#transaction_amount_value').value,
-            currency: document.querySelector('#transaction_currency_value').value,
-            account: document.querySelector('#transaction_account_value').value,
-            // date: document.querySelector('input[type="datetime-local"]').value,
-            date: document.querySelector('#transaction_date_value').value,
-        })
-    })
-        .then(response => response.json())
-        .then(result => {console.log(result);
-        })
-        .catch(error => {console.log(error)})
-        chart_income_and_expense();
-        get_transactions_history(page=page, transactions_per_page=transactions_per_page, tag='all')
-        get_account();
-        get_transaction_info();
-        return false
-        
-};
+
+
 
 function create_category() {
     fetch('/create_category', {
@@ -182,6 +359,61 @@ function create_category() {
         return false
         
 };
+
+document.querySelector('#category_edit_select').addEventListener('change', () => {
+    const selected_edit_category = document.querySelector('#category_edit_select').value;
+    get_category_detail(category=`${selected_edit_category}`);
+})
+
+document.querySelector('#category_delete_select').addEventListener('change', () => {
+    const selected_delete_category = document.querySelector('#category_delete_select').value;
+    get_category_detail(category=`${selected_delete_category}`);
+})
+
+document.querySelector('#category_edit_save').addEventListener('click', () => {
+    edit_category()
+});
+
+function edit_category() {
+    fetch('/edit_category', {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            selected_category: document.querySelector('#category_edit_select').value,
+            title: document.querySelector('#category_edit_title').value,
+            type: document.querySelector('#category_edit_type').value,
+            color: document.querySelector('#category_edit_color').value,
+        })
+    })
+        .then(response => response.json())
+        .then(result => {console.log(result)})
+        .catch(error => {console.log(error)})
+        document.querySelector('#edit_form_category').style.display = 'none';
+        get_category()
+        return false
+};
+
+document.querySelector('#category_delete_save').addEventListener('click', () => {
+    delete_category()
+});
+
+function delete_category() {
+    fetch('/delete_category', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            selected_category: document.querySelector('#category_delete_select').value,
+        })
+    })
+        .then(response => response.json())
+        .then(result => {console.log(result)})
+        .catch(error => {console.log(error)})
+        document.querySelector('#delete_form_category').style.display = 'none';
+        get_category()
+        return false
+};
+
+
 document.querySelector('#transaction_type_value').addEventListener('change', () => {
     const selected_type = document.querySelector('#transaction_type_value').value;
     get_category(type=`${selected_type}`);
@@ -193,6 +425,17 @@ function get_category(type) {
         option.remove()
     })
 
+    const options_edit_category = document.querySelectorAll('.category_option_edit_class')
+    options_edit_category.forEach(option  => {
+        option.remove()
+    })
+
+    const options_delete_category = document.querySelectorAll('.category_option_delete_class')
+    options_delete_category.forEach(option  => {
+        option.remove()
+    })
+
+
     fetch(`/get_category?type=${type}`)
         .then(response => response.json())
         .then(data => {
@@ -203,8 +446,14 @@ function get_category(type) {
             const category_id = category.id;
             const category_user = category.user;
             const category_title = category.title;
+            const transaction_edit_title_option = category.title;
+            const transaction_delete_title_option = category.title;
+            const category_edit_title_option = category.title;
+            const category_delete_title_option = category.title;
             const category_type = category.type;
             const category_color = category.color;
+            const category_edit_color = category.color;
+            const category_delete_color = category.color; 
 
             const category_option = document.createElement('option');
             category_option.innerHTML = `${category_title}`;
@@ -212,11 +461,36 @@ function get_category(type) {
             category_option.setAttribute('class', 'transaction_category_select')
             document.querySelector('#transaction_category_value').append(category_option);
 
+            const category_option_transaction_edit = document.createElement('option');
+            category_option_transaction_edit.innerHTML = `${transaction_edit_title_option}`;
+            category_option_transaction_edit.style.color = `${category_color}`;
+            category_option_transaction_edit.setAttribute('class', 'category_option_transaction_edit_class')
+            document.querySelector('#transaction_edit_category').append(category_option_transaction_edit);
+
+            const category_option_transaction_delete = document.createElement('option');
+            category_option_transaction_delete.innerHTML = `${transaction_delete_title_option}`;
+            category_option_transaction_delete.style.color = `${category_color}`;
+            category_option_transaction_delete.setAttribute('class', 'category_option_transaction_delete_class')
+            document.querySelector('#transaction_delete_category').append(category_option_transaction_delete);
+
+            const category_option_edit = document.createElement('option');
+            category_option_edit.innerHTML = `${category_edit_title_option}`;
+            category_option_edit.style.color = `${category_edit_color}`;
+            category_option_edit.setAttribute('class', 'category_option_edit_class')
+            document.querySelector('#category_edit_select').append(category_option_edit);
+
+            const category_option_delete = document.createElement('option');
+            category_option_delete.innerHTML = `${category_delete_title_option}`;
+            category_option_delete.style.color = `${category_delete_color}`;
+            category_option_delete.setAttribute('class', 'category_option_delete_class')
+            document.querySelector('#category_delete_select').append(category_option_delete);
+
         })
         })
         .catch(error => {console.log(error)})
         return false
 };
+
 
 
 function history_display() {
@@ -229,8 +503,6 @@ function history_display() {
     get_transactions_history(page=1, transactions_per_page=transactions_per_page, tag='all');
     document.querySelector('#transaction_container_history').innerHTML ='';
 };
-
-
 
 document.querySelector('#next').addEventListener('click', () => {load_next(returned_page)})
 
@@ -307,6 +579,9 @@ function get_transactions_history(page, transactions_per_page, tag) {
             const transaction_category = transaction.category.fontcolor(`${transaction.color}`);
             // const transaction_category = `<strong> ${transaction.category}</strong>`;
             const transaction_title = transaction.title;
+            const transaction_edit_title_option = transaction.title;
+            const transaction_delete_title_option = transaction.title;
+
             const transaction_amount = transaction.amount;
             const transaction_currency = transaction.currency;
             const transaction_account = transaction.account;
@@ -322,6 +597,8 @@ function get_transactions_history(page, transactions_per_page, tag) {
             document.querySelector('#transaction_container_history').append(transaction_unit_history);
             document.querySelector('#transaction_container_incomes').append(transaction_unit_incomes);      
             document.querySelector('#transaction_container_expenses').append(transaction_unit_expenses);
+
+            
 
             transaction_unit_home.querySelector('strong').addEventListener('click', () => {
                 get_transactions_history(page=page, transactions_per_page=transactions_per_page, tag=`${transaction.category}`)
@@ -354,6 +631,16 @@ function get_transactions_history(page, transactions_per_page, tag) {
             // transaction_unit_expenses.querySelector('b').addEventListener('click', () => {
             //     get_transactions_history(tag=`${transaction.type}`)
             // })
+
+            const transaction_option_edit = document.createElement('option');
+            transaction_option_edit.innerHTML = `${transaction_edit_title_option}`;
+            transaction_option_edit.setAttribute('class', 'transaction_option_edit_class')
+            document.querySelector('#transaction_edit_select').append(transaction_option_edit);
+
+            const transaction_option_delete = document.createElement('option');
+            transaction_option_delete.innerHTML = `${transaction_delete_title_option}`;
+            transaction_option_delete.setAttribute('class', 'transaction_option_delete_class')
+            document.querySelector('#transaction_delete_select').append(transaction_option_delete);
         })
         })
         .catch(error => {console.log(error)})
@@ -523,6 +810,8 @@ function get_account() {
             const account_id = account.id;
             const account_user = account.user;
             let title_account = account.title;
+            let title_account_transaction_edit = account.title;
+            let title_account_transaction_delete = account.title;
             let edit_title_account = account.title;
             let delete_title_account = account.title;
             const account_amount = account.amount.toFixed(2);
@@ -556,6 +845,16 @@ function get_account() {
             account_option.innerHTML = `${title_account}`;
             account_option.setAttribute('class', 'transaction_account_select')
             document.querySelector('#transaction_account_value').append(account_option);
+
+            const account_option_transaction_edit = document.createElement('option');
+            account_option_transaction_edit.innerHTML = `${title_account_transaction_edit}`;
+            account_option_transaction_edit.setAttribute('class', 'account_option_transaction_edit_class')
+            document.querySelector('#transaction_edit_account').append(account_option_transaction_edit);
+
+            const account_option_transaction_delete = document.createElement('option');
+            account_option_transaction_delete.innerHTML = `${title_account_transaction_delete}`;
+            account_option_transaction_delete.setAttribute('class', 'account_option_transaction_delete_class')
+            document.querySelector('#transaction_delete_account').append(account_option_transaction_delete);
             
 
             const account_option_edit = document.createElement('option');
@@ -695,7 +994,6 @@ function incomes_display() {
     get_transactions_history(page=page, transactions_per_page=transactions_per_page, tag='Income')
     chart_income();
 };
-
 
 
 function expenses_display() {

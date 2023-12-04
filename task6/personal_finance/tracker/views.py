@@ -4,14 +4,12 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import render
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from .models import User, Transaction, Account, Category
 from django.core.paginator import Paginator
-
-from django.db.models import Avg, Sum
+from django.db.models import Sum
 
 
 def index(request):
@@ -192,6 +190,7 @@ def create_transaction(request):
             else:
                 account.amount = account.amount - float(amount)
             account.save()
+          
             transaction = Transaction(
                 user=user,
                 type=type,
@@ -208,6 +207,76 @@ def create_transaction(request):
         return JsonResponse({"message": "Transaction is created"}, status=201)
     else:
         return JsonResponse({"error": "Method have to be POST"}, status=404)
+
+
+@csrf_exempt
+def edit_transaction(request):
+  if request.method == "PUT":
+    try:
+      data = json.loads(request.body)
+      user = request.user
+      selected_transaction = data.get("selected_transaction", "")
+      type = data.get("type", "")
+      category_title = data.get("category", "")
+      category = Category.objects.get(title=category_title)
+      title = data.get("title", "")
+      amount = data.get("amount", "")
+      currency = data.get("currency", "")
+      account = data.get("account", "")
+      date = data.get("date", "")
+
+      account = Account.objects.get(title=account)
+      if type == "Income":
+        account.amount = account.amount + float(amount)
+      else:
+        account.amount = account.amount - float(amount)
+      account.save()
+
+      transaction = Transaction.objects.filter(user=user, title=selected_transaction).first()
+      
+      transaction.type = type
+      transaction.category = category
+      transaction.title = title
+      transaction.amount = amount
+      transaction.currency = currency
+      transaction.account = account
+      transaction.date = date
+      transaction.save()
+
+    except AttributeError:
+      return JsonResponse({"error": "AttributeError catched"}, status=500)
+    return JsonResponse({"message": "Transaction is edited"}, status=201)
+  else:
+    return JsonResponse({"error": "Method have to be PUT"}, status=404)
+
+
+@csrf_exempt
+def delete_transaction(request):
+  if request.method == "POST":
+    try:
+      data = json.loads(request.body)
+      user = request.user
+      selected_transaction = data.get("selected_transaction", "")
+      transaction = Transaction.objects.filter(user=user, title=selected_transaction).first()
+      transaction.delete()
+    except AttributeError:
+      return JsonResponse({"error": "AttributeError catched"}, status=500)
+    return JsonResponse({"message": "Transaction is deleted"}, status=201)
+  else:
+    return JsonResponse({"error": "Method have to be POST"}, status=404)
+
+
+def get_transaction_detail(request):
+  if request.method == "GET":
+    user = request.user
+    transaction = request.GET.get("selected_transaction")
+    transaction = Transaction.objects.filter(user=user, title=transaction).first()
+    serialised_transaction = transaction.serialize()
+    return JsonResponse(
+      {
+        "transaction": serialised_transaction,
+      }
+    )
 
 
 @csrf_exempt
@@ -263,7 +332,7 @@ def delete_account(request):
             return JsonResponse({"error": "AttributeError catched"}, status=500)
         return JsonResponse({"message": "Account is deleted"}, status=201)
     else:
-        return JsonResponse({"error": "Method have to be PUT"}, status=404)
+        return JsonResponse({"error": "Method have to be POST"}, status=404)
 
 
 @csrf_exempt
@@ -282,6 +351,56 @@ def create_category(request):
         return JsonResponse({"message": "Category is created"}, status=201)
     else:
         return JsonResponse({"error": "Method have to be POST"}, status=404)
+
+
+@csrf_exempt
+def edit_category(request):
+  if request.method == "PUT":
+    try:
+      data = json.loads(request.body)
+      user = request.user
+      selected_category = data.get("selected_category", "")
+      title = data.get("title", "")
+      type = data.get("type", "")
+      color = data.get("color", "")
+      category = Category.objects.filter(user=user, title=selected_category).first()
+      category.title = title
+      category.type = type
+      category.color = color
+      category.save()
+    except AttributeError:
+      return JsonResponse({"error": "AttributeError catched"}, status=500)
+    return JsonResponse({"message": "Category is edited"}, status=201)
+  else:
+    return JsonResponse({"error": "Method have to be PUT"}, status=404)
+
+@csrf_exempt
+def delete_category(request):
+  if request.method == "POST":
+    try:
+      data = json.loads(request.body)
+      user = request.user
+      selected_category = data.get("selected_category", "")
+      category = Category.objects.filter(user=user, title=selected_category).first()
+      category.delete()
+    except AttributeError:
+      return JsonResponse({"error": "AttributeError catched"}, status=500)
+    return JsonResponse({"message": "Category is deleted"}, status=201)
+  else:
+    return JsonResponse({"error": "Method have to be POST"}, status=404)
+
+
+def get_category_detail(request):
+  if request.method == "GET":
+    user = request.user
+    category = request.GET.get("selected_category")
+    category = Category.objects.filter(user=user, title=category).first()
+    serialised_category = category.serialize()
+    return JsonResponse(
+        {
+            "category": serialised_category,
+        }
+    )
 
 
 def chart_income(request):

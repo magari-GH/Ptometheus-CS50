@@ -41,8 +41,14 @@
 
   {% if user.is_authenticated %}
   <button class="btn btn-primary btn-sm" id="add_transaction_button">Add transaction</button>
+  <button class="btn btn-primary btn-sm m-1" id="edit_transaction_button">Edit transaction</button>
+  <button class="btn btn-primary btn-sm m-1" id="delete_transaction_button">Delete transaction</button>
+
   <button class="btn btn-primary btn-sm" id="add_category_button">Add category</button>
+  <button class="btn btn-primary btn-sm m-1" id="edit_category_button">Edit category</button>
+  <button class="btn btn-primary btn-sm m-1" id="delete_category_button">Delete category</button>
   {% endif %}
+
 
   <form id="form_transaction">
     <div class="input-group border p-2 mt-2">
@@ -76,7 +82,88 @@
   </form>
 
 
+  <form id="edit_form_transaction">
+    <div class="input-group border p-2 mt-2">
 
+      <select id="transaction_edit_select">
+        <option selected>Select transaction</option>
+      </select>
+
+      <select id="transaction_edit_type" class="form-control">
+        <option selected>Transaction</option>
+        <option value="Income">Income</option>
+        <option value="Expense">Expense</option>
+      </select>
+
+      <input hidden disabled class="form-control" value={{user.username}}>
+
+      <select id="transaction_edit_category" class="form-control">
+        <option selected>Category</option>
+      </select>
+
+      <input id="transaction_edit_title" class="form-control" type="text" placeholder="Title of transaction">
+      <input id="transaction_edit_amount" class="form-control" type="number" step="0.01" value="0.00"
+        placeholder="0.00">
+      <select id="transaction_edit_currency" class="form-control">
+        <option selected>Currency</option>
+        <!-- <option value="USD">USD</option> -->
+        <option value="EUR">EUR</option>
+        <!-- <option value="UAH">UAH</option> -->
+      </select>
+      <select id="transaction_edit_account" class="form-control">
+        <option selected>Select account</option>
+      </select>
+      <input type="datetime-local" name="name" id="transaction_edit_date">
+      <br>
+    </div>
+    
+    <div>
+      <input id="transaction_edit_save" class="btn btn-primary btn-sm mt-3" type="button" value="Save transaction">
+    </div>
+
+  </form>
+
+
+  <form id="delete_form_transaction">
+    <div class="input-group border p-2 mt-2">
+
+      <select id="transaction_delete_select">
+        <option selected>Select transaction</option>
+      </select>
+
+      <select id="transaction_delete_type" class="form-control">
+        <option selected>Transaction</option>
+        <option value="Income">Income</option>
+        <option value="Expense">Expense</option>
+      </select>
+
+      <input hidden disabled class="form-control" value={{user.username}}>
+
+      <select id="transaction_delete_category" class="form-control">
+        <option selected>Category</option>
+      </select>
+
+      <input id="transaction_delete_title" class="form-control" type="text" placeholder="Title of transaction">
+      <input id="transaction_delete_amount" class="form-control" type="number" step="0.01" value="0.00"
+        placeholder="0.00">
+      <select id="transaction_delete_currency" class="form-control">
+        <option selected>Currency</option>
+        <!-- <option value="USD">USD</option> -->
+        <option value="EUR">EUR</option>
+        <!-- <option value="UAH">UAH</option> -->
+      </select>
+      <select id="transaction_delete_account" class="form-control">
+        <option selected>Select account</option>
+      </select>
+      <input type="datetime-local" name="name" id="transaction_delete_date">
+      <br>
+    </div>
+    
+    <div>
+      <input id="transaction_delete_save" class="btn btn-primary btn-sm mt-3" type="button" value="Delete transaction">
+    </div>
+
+  </form>
 
 
   <form id="form_category">
@@ -93,10 +180,66 @@
       <input id="category_color_value" type="color" class="form-control">
 
     </div>
-    <br>
-    <input id="category_save_end_exit" class="btn btn-primary btn-sm" type="button" value="Save category">
-    <input id="category_save_end_add" class="btn btn-primary btn-sm" type="button" value="Add new">
+
+    <div class="pt-3">
+      <input id="category_save_end_exit" class="btn btn-primary btn-sm" type="button" value="Save category">
+      <input id="category_save_end_add" class="btn btn-primary btn-sm" type="button" value="Add new">
+    </div>
+    
   </form>
+
+  <form id="edit_form_category">
+    <div class="input-group border p-2 mt-2">
+      <input hidden disabled class="form-control" value={{user.username}}>
+
+      <select id="category_edit_select" class="form-control">
+        <option selected>Select category</option>
+      </select>
+
+      <input id="category_edit_title" class="form-control" type="text" placeholder="Title of category">
+
+      <select id="category_edit_type" class="form-control">
+        <option selected>Choose Type</option>
+        <option value="Income">Income</option>
+        <option value="Expense">Expense</option>
+      </select>
+      
+      <label for="category_edit_color" class="form-control">Color</label>
+      <input id="category_edit_color" type="color" class="form-control">
+
+    </div>
+
+    <div class="pt-3">
+      <input id="category_edit_save" class="btn btn-primary btn-sm" type="button" value="Save category">
+    </div>
+  </form>
+
+  <form id="delete_form_category">
+    <div class="input-group border p-2 mt-2">
+      <input hidden disabled class="form-control" value={{user.username}}>
+
+      <select id="category_delete_select" class="form-control">
+        <option selected>Select category</option>
+      </select>
+
+      <input id="category_delete_title" class="form-control" type="text" placeholder="Title of category">
+
+      <select id="category_delete_type" class="form-control">
+        <option selected>Choose Type</option>
+        <option value="Income">Income</option>
+        <option value="Expense">Expense</option>
+      </select>
+      <label for="category_delete_color" class="form-control">Color</label>
+      <input id="category_delete_color" type="color" class="form-control">
+
+    </div>
+
+    <div class="pt-3">
+      <input id="category_delete_save" class="btn btn-primary btn-sm" type="button" value="Delete category">
+    </div>
+  </form>
+
+
 
   {% if user.is_authenticated %}
   <div class="row m-0">
