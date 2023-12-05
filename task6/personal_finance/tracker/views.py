@@ -222,18 +222,20 @@ def edit_transaction(request):
       title = data.get("title", "")
       amount = data.get("amount", "")
       currency = data.get("currency", "")
-      account = data.get("account", "")
+      account_title = data.get("account", "")
       date = data.get("date", "")
 
-      account = Account.objects.get(title=account)
+      transaction = Transaction.objects.filter(user=user, title=selected_transaction).first()
+
+      old_amount = transaction.amount
+      account = Account.objects.get(title=account_title)
       if type == "Income":
-        account.amount = account.amount + float(amount)
+        account.amount = account.amount + float(amount) - old_amount
       else:
-        account.amount = account.amount - float(amount)
+        account.amount = account.amount - float(amount) + old_amount
       account.save()
 
-      transaction = Transaction.objects.filter(user=user, title=selected_transaction).first()
-      
+
       transaction.type = type
       transaction.category = category
       transaction.title = title
@@ -258,6 +260,17 @@ def delete_transaction(request):
       user = request.user
       selected_transaction = data.get("selected_transaction", "")
       transaction = Transaction.objects.filter(user=user, title=selected_transaction).first()
+      type = transaction.type
+      old_amount = transaction.amount
+      account = transaction.account.id
+      account = Account.objects.get(id=account)
+      
+      if type == "Income":
+        account.amount = account.amount - old_amount
+      else:
+        account.amount = account.amount + old_amount
+      account.save()
+
       transaction.delete()
     except AttributeError:
       return JsonResponse({"error": "AttributeError catched"}, status=500)

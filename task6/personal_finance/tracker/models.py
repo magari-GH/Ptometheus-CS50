@@ -17,12 +17,11 @@ class Transaction(models.Model):
     title = models.CharField(max_length=64)
     amount = models.FloatField(default=0)
     currency = models.CharField(max_length=3)
-    account = models.CharField(max_length=64)
-    # account = models.ForeignKey("Account", on_delete=models.CASCADE, related_name="accounts")
+    # account = models.CharField(max_length=64)
+    account = models.ForeignKey("Account", on_delete=models.CASCADE, related_name="accounts")
     date = models.DateTimeField()
 
     def serialize(self):
-        # function serializing model's fuilds for use by JSON
         return {
             "id": self.id,
             "user": self.user.username,
@@ -32,8 +31,9 @@ class Transaction(models.Model):
             "title": self.title,
             "amount": self.amount,
             "currency": self.currency,
-            "account": self.account,
-            "date": self.date.strftime("%b %d %Y, %I:%M %p"),
+            "account": self.account.title,
+            # "date": self.date.strftime("%b %d %Y, %I:%M %p"),
+            "date": self.date.strftime("%Y-%m-%dT%H:%M:%S"), # for input date to html type datetime local
         }
 
     def __str__(self):
