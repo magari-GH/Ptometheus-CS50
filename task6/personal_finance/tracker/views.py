@@ -1,21 +1,35 @@
 import datetime
+from django.db.models import Exists
 from django.shortcuts import render
 import json
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from .models import User, Transaction, Account, Category
 from django.core.paginator import Paginator
 from django.db.models import Sum
+import csv
 
 
 def index(request):
     # function for representing main page
     return render(request, "tracker/index.html")
 
+
+def export_transactions_csv(request):
+  user = request.user
+  response = HttpResponse(content_type="text/csv")
+  response['Content-Disposition'] = "attachment; filename='transactions.csv'"
+  writer = csv.writer(response)
+  writer.writerow(['id', 'user', 'type', 'category', 'title', 'amount', 'currency', 'account', 'date'])
+  transactions = Transaction.objects.filter(user=user).values_list('id', 'user', 'type', 'category', 'title', 'amount', 'currency', 'account', 'date')
+  for transaction in transactions:
+    writer.writerow(transaction)
+  return response
+    
 
 def get_account(request):
     # fucnction for represent accounts
@@ -27,7 +41,7 @@ def get_account(request):
         # accounts = Account.objects.order_by('currency').distinct()
         # curennsies = curennsies.user
 
-        sum_total = Account.objects.filter(currency="EUR").aggregate(Sum("amount"))
+        sum_total = Account.objects.filter(user=user, currency="EUR").aggregate(Sum("amount"))
         return JsonResponse(
             {
                 "accounts": serialised_accounts,
@@ -127,29 +141,29 @@ def get_transaction_info(request):
         today = datetime.date.today()
         current_month = today.month
         current_year = today.year
-        monthly_income = Transaction.objects.filter(
+        monthly_income = Transaction.objects.filter(user=user, 
             date__month=current_month, type="Income"
         ).aggregate(Sum("amount"))
-        monthly_expense = Transaction.objects.filter(
+        monthly_expense = Transaction.objects.filter(user=user, 
             date__month=current_month, type="Expense"
         ).aggregate(Sum("amount"))
-        previous_monthly_income = Transaction.objects.filter(
+        previous_monthly_income = Transaction.objects.filter(user=user, 
             date__month=current_month - 1, type="Income"
         ).aggregate(Sum("amount"))
-        previous_monthly_expense = Transaction.objects.filter(
+        previous_monthly_expense = Transaction.objects.filter(user=user, 
             date__month=current_month - 1, type="Expense"
         ).aggregate(Sum("amount"))
-        yearly_income = Transaction.objects.filter(
+        yearly_income = Transaction.objects.filter(user=user, 
             date__year=current_year, type="Income"
         ).aggregate(Sum("amount"))
-        yearly_expense = Transaction.objects.filter(
+        yearly_expense = Transaction.objects.filter(user=user, 
             date__year=current_year, type="Expense"
         ).aggregate(Sum("amount"))
-        month_number = Transaction.objects.dates("date", "month").count()
-        total_income = Transaction.objects.filter(type="Income").aggregate(
+        month_number = Transaction.objects.filter(user=user).dates("date", "month").count()
+        total_income = Transaction.objects.filter(user=user, type="Income").aggregate(
             Sum("amount")
         )
-        total_expense = Transaction.objects.filter(type="Expense").aggregate(
+        total_expense = Transaction.objects.filter(user=user, type="Expense").aggregate(
             Sum("amount")
         )
 
@@ -176,6 +190,7 @@ def create_transaction(request):
         try:
             data = json.loads(request.body)
             user = request.user
+            title = data.get("title", "")
             type = data.get("type", "")
             category_title = data.get("category", "")
             category = Category.objects.get(title=category_title)
@@ -186,25 +201,26 @@ def create_transaction(request):
             date = data.get("date", "")
             account = Account.objects.get(title=account)
             if type == "Income":
-                account.amount = account.amount + float(amount)
+              account.amount = account.amount + float(amount)
             else:
-                account.amount = account.amount - float(amount)
+              account.amount = account.amount - float(amount)
             account.save()
-          
+            
             transaction = Transaction(
-                user=user,
-                type=type,
-                category=category,
-                title=title,
-                amount=amount,
-                currency=currency,
-                account=account,
-                date=date,
+              user=user,
+              type=type,
+              category=category,
+              title=title,
+              amount=amount,
+              currency=currency,
+              account=account,
+              date=date,
             )
             transaction.save()
         except AttributeError:
             return JsonResponse({"error": "AttributeError catched"}, status=500)
         return JsonResponse({"message": "Transaction is created"}, status=201)
+        
     else:
         return JsonResponse({"error": "Method have to be POST"}, status=404)
 

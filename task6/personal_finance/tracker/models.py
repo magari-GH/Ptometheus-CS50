@@ -21,6 +21,11 @@ class Transaction(models.Model):
     account = models.ForeignKey("Account", on_delete=models.CASCADE, related_name="accounts")
     date = models.DateTimeField()
 
+
+    class Meta:
+        unique_together  = "user", "title"
+
+
     def serialize(self):
         return {
             "id": self.id,

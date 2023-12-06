@@ -98,3 +98,7 @@ task6/personal_finance/tracker/migrations/0005_alter_transaction_category_alter_
 task6/personal_finance/tracker/migrations/__pycache__/0005_alter_transaction_category_alter_transaction_user.cpython-311.pyc
 task5/pylintrc
 task6/pylintrc
+task6/personal_finance/tracker/migrations/__pycache__/0006_alter_transaction_account.cpython-311.pyc
+task6/personal_finance/tracker/migrations/0006_alter_transaction_account.py
+task6/personal_finance/tracker/migrations/__pycache__/0007_alter_transaction_unique_together.cpython-311.pyc
+task6/personal_finance/tracker/migrations/0007_alter_transaction_unique_together.py
