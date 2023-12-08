@@ -95,6 +95,33 @@ function add_transaction () {
 };
 
 function create_transaction() {
+
+
+    if (document.querySelector('#transaction_type_value').value == "Transaction" ) {
+        alert("Choose transaction type");
+    }
+    else if (document.querySelector('#transaction_category_value').value =="Category") {
+        alert("Choose transaction category");
+    }
+    else if (document.querySelector('#transaction_title_value').value == "") {
+        alert("Enter the title of transaction")
+    }
+    else if (document.querySelector('#transaction_amount_value').value == "0.00")
+    {
+        alert("Enter the amount of the transaction")
+    }
+    else if (document.querySelector('#transaction_currency_value').value == "Currency") {
+        alert("Choose the currency")
+    }
+    else if (document.querySelector('#transaction_account_value').value == "Select account") {
+        alert("Choose account")
+    }
+    else if (document.querySelector('#transaction_date_value').value == "" ) {
+        alert("Pick the date")
+    }
+    else {
+    
+
     fetch('/create_transaction', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -118,7 +145,7 @@ function create_transaction() {
         get_transaction_info();
         // get_transactions_history(page=page, transactions_per_page=transactions_per_page, tag='all')
         return false
-        
+    }    
 };
 
 document.querySelector('#transaction_edit_select').addEventListener('change', () => {
@@ -425,6 +452,14 @@ document.querySelector('#category_save_end_add').addEventListener('click', () =>
 });
 
 function create_category() {
+    if (document.querySelector('#category_title_value').value == "") {
+        alert("Enter title of category")
+    }
+    else if (document.querySelector('#category_type_value').value == "Choose Type") {
+        alert("Select the type of category")
+    }
+    else {
+
     fetch('/create_category', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -441,7 +476,7 @@ function create_category() {
 
         // create function to refresh list of category
         return false
-        
+    }
 };
 
 document.querySelector('#category_edit_select').addEventListener('change', () => {
@@ -829,6 +864,13 @@ document.querySelector('#account_save_end_add').onclick = (event) => {
 }; 
 
 function create_account() {
+    if (document.querySelector('#account_title_value').value == "") {
+        alert("Enter title of account")
+    }
+    else if (document.querySelector('#account_currency_value').value == "Currency") {
+        alert("Choose currency of the account")
+    }
+    else {
     
     fetch('/create_account', {
         method: 'POST',
@@ -848,7 +890,7 @@ function create_account() {
         chart_account();
         get_account();
         return false
-        
+    }
 };
 
 function get_account() {
